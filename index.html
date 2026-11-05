@@ -181,6 +181,10 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .fala{color:var(--fg);font-weight:500}
 .cnote{display:inline-block;vertical-align:.08em;font:500 .7em/1.5 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ochre);border:1px solid var(--ochre);border-radius:3px;padding:.05em .6em;font-style:normal}
 .ooc{font:400 .82em/1.5 var(--f-mono);color:var(--faint)}
+.planb{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;border-top:1px dashed var(--line);padding-top:10px}
+.planb>span:first-child{flex-basis:100%}
+.planb a.btn{display:inline-flex;align-items:center;text-decoration:none}
+.planb .hint{margin:0}
 .scene{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--muted);font:500 12px/1.4 var(--f-mono);text-align:left;padding-block:7px}
 .scene .s{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .scene .n{flex:none;color:var(--ochre)}
@@ -372,7 +376,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <div class="actions"><button class="btn ghost sm" type="button" id="b-import">Escolher arquivo…</button><input type="file" id="f-import" hidden></div>
           <p class="hint">Aceita o “tudo de uma vez”, backups de uma história, backups do app antigo só do Tau e cards de personagem. Se o seletor de arquivos não funcionar aí, cole o conteúdo abaixo.</p>
           <textarea class="big" id="paste" style="min-height:96px;margin-top:10px" placeholder="Cole aqui o conteúdo do backup (.json)"></textarea>
-          <div class="actions" style="margin-top:10px"><button class="btn ghost sm" type="button" id="b-paste">Importar texto colado</button></div>
+          <div class="actions" style="margin-top:10px"><button class="btn ghost sm" type="button" id="b-paste">Importar texto colado</button><button class="btn sm" type="button" id="b-clip" hidden>Colar e importar</button></div>
           <p class="hint" id="imp-msg" role="status" hidden style="color:var(--fg)"></p>
         </div>
         <p class="hint" id="store-note"></p>
@@ -397,6 +401,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <div><h4>Lore ativada</h4><div class="seg" id="seg-lore"></div><p class="hint">Mostra, abaixo de cada resposta, quais entradas do lorebook entraram na consulta.</p></div>
         <div><h4>Simulação em histórias novas</h4><div class="seg" id="seg-sim"></div><p class="hint">Status (fome, sede, energia, higiene, necessidades), relógio e inventário realista. Dá para ligar ou desligar em cada história, na Ficha.</p></div>
         <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens e relação a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra.</p></div>
+        <div><h4>Uso</h4><p class="hint" id="usage" style="margin:0"></p></div>
         <div><h4>Tema</h4><div class="seg" id="seg-theme"></div></div>
       </div>
     </div>
@@ -859,6 +864,7 @@ function msgNode(m, i){
       sw.append(l, document.createTextNode((m.ai + 1) + "/" + m.alts.length), r); a.append(sw);
     }
     const ed = el("button", "", "Editar"); ed.dataset.act = "edit"; ed.dataset.i = i; a.append(ed);
+    if (i >= 0 && S.char) { const br = el("button", "", "Ramificar"); br.dataset.act = "branch"; br.dataset.i = i; br.title = "Cria uma história nova que segue daqui, sem mexer nesta"; a.append(br); }
     if (isTau && i >= 0 && window.speechSynthesis) { const sp = el("button", "", VOICE.on === i ? "Parar voz" : "Ouvir"); sp.dataset.act = "speak"; sp.dataset.i = i; a.append(sp); }
     if (isTau && i === lastAssistantIdx() && i > 0 && S.char) {
       const rg = el("button", "", "Regerar"); rg.dataset.act = "regen"; a.append(rg);
@@ -890,6 +896,13 @@ function errNode(){
   const d = el("div", "err"); d.setAttribute("role", "alert");
   d.append(el("span", "", S.error.text));
   if (S.error.retry) { const b = el("button", "btn sm", "Tentar de novo"); b.dataset.act = "retry"; d.append(b); }
+  if (S.error.code === "rate_limited" && IN_CLAUDE && HOSTED_URL) {
+    const box = el("div", "planb"); box.append(el("span", "", "Limite do Claude no fim? Continue no site com o seu modelo de API:"));
+    const b = el("button", "btn sm", "1. Copiar tudo"); b.dataset.act = "planb"; box.append(b);
+    const a = el("a", "btn ghost sm", "2. Abrir o site"); a.href = HOSTED_URL + "#importar"; a.target = "_blank"; a.rel = "noopener"; box.append(a);
+    box.append(el("span", "hint", "No site, toque em “Colar e importar”."));
+    d.append(box);
+  }
   return d;
 }
 function renderLog(o = {}){
@@ -952,7 +965,7 @@ async function generate(kind){
   renderLog({liveAt}); toBottom();
   let partial = "", failed = false;
   try {
-    const res = await ask(built.turns, {cache:false, signal: ctl.signal, modelTier: prefs.mode, onText: ({text}) => { partial = text; live.set(text); }});
+    const res = await ask(built.turns, {main:true, cache:false, signal: ctl.signal, modelTier: prefs.mode, onText: ({text}) => { partial = text; live.set(text); }});
     finishAssistant(res.text, built.lore, {regen: kind === "regen", cut: res.truncated});
   } catch (e) {
     const code = e && e.code; const t = (e && e.text) || partial;
@@ -963,7 +976,8 @@ async function generate(kind){
       let regen = kind === "regen";
       if (t && t.trim() && code !== "refused") { finishAssistant(t, built.lore, {regen, cut:true}); regen = true; }
       S.lastGen = regen ? "regen" : "append";
-      S.error = {text: errText(e), retry: !NO_RETRY.has(code)};
+      S.error = {text: errText(e), retry: !NO_RETRY.has(code), code};
+      if (code === "rate_limited" && IN_CLAUDE && HOSTED_URL) { S.planB = null; allJSON().then(t => { S.planB = t; }).catch(() => {}); }
     }
   } finally {
     live.stop(); S.live = null; S.ctl = null;
@@ -1497,7 +1511,7 @@ function renderSettings(){
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
   seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim !== false ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
-  renderMe();
+  renderMe(); const ut = $("#usage"); if (ut) ut.textContent = usageText();
   hint();
   $("#sec-mode").hidden = !S.sample;
 }
@@ -1721,6 +1735,14 @@ function bind(){
   $("#b-copy-json").addEventListener("click", async () => copyText(await backupJSON()));
   $("#b-all-json").addEventListener("click", async () => saveFile("mesa-de-rp-tudo-" + new Date().toISOString().slice(0, 10) + ".json", await allJSON()));
   $("#b-all-copy").addEventListener("click", async () => copyText(await allJSON()));
+  if (!IN_CLAUDE && navigator.clipboard && navigator.clipboard.readText) {
+    $("#b-clip").hidden = false;
+    $("#b-clip").addEventListener("click", async () => {
+      let t = ""; try { t = await navigator.clipboard.readText(); } catch { impMsg("O navegador não deixou ler a área de transferência. Cole no campo acima e toque em Importar texto colado."); return; }
+      if (!t.trim()) { impMsg("A área de transferência está vazia. Copie tudo na outra versão primeiro."); return; }
+      await importText(t);
+    });
+  }
   $("#b-copy").addEventListener("click", async () => copyText(await transcript()));
   $("#b-mem-save").addEventListener("click", () => { S.story.memory = $("#mem").value.trim(); persist(); toast("Memória salva."); });
   $("#b-mem-sum").addEventListener("click", async () => {
@@ -1768,6 +1790,12 @@ function bind(){
       persist(); renderLog();
     }
     else if (act === "retry") { S.error = null; generate(S.lastGen); }
+    else if (act === "planb") {
+      const data = S.planB || await allJSON();
+      try { await navigator.clipboard.writeText(data); b.textContent = "✓ Copiado"; toast("Tudo copiado. Agora abra o site."); }
+      catch { await openSheet("stories"); copyText(data); }
+    }
+    else if (act === "branch") branchFrom(i);
     else if (act === "old") {
       b.disabled = true; b.textContent = "Carregando…";
       try { let arc = []; for (let n = 1; n <= st.archiveChunks; n++) arc = arc.concat(await S.store.getArchive(st.id, n)); S.old = arc; }
@@ -1881,6 +1909,21 @@ function speak(i, btn){
   renderLog();
 }
 
+async function branchFrom(i){
+  const st = S.story; if (!st || S.busy || i < 0) return;
+  if (dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
+  const nst = clean(st); nst.id = rid(); nst.created = nst.updated = Date.now();
+  nst.title = st.title.replace(/ · ramo$/, "") + " · ramo";
+  nst.messages = clean(st.messages.slice(0, i + 1));
+  let n = 0;
+  try { for (let k = 1; k <= (st.archiveChunks || 0); k++) { const arc = await S.store.getArchive(st.id, k); n += 1; const kk = n; await enqueue(() => S.store.setArchive(nst.id, kk, arc)); } }
+  catch { toast("Não consegui copiar as mensagens antigas para o ramo."); return; }
+  nst.archiveChunks = n; nst.keepN = 0;
+  if (nst.sim) { nst.sim.snap = null; nst.sim.notes = []; }
+  openStory(nst); persist(true);
+  toast("Ramo criado a partir dessa mensagem. A história original continua em Histórias.");
+}
+
 /* ---------- memória que se cuida sozinha ---------- */
 const STATE_FIELDS = [["lugar", "📍", "Lugar"], ["hora", "🕐", "Hora e tempo"], ["presentes", "👥", "Quem está na cena"], ["corpo", "🩹", "Corpo e condição"], ["itens", "🎒", "Itens"], ["relacao", "🤝", "Relação"], ["pendencias", "❗", "Em aberto"]];
 const filled = v => typeof v === "string" && v.trim() && v.trim() !== "—" && v.trim() !== "-";
@@ -1923,15 +1966,7 @@ Cada campo do estado com no máximo 20 palavras; use "—" quando não houver in
   AUX.keeping = true; renderScene();
   try {
     const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:900});
-    const j = parseJSON(r.text);
-    const e = j && typeof j === "object" && !Array.isArray(j) ? (j.estado || j.state || {}) : {};
-    const next = {};
-    STATE_FIELDS.forEach(([k]) => { next[k] = str(e[k], 300); });
-    if (STATE_FIELDS.some(([k]) => filled(next[k]))) st.state = next;
-    const have = new Set(allLoreNames(st));
-    const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
-    st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
-    st.keepN = 0;
+    applyKeeperJSON(st, parseJSON(r.text));
     if (S.story === st) { persist(); if (sheetName === "memory") renderMemExtra(); }
     if (force) toast("Estado da cena atualizado.");
     return true;
@@ -1940,10 +1975,30 @@ Cada campo do estado com no máximo 20 palavras; use "—" quando não houver in
     return false;
   } finally { AUX.keeping = false; renderScene(); }
 }
+function applyKeeperJSON(st, j){
+  const e = j && typeof j === "object" && !Array.isArray(j) ? (j.estado || j.state || {}) : {};
+  const next = {};
+  STATE_FIELDS.forEach(([k]) => { next[k] = str(e[k], 300); });
+  if (STATE_FIELDS.some(([k]) => filled(next[k]))) st.state = next;
+  const have = new Set(allLoreNames(st));
+  const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
+  st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
+  st.keepN = 0; st.keepDue = false;
+  renderScene();
+}
+function keeperSpec(st){
+  const n = st.setup.name, c = S.char.name;
+  return {json: `,
+ "estado": {"lugar":"onde a cena está agora","hora":"momento do dia ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, roupas relevantes","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "relações de " + n + " com os NPCs importantes" : "relação e confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto"},
+ "lore": [no máximo 2 fatos NOVOS e duradouros: {"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras"}]`,
+    rules: `Estado: cada campo com no máximo 20 palavras, considerando a memória e o estado anterior (${JSON.stringify(st.state || {})}); use "—" quando não houver informação. Lore: só pessoas com nome, lugares, combinados, objetos importantes ou palavras aprendidas que apareceram agora e não estão em: ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}; se não houver, []. Escreva no idioma das mensagens.`};
+}
 function afterReply(){
   const st = S.story; if (!st) return;
   st.keepN = (st.keepN || 0) + 1;
-  if (prefs.keeper !== false && (st.keepN >= 3 || !st.state)) keeper(false);
+  if (prefs.keeper !== false && (st.keepN >= 3 || !st.state)) {
+    if (simOn(st) && st.sim.ready) st.keepDue = true; else keeper(false);
+  }
 }
 function renderMemExtra(){
   const box = $("#mem-extra"); if (!box || !S.story) return;
@@ -2248,6 +2303,14 @@ async function simStep(kind){
   const before = JSON.stringify({clock: sim.clock, player: sim.player, npc: sim.npc, items: sim.items});
   const n = st.setup.name, c = S.char.name, npc = hasNpc(st);
   const prevUser = st.messages.slice(0, li).reverse().find(m => m.role === "user");
+  const due = !!st.keepDue && prefs.keeper !== false;
+  const both = (prevUser ? prevUser.text : "") + " " + reply.text;
+  if (!due && kind !== "regen" && (prevUser ? prevUser.text.length : 0) < 160 && reply.text.length < 900 && !SIM_WORDS.test(both)) {
+    sim.snap = {msgId: reply.id, before};
+    applyTime(sim.player, 3, 0, carriedKg(sim) > CARRY_OK); if (npc) applyTime(sim.npc, 3, 0, false); advanceClock(sim.clock, 3);
+    persist(); renderSimBar(); if (sheetName === "sim") renderSim(); return;
+  }
+  const ks = due ? keeperSpec(st) : null;
   const prompt = `Você é o motor de simulação de um roleplay. Leia a última troca e diga o que mudou, em JSON. Não invente nada que não esteja no texto.
 
 RELÓGIO ATUAL: ${clockText(sim.clock)}
@@ -2265,15 +2328,17 @@ Responda SOMENTE com um objeto JSON:
 {"minutos": tempo que passou na história durante esta narração (número; uma conversa curta = 2 a 10; "passam-se algumas horas" = 180; "um dia" = 1440),
  "sono": {"${n}": minutos dormindo dentro desse tempo${npc ? `, "${c}": minutos dormindo` : ""}},
  "efeitos": {"${n}": {"fome": +/-pontos, "sede": ..., "energia": ..., "higiene": ..., "bexiga": ..., "saude": ...}${npc ? `, "${c}": {...}` : ""}},
- "inventario": [operações no inventário de ${n}]}
+ "inventario": [operações no inventário de ${n}]${ks ? ks.json : ""}}${ks ? "\n" + ks.rules : ""}
 Efeitos: só o que aconteceu na narração ou na ação. Exemplos: refeição completa fome +40 a +60; lanche +15; beber água sede +30 a +60; banho higiene +60; ir ao banheiro bexiga = +100; ferimento leve saude -10, grave -40; esforço pesado energia -10. Não inclua o desgaste normal do tempo (o app calcula sozinho). Omita campos sem mudança.
 Operações de inventário (só para ${n}, e só se a ação ou a narração mostrar isso acontecendo): {"op":"add","name":"...","size":"P|M|G|GG","kg":número,"qty":1,"to":"maoD|maoE|maos|chao|nome do recipiente|auto","wear":"cabeca|torso|pernas|pes|costas|cintura (se for vestível)","cap":{"vol":n,"max":"P|M|G","kg":n} (se guardar coisas),"food":{"fome":n,"sede":n} (se for comida ou bebida)}; {"op":"remove","id":"...","qty":n} (comido, usado, entregue, perdido); {"op":"move","id":"...","to":"..."}; {"op":"wear","id":"..."}; {"op":"unwear","id":"...","to":"..."}. Tamanhos: P cabe no bolso (isqueiro, faca pequena); M ocupa uma mão (garrafa, peixe, camisa dobrada); G pede as duas mãos ou uma mochila grande (machado, lança, rede); GG é enorme (tronco, pessoa).`;
   try {
-    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:700});
+    if (due) { AUX.keeping = true; renderScene(); }
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: due ? 1300 : 700});
     const j = parseJSON(r.text);
     if (!j || typeof j !== "object" || Array.isArray(j)) return;
     if (S.story !== st) return;
     sim.snap = {msgId: reply.id, before};
+    if (due) applyKeeperJSON(st, j);
     const minutes = clamp(Number(j.minutos) || 0, 0, 60 * 24 * 60);
     const sono = j.sono || {}; const eff = j.efeitos || {};
     const pick = (o, name, alt) => o[name] || o[alt] || o[name.toLowerCase()] || null;
@@ -2288,7 +2353,7 @@ Operações de inventário (só para ${n}, e só se a ação ou a narração mos
     const warn = STATS.filter(d => stLevel(sim.player[d.k]) >= 2).map(d => d.t[stLevel(sim.player[d.k])]);
     persist(); renderSimBar(); if (sheetName === "sim") renderSim();
     if (warn.length) toast(n + ": " + warn.join(", ") + ".");
-  } catch {}
+  } catch {} finally { if (due) { AUX.keeping = false; renderScene(); } }
 }
 async function simInit(force){
   const st = S.story; const sim = simOf(st);
@@ -2331,6 +2396,7 @@ Status: 100 é ótimo, 0 é péssimo; reflita a situação (dias perdido = fome 
   finally { SIMX.init = false; renderSimBar(); if (sheetName === "sim") renderSim(); }
 }
 const SIMX = {init:false, open:null, tab:"status", adjust:false};
+const SIM_WORDS = /com[eio]|bebe|beb[io]|água|agua|fome|sede|peg[aou]|guard|larg|solt|entreg|tir[aeo]|vest|dorm|cochil|descans|banho|lav[aeo]|xixi|mij|banheiro|ferid|cort[aeo]|sangr|caç|pesc|mochila|bolso|horas?\b|noite|amanhe|madrugada|entardec|semana|meses|minutos|depois de|carreg|arrast|cozinh|assa|eat|drink|grab|take|sleep|hour/i;
 
 /* faixa compacta na conversa */
 function renderSimBar(){
@@ -2521,7 +2587,22 @@ function loadModels(){
 function saveModels(){ LS.set("rp.models", JSON.stringify({list: MD.list, active: MD.active})); }
 function activeModel(){ return MD.list.find(m => m.id === MD.active) || null; }
 function hasAI(){ return !!(S.sample || (!IN_CLAUDE && activeModel())); }
-function ask(input, opts){ return S.sample ? S.sample(input, opts) : apiAsk(input, opts || {}); }
+function bumpUsage(kind){
+  const d = new Date().toLocaleDateString("sv"); let u = {};
+  try { u = JSON.parse(LS.get("rp.usage") || "{}"); } catch {}
+  if (u.date !== d) u = {date: d, main: 0, extra: 0};
+  u[kind] = (u[kind] || 0) + 1; LS.set("rp.usage", JSON.stringify(u));
+}
+function usageText(){
+  let u = {}; try { u = JSON.parse(LS.get("rp.usage") || "{}"); } catch {}
+  if (u.date !== new Date().toLocaleDateString("sv")) u = {main: 0, extra: 0};
+  return "Hoje, neste aparelho: " + (u.main || 0) + (u.main === 1 ? " resposta" : " respostas") + " da história e " + (u.extra || 0) + (u.extra === 1 ? " consulta extra" : " consultas extras") + " (ideias, melhorar texto, memória, estado da cena, ficha, criação de personagem).";
+}
+function ask(input, opts){
+  const o = Object.assign({}, opts || {}); const main = !!o.main; delete o.main;
+  bumpUsage(main ? "main" : "extra");
+  return S.sample ? S.sample(input, o) : apiAsk(input, o);
+}
 function modelLabel(){ if (S.sample) return "Claude"; const m = !IN_CLAUDE && activeModel(); return m ? (m.name || m.model) : "nenhum"; }
 const kfmt = n => n >= 1000 ? (Math.round(n / 100) / 10) + "K" : String(n);
 const hostOf = u => { try { return new URL(u).host; } catch { return u; } };
@@ -2819,6 +2900,7 @@ async function boot(){
   catch { S.store = mkLocalStore(); S.localNote = true; try { S.index = await loadIx(); } catch { S.index = {lastId:null, stories:[], chars:[]}; } }
   await loadChars();
   showLibrary(); refreshAI();
+  if (!IN_CLAUDE && location.hash === "#importar") { try { history.replaceState(null, "", location.pathname + location.search); } catch {} openSheet("stories"); impMsg("Toque em “Colar e importar” para trazer o que você copiou na versão do Claude."); }
   if (!IN_CLAUDE && !LS_OK) toast("Este navegador não está guardando dados desta página: o que você fizer some ao fechar. Veja as dicas em Modelo.");
 }
 boot();
