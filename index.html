@@ -181,6 +181,14 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .fala{color:var(--fg);font-weight:500}
 .cnote{display:inline-block;vertical-align:.08em;font:500 .7em/1.5 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ochre);border:1px solid var(--ochre);border-radius:3px;padding:.05em .6em;font-style:normal}
 .ooc{font:400 .82em/1.5 var(--f-mono);color:var(--faint)}
+.scene{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--muted);font:500 12px/1.4 var(--f-mono);text-align:left;padding-block:7px}
+.scene .s{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene .n{flex:none;color:var(--ochre)}
+.ideas{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.idea{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font:400 15px/1.45 var(--f-body);color:var(--fg)}
+.idea:hover{border-color:var(--accent)}
+.idea p{margin:0}
+.ideas .txt{align-self:flex-start}
 .msg.you{align-self:flex-end;max-width:90%}
 .msg.you .who{justify-content:flex-end}
 .msg.you .body{background:var(--surface-2);border:1px solid var(--line);border-radius:14px 14px 4px 14px;padding:11px 15px}
@@ -203,13 +211,14 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 
 /* compositor */
 .composer{flex:none;border-top:1px solid var(--line);background:var(--bg)}
-.composer .col{padding-block:10px 12px;display:flex;flex-direction:column;gap:9px}
+.composer .col{padding-block:10px 12px;display:flex;flex-direction:column;gap:9px;position:relative}
 .tray{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+@media (max-width:640px){.tray{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;margin-inline:-2px;padding-inline:2px}.tray::-webkit-scrollbar{display:none}.tray>*{flex:none}}
 .chip{border:1px solid var(--line);background:none;border-radius:999px;padding:7px 12px;font:500 12px/1 var(--f-mono);color:var(--muted)}
 .chip:hover{border-color:var(--accent);color:var(--fg)}
 .chip[disabled]{opacity:.4;cursor:default}
 .pop{position:relative}
-#timemenu{position:absolute;bottom:calc(100% + 6px);left:0;z-index:5;min-width:190px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column}
+#timemenu{position:absolute;bottom:calc(100% - 4px);left:max(16px,env(safe-area-inset-left,0px));z-index:5;min-width:190px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column}
 #timemenu button{background:none;border:0;text-align:left;padding:9px 10px;border-radius:6px;font:500 13px/1 var(--f-mono);color:var(--fg)}
 #timemenu button:hover{background:var(--surface-2)}
 .send-row{display:flex;gap:8px;align-items:flex-end}
@@ -283,6 +292,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
     </section>
 
     <section class="view" id="v-chat" hidden>
+      <button class="scene gut" id="scene" type="button" hidden title="Abrir estado da cena e memória"></button>
       <div id="log" tabindex="-1"><div class="gut"><div class="col" id="msgs" role="log" aria-label="Conversa"></div></div></div>
       <div class="composer"><div class="gut"><div class="col">
         <div class="status" id="status" hidden></div>
@@ -290,10 +300,14 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <button class="chip" type="button" data-wrap="*|*" title="Ação em itálico">*ação*</button>
           <button class="chip" type="button" data-wrap='"|"' title="Fala entre aspas">“fala”</button>
           <button class="chip" type="button" data-wrap="((|))" title="Fora do personagem">(( fora do RP ))</button>
+          <button class="chip" type="button" id="b-ideas" title="Três sugestões do que fazer agora">💡 Ideias</button>
+          <button class="chip" type="button" id="b-polish" title="Deixa sua ação mais viva e bem formatada, sem mudar o que você decidiu">✨ Melhorar</button>
           <button class="chip" type="button" id="b-cont" title="Deixa a cena seguir sem uma ação sua">Continuar</button>
-          <span class="pop"><button class="chip" type="button" id="b-time" aria-expanded="false" aria-controls="timemenu">Avançar tempo ▾</button><div id="timemenu" hidden></div></span>
+          <span class="pop"><button class="chip" type="button" id="b-time" aria-expanded="false" aria-controls="timemenu">Avançar tempo ▾</button></span>
           <button class="chip" type="button" id="b-model" title="Trocar de modelo">Modelo</button>
         </div>
+        <div class="pop" id="timemenu" hidden></div>
+        <div class="ideas" id="ideas" hidden></div>
         <div class="send-row">
           <textarea id="in" rows="1" placeholder="O que você faz ou diz?" aria-label="Sua ação ou fala"></textarea>
           <button class="btn" type="button" id="b-send">Enviar</button>
@@ -346,14 +360,17 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <div class="actions" style="margin-top:10px"><button class="btn sm" type="button" id="b-mem-save">Salvar</button><button class="btn ghost sm" type="button" id="b-mem-sum">Resumir agora</button></div>
           <p class="hint" id="mem-hint"></p>
         </div>
+        <div id="mem-extra" style="display:flex;flex-direction:column;gap:22px"></div>
       </div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
+        <div><h4>Você</h4><div id="me-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
         <div id="sec-mode"><h4>Velocidade e cuidado</h4><div class="seg" id="seg-mode"></div><p class="hint" id="mode-hint"></p></div>
         <div><h4>Tamanho das respostas</h4><div class="seg" id="seg-len"></div></div>
         <div><h4>Idioma da narração</h4><div class="seg" id="seg-lang"></div></div>
         <div><h4>Nota de cena</h4><textarea class="big" id="notes" style="min-height:96px" placeholder="Ex.: mais tensão, ritmo lento, mais humor seco. Vale só para esta história."></textarea></div>
         <div><h4>Lore ativada</h4><div class="seg" id="seg-lore"></div><p class="hint">Mostra, abaixo de cada resposta, quais entradas do lorebook entraram na consulta.</p></div>
+        <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens e relação a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra.</p></div>
         <div><h4>Tema</h4><div class="seg" id="seg-theme"></div></div>
       </div>
     </div>
@@ -415,7 +432,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt"};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -576,7 +593,7 @@ function header(st, ch, loreHead){
     ? `Você é o narrador de uma aventura interativa de roleplay em ${lang}. Você descreve o mundo, interpreta todos os personagens que o jogador encontra e decide as consequências das ações. O jogador interpreta ${n}. Nome da mesa: ${c}.`
     : `Você conduz um roleplay em ${lang} com um jogador. Você interpreta ${c}, os demais personagens e o mundo ao redor (ambiente, clima, consequências). O jogador interpreta ${n}.`;
   const how = `COMO ESCREVER
-- Responda apenas com a continuação da cena, de dentro da história: sem comentários sobre o roleplay, sem listas, sem títulos, sem avisos. Se o jogador escrever fora do personagem entre (( )), responda fora do personagem em uma ou duas frases e volte à cena.
+- Responda apenas com a continuação da cena, de dentro da história: sem comentários sobre o roleplay, sem listas, sem títulos, sem avisos. Se o jogador escrever fora do personagem entre (( )), responda fora do personagem em uma ou duas frases e volte à cena, exceto quando for uma instrução de direção (continuar, avançar o tempo, abrir a cena): aí siga a instrução dentro da história.
 - Formato: narração e ações em *itálico entre asteriscos* (cada parágrafo de narração aberto e fechado com asterisco); falas entre aspas retas "assim"; sons e falas sem tradução podem aparecer entre [colchetes] curtos.
 - Tamanho: ${LENGTHS[prefs.length].rule}
 - Nunca escreva falas, ações, pensamentos, sentimentos, decisões ou consentimento de ${n}. Termine num ponto em que ${n} possa agir ou responder.
@@ -590,7 +607,7 @@ function header(st, ch, loreHead){
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), persona, examples, mem, lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), persona, examples, mem, stateBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -605,12 +622,13 @@ function tail(st, ch, loreTail){
 function buildTurns(st, ch, upto){
   const msgs = st.messages.slice(0, upto);
   const scan = msgs.slice(-4).map(m => m.text).join("\n");
-  const lore = matchLore(ch, scan);
-  const turns = [{role:"user", content: header(st, ch, lore.filter(e => e.pos !== 1))}];
+  const lore = matchLore({lore: (ch.lore || []).concat(st.slore || [])}, scan);
+  let turns = [{role:"user", content: header(st, ch, lore.filter(e => e.pos !== 1))}];
   for (const m of msgs) turns.push({role: m.role, content: m.text});
   turns[turns.length - 1].content += tail(st, ch, lore.filter(e => e.pos === 1));
   let total = turns.reduce((a, t) => a + bytes(t.content), 0);
   while (total > maxBytes() && turns.length > 3) { total -= bytes(turns[1].content); turns.splice(1, 1); }
+  turns = mergeTurns(turns);
   return {turns, lore};
 }
 
@@ -654,6 +672,8 @@ const VIEWS = ["library", "editor", "setup", "chat"];
 function showView(name){
   S.view = name; $("#app").dataset.view = name;
   VIEWS.forEach(v => { $("#v-" + v).hidden = v !== name; });
+  if (name !== "chat" && window.speechSynthesis) { try { speechSynthesis.cancel(); } catch {} VOICE.on = null; }
+  renderScene();
   updateHeader(); updateComposer();
 }
 function updateHeader(){
@@ -675,7 +695,7 @@ function markSvg(){
 function updateComposer(){
   const ok = !!(hasAI() && S.char);
   $("#b-send").disabled = !ok; $("#in").disabled = !ok || S.busy;
-  $("#b-cont").disabled = !ok || S.busy; $("#b-time").disabled = !ok || S.busy;
+  $("#b-cont").disabled = !ok || S.busy; $("#b-ideas").disabled = !ok || S.busy || AUX.ideas; $("#b-polish").disabled = !ok || AUX.polish; $("#b-time").disabled = !ok || S.busy;
 }
 
 /* ---------- biblioteca ---------- */
@@ -692,9 +712,10 @@ function charCard(ch){
   bd.append(meta);
   if (ch.tagline) bd.append(el("p", "", ch.tagline));
   const go = el("div", "go");
-  const play = el("button", "btn sm", "Jogar"); play.dataset.act = "play"; play.dataset.id = ch.id; go.append(play);
+  const play = el("button", "btn sm", "Jogar"); play.dataset.act = "quick"; play.dataset.id = ch.id; go.append(play);
   const links = el("div", "links");
   const add = (label, act, cls) => { const b = el("button", "txt" + (cls ? " " + cls : ""), label); b.dataset.act = act; b.dataset.id = ch.id; links.append(b); return b; };
+  add("Escolher início", "play"); add("Me surpreenda", "surprise");
   if (!ch.builtin) add("Editar", "edit");
   add("Duplicar", "dup"); add("Baixar", "export");
   if (!ch.builtin) add("Excluir", "del", "danger");
@@ -735,16 +756,14 @@ function renderLibrary(){
 /* ---------- criar história ---------- */
 function showSetup(ch){
   S.setupChar = ch;
-  let p = null;
-  try { p = JSON.parse(LS.get("rp.persona." + ch.id) || "null"); } catch {}
-  if (!p) p = Object.assign({}, GENERIC_PERSONA, ch.persona || {});
-  if (!p.name) p.name = "Alex";
+  const p = personaFor(ch);
   const box = $("#setup-box"); box.textContent = "";
   const hero = el("div", "shero"); hero.append(tileEl(ch));
   const hd = el("div"); hd.append(el("h2", "", ch.role === "narrator" ? "Prepare a sua mesa." : "Antes de começar."), el("p", "", ch.tagline || "Conte quem você vai ser nesta história."));
   hero.append(hd); box.append(hero);
   const f = el("form", "sect"); f.id = "setup-form"; f.autocomplete = "off";
   f.append(el("h3", "", "Seu personagem"));
+  f.append(el("p", "note", "O que você mudar aqui vale para as próximas histórias com " + ch.name + ". Seu “Você” padrão, para todos os personagens, fica em Ajustes."));
   const fld = (label, id, tag, val, rows) => { const w = el("div", "field"); const l = el("label", "", label); l.htmlFor = id; const i = el(tag); i.id = id; if (tag === "textarea") i.rows = rows || 2; else i.type = "text"; i.value = val || ""; w.append(l, i); return w; };
   const r1 = el("div", "row"); const wn = fld("Nome", "s-name", "input", p.name); wn.querySelector("input").required = true; wn.querySelector("input").maxLength = 40;
   const wp = el("div", "field"); const lp = el("label", "", "Pronome na narração"); lp.htmlFor = "s-pro"; const sp = el("select"); sp.id = "s-pro";
@@ -777,7 +796,7 @@ function newStory(ch, setup){
 }
 function openStory(st){
   S.story = st; S.char = S.chars.get(st.charId) || null; S.index.lastId = st.id; S.old = null; S.error = null; S.editing = null;
-  showView("chat"); renderLog();
+  showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene();
   if (st.messages.length <= 1) $("#log").scrollTop = 0; else toBottom();
   if (!S.char) showBanner("O personagem desta história foi excluído. Você pode ler e exportar, mas não continuar."); else showBanner(hasAI() ? "" : noAIText());
   persist();
@@ -789,7 +808,7 @@ function msgNode(m, i){
   const st = S.story;
   if (m.role === "user" && m.kind === "cmd") return el("div", "msg cmd", "↳ " + (m.label || "Continuar"));
   const isTau = m.role === "assistant";
-  const art = el("article", "msg " + (isTau ? "tau" : "you"));
+  const art = el("article", "msg " + (isTau ? "tau" : "you")); art.dataset.i = i;
   const who = el("div", "who");
   if (isTau) { who.append(avatarEl(S.char || {name:st.charName}), document.createTextNode(S.char ? S.char.name : st.charName || "Narrador")); } else who.textContent = st.setup.name;
   art.append(who);
@@ -812,6 +831,7 @@ function msgNode(m, i){
       sw.append(l, document.createTextNode((m.ai + 1) + "/" + m.alts.length), r); a.append(sw);
     }
     const ed = el("button", "", "Editar"); ed.dataset.act = "edit"; ed.dataset.i = i; a.append(ed);
+    if (isTau && i >= 0 && window.speechSynthesis) { const sp = el("button", "", VOICE.on === i ? "Parar voz" : "Ouvir"); sp.dataset.act = "speak"; sp.dataset.i = i; a.append(sp); }
     if (isTau && i === lastAssistantIdx() && i > 0 && S.char) {
       const rg = el("button", "", "Regerar"); rg.dataset.act = "regen"; a.append(rg);
       const bk = el("button", "", "Voltar"); bk.dataset.act = "undo"; bk.title = "Apaga esta resposta e devolve sua ação para a caixa de texto"; a.append(bk);
@@ -819,7 +839,7 @@ function msgNode(m, i){
     art.append(a);
   }
   if (isTau && prefs.lore && m.lore && m.lore.length && S.char) {
-    const names = m.lore.map(id => (S.char.lore.find(e => e.id === id) || {}).name).filter(Boolean);
+    const pool = S.char.lore.concat(st.slore || []); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
     if (names.length) art.append(el("div", "tag", "Lore: " + names.join(" · ")));
   }
   return art;
@@ -923,6 +943,7 @@ async function generate(kind){
   renderLog(); persist();
   if (!failed) await compact(false);
   setBusy(false); renderLog();
+  if (!failed) afterReply();
 }
 function send(text, label){
   if (S.busy || !hasAI() || !S.char) return;
@@ -1409,6 +1430,7 @@ async function openSheet(name){
   if (name === "stories") renderStories();
   if (name === "memory") { $("#mem").value = S.story.memory || ""; $("#mem-hint").textContent = "Mensagens recentes: " + S.story.messages.length + " · arquivadas: " + S.story.archived + ". " + (S.sample ? "O app resume sozinho quando a conversa passa de cerca de 60 mil caracteres." : "O app resume sozinho quando a conversa se aproxima do limite de contexto do modelo em uso."); }
   if (name === "models") renderModels();
+  if (name === "memory") renderMemExtra();
   if (name === "settings") { renderSettings(); $("#notes").value = S.story ? S.story.notes || "" : ""; $("#notes").disabled = !S.story; }
   $("#b-close").focus();
 }
@@ -1432,6 +1454,8 @@ function renderSettings(){
   seg($("#seg-lang"), Object.entries(LANGS).map(([k, v]) => [k, v[0]]), prefs.lang, id => { prefs.lang = id; savePrefs(); });
   seg($("#seg-lore"), [["on", "Mostrar"], ["off", "Esconder"]], prefs.lore ? "on" : "off", id => { prefs.lore = id === "on"; savePrefs(); if (S.story && S.view === "chat") renderLog(); });
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
+  seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
+  renderMe();
   hint();
   $("#sec-mode").hidden = !S.sample;
 }
@@ -1568,6 +1592,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
+  bindFeatures();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
@@ -1584,6 +1609,8 @@ function bind(){
     if (act === "new") openEditor(null);
     else if (act === "import") pickFile($("#f-card"), "");
     else if (act === "play" && ch) showSetup(ch);
+    else if (act === "quick" && ch) quickStart(ch);
+    else if (act === "surprise" && ch) surpriseStart(ch);
     else if (act === "edit" && ch && !ch.builtin) openEditor(ch);
     else if (act === "dup" && ch) { const c = normChar(clean(ch)); delete c.builtin; c.name = ch.name + " (cópia)"; openEditor(null); D = Object.assign(c, {id: rid(), isNew:true}); renderEditor(); updateHeader(); }
     else if (act === "export" && ch) saveFile(slug(ch.name) + ".json", JSON.stringify(charToCard(ch), null, 2));
@@ -1683,6 +1710,7 @@ function bind(){
     }
     else if (act === "swipe") { const m = st.messages[i]; m.ai = Math.max(0, Math.min(m.alts.length - 1, m.ai + Number(b.dataset.d))); m.text = m.alts[m.ai]; persist(); renderLog(); }
     else if (act === "regen") generate("regen");
+    else if (act === "speak") speak(i, b);
     else if (act === "undo") {
       const idx = lastAssistantIdx(); if (idx < 1) return;
       const prev = st.messages[idx - 1];
@@ -1699,6 +1727,256 @@ function bind(){
       renderLog();
     }
   });
+}
+
+/* ---------- começar com um toque ---------- */
+function loadMe(){ try { return Object.assign({name:"", pro:"ele", look:"", bio:""}, JSON.parse(LS.get("rp.me") || "{}")); } catch { return {name:"", pro:"ele", look:"", bio:""}; } }
+function personaFor(ch){
+  let p = null; try { p = JSON.parse(LS.get("rp.persona." + ch.id) || "null"); } catch {}
+  if (p && p.name) return Object.assign({}, GENERIC_PERSONA, p);
+  const me = loadMe(), d = Object.assign({}, GENERIC_PERSONA, ch.persona || {});
+  return {name: me.name || d.name || "Alex", pro: me.name ? (me.pro || "ele") : (d.pro || "ele"), look: me.look || d.look || "", bio: d.bio || me.bio || "", extra: d.extra || ""};
+}
+function quickStart(ch){
+  if (!ch.openings.length) { showSetup(ch); return; }
+  openStory(newStory(ch, Object.assign(personaFor(ch), {opening: ch.openings[0].id})));
+}
+function surpriseStart(ch){
+  if (!hasAI()) { toast(IN_CLAUDE ? "O Claude precisa estar disponível para inventar a cena." : "Escolha um modelo em Modelo para usar o Me surpreenda."); return; }
+  const setup = Object.assign(personaFor(ch), {opening: null});
+  const st = {id: rid(), charId: ch.id, charName: ch.name, title: setup.name + " · Surpresa", created: Date.now(), updated: Date.now(), setup,
+    messages: [], memory:"", notes:"", archived:0, archiveChunks:0};
+  openStory(st);
+  sendCmd("🎲 Me surpreenda", "Instrução de direção (escreva dentro da história, não fora do personagem): comece esta história com uma cena de abertura original e inesperada, coerente com a ficha e o cenário, num lugar ou momento diferente do óbvio. Comece no meio da ação, com um detalhe sensorial concreto, situe " + setup.name + " na cena sem escrever ações, falas ou pensamentos por " + setup.name + ", e termine num gancho que peça uma reação.");
+}
+function mergeTurns(turns){
+  const out = [];
+  for (const t of turns) { const l = out[out.length - 1]; if (l && l.role === t.role) l.content += "\n\n" + t.content; else out.push({role: t.role, content: t.content}); }
+  return out;
+}
+
+/* ---------- menos digitação ---------- */
+const AUX = {ideas:false, polish:false, keeping:false, undo:null, polished:null};
+function recentLog(st, n, max){
+  const c = S.char ? S.char.name : (st.charName || "Narrador"), u = st.setup.name;
+  const s = st.messages.slice(-n).filter(m => m.kind !== "cmd").map(m => (m.role === "assistant" ? c : u) + ": " + m.text).join("\n\n");
+  return s.length > max ? "…" + s.slice(-max) : s;
+}
+async function showIdeas(){
+  const box = $("#ideas");
+  if (!box.hidden) { box.hidden = true; return; }
+  if (AUX.ideas || S.busy || !hasAI() || !S.story || !S.char) return;
+  const st = S.story, n = st.setup.name, c = S.char.name;
+  const prompt = `Você ajuda um jogador de roleplay a decidir o próximo passo. O jogador interpreta ${n}; o narrador interpreta ${c} e o mundo.
+${st.setup.bio ? "Sobre " + n + ": " + st.setup.bio + "\n" : ""}${st.memory ? "Memória da história: " + trunc(st.memory, 1500) + "\n" : ""}
+ÚLTIMAS MENSAGENS:
+${recentLog(st, 6, 6000)}
+
+Sugira 3 próximas ações bem diferentes entre si para ${n}: uma cautelosa, uma ousada e uma que explore algo concreto da cena. Cada uma com no máximo 25 palavras, escrita como o jogador escreveria: em primeira pessoa, ações entre *asteriscos* e falas entre aspas retas. Só ações e falas de ${n}; nada sobre como os outros reagem. Use o idioma das mensagens.
+Responda SOMENTE com um array JSON de 3 strings.`;
+  AUX.ideas = true; const b = $("#b-ideas"); b.disabled = true; b.textContent = "💡 Pensando…";
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:500});
+    let list = []; try { list = asList(parseJSON(r.text), "ideias").map(x => String(x).trim()).filter(Boolean).slice(0, 3); } catch {}
+    if (!list.length) list = r.text.split(/\n+/).map(x => x.replace(/^\s*[-\d.)]+\s*/, "").trim()).filter(Boolean).slice(0, 3);
+    box.textContent = "";
+    list.forEach(t => { const i = el("button", "idea"); i.type = "button"; i.dataset.idea = t; i.innerHTML = fmt(t); box.append(i); });
+    const x = el("button", "txt", "Fechar ideias"); x.type = "button"; x.dataset.idea = ""; box.append(x);
+    box.hidden = !list.length;
+  } catch (e) { toast("Não consegui gerar ideias agora. " + (e && e.code === "rate_limited" ? "Espere um pouco." : "")); }
+  finally { AUX.ideas = false; b.disabled = false; b.textContent = "💡 Ideias"; }
+}
+async function polishInput(){
+  const ta = $("#in"), b = $("#b-polish");
+  if (AUX.undo != null && ta.value === AUX.polished) { ta.value = AUX.undo; AUX.undo = AUX.polished = null; b.textContent = "✨ Melhorar"; autosize(); return; }
+  const t = ta.value.trim();
+  if (!t) { toast("Escreva sua ação primeiro; eu só deixo o texto mais bonito."); ta.focus(); return; }
+  if (AUX.polish || !hasAI() || !S.story) return;
+  const st = S.story, n = st.setup.name; const li = lastAssistantIdx();
+  const prompt = `Reescreva a ação de roleplay abaixo, de ${n}, deixando-a mais viva e bem formatada, SEM mudar o que ${n} decide, faz ou diz.
+Regras: mantenha a mesma pessoa gramatical do original; ações e narração entre *asteriscos*; falas entre aspas retas; acrescente no máximo um detalhe sensorial ou de linguagem corporal; não invente ações, decisões, informações ou falas novas; não escreva nada por outros personagens; no máximo o dobro do tamanho original; use o idioma do original. Trechos entre (( )) ficam exatamente iguais.
+${li >= 0 ? "Contexto (última mensagem do narrador, só para coerência):\n" + trunc(st.messages[li].text, 1200) + "\n" : ""}
+TEXTO DE ${n.toUpperCase()}:
+${t}
+
+Responda só com o texto reescrito.`;
+  AUX.polish = true; b.disabled = true; b.textContent = "✨ Melhorando…";
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:400});
+    const out = r.text.trim();
+    if (out) { AUX.undo = ta.value; AUX.polished = out; ta.value = out; autosize(); b.textContent = "↶ Desfazer"; }
+  } catch { toast("Não consegui melhorar o texto agora."); b.textContent = "✨ Melhorar"; }
+  finally { AUX.polish = false; b.disabled = false; }
+}
+function swipeMsg(i, d){
+  const st = S.story; const m = st && st.messages[i];
+  if (!m || m.role !== "assistant" || S.busy || S.editing === i) return;
+  const alts = m.alts || [m.text];
+  if (d > 0 && (m.ai || 0) >= alts.length - 1) { if (i === lastAssistantIdx() && i > 0 && S.char && hasAI()) generate("regen"); return; }
+  if (d < 0 && (m.ai || 0) <= 0) return;
+  m.alts = alts; m.ai = (m.ai || 0) + d; m.text = m.alts[m.ai]; persist(); renderLog();
+}
+const VOICE = {on:null};
+function speak(i, btn){
+  const ss = window.speechSynthesis; if (!ss) return;
+  if (VOICE.on === i) { ss.cancel(); VOICE.on = null; renderLog(); return; }
+  ss.cancel();
+  const m = S.story.messages[i]; if (!m) return;
+  const text = m.text.replace(/\(\([\s\S]*?\)\)/g, "").replace(/[*_]/g, "").replace(/\[([^\]]*)\]/g, "$1").replace(/["“”]/g, "");
+  const lang = {pt:"pt-BR", en:"en-US", es:"es-ES"}[prefs.lang] || "pt-BR";
+  const u = new SpeechSynthesisUtterance(text); u.lang = lang;
+  const v = (ss.getVoices() || []).find(x => x.lang && x.lang.replace("_", "-").toLowerCase().startsWith(lang.toLowerCase().slice(0, 2)));
+  if (v) u.voice = v;
+  u.onend = u.onerror = () => { if (VOICE.on === i) { VOICE.on = null; if (S.view === "chat") renderLog(); } };
+  VOICE.on = i;
+  try { ss.speak(u); } catch { VOICE.on = null; toast("Este navegador não conseguiu ler em voz alta."); }
+  renderLog();
+}
+
+/* ---------- memória que se cuida sozinha ---------- */
+const STATE_FIELDS = [["lugar", "📍", "Lugar"], ["hora", "🕐", "Hora e tempo"], ["presentes", "👥", "Quem está na cena"], ["corpo", "🩹", "Corpo e condição"], ["itens", "🎒", "Itens"], ["relacao", "🤝", "Relação"], ["pendencias", "❗", "Em aberto"]];
+const filled = v => typeof v === "string" && v.trim() && v.trim() !== "—" && v.trim() !== "-";
+function stateBlock(st){
+  const s = st.state || {}; const lines = STATE_FIELDS.filter(([k]) => filled(s[k])).map(([k, , l]) => l + ": " + s[k].trim());
+  return lines.length ? "ESTADO ATUAL DA CENA (anotações de continuidade; se o histórico recente disser outra coisa, vale o histórico)\n" + lines.join("\n") : "";
+}
+function renderScene(){
+  const b = $("#scene"); const st = S.story;
+  if (!b) return;
+  if (!st || S.view !== "chat") { b.hidden = true; return; }
+  const s = st.state || {}; const sug = (st.sloreSug || []).length;
+  const parts = [["lugar", "📍"], ["hora", "🕐"], ["relacao", "🤝"]].filter(([k]) => filled(s[k])).map(([k, i]) => i + " " + s[k].trim());
+  if (!parts.length && !sug && !AUX.keeping) { b.hidden = true; return; }
+  b.textContent = "";
+  b.append(el("span", "s", parts.length ? parts.join("  ·  ") : "Estado da cena"));
+  if (AUX.keeping) b.append(el("span", "n", "anotando…"));
+  else if (sug) b.append(el("span", "n", "📚 " + sug + (sug === 1 ? " novidade" : " novidades")));
+  b.hidden = false;
+}
+function allLoreNames(st){
+  const ch = S.char || {lore:[]};
+  return [...(ch.lore || []), ...(st.slore || []), ...(st.sloreSug || [])].map(e => (e.name || "").toLowerCase().trim()).filter(Boolean);
+}
+async function keeper(force){
+  const st = S.story; if (!st || !S.char || !hasAI() || AUX.keeping) return false;
+  if (!st.messages.some(m => m.role === "assistant")) return false;
+  const n = st.setup.name, c = S.char.name;
+  const prompt = `Você é o anotador de continuidade de um roleplay entre ${n} (jogador) e ${c} (${S.char.role === "narrator" ? "narrador que interpreta o mundo e todos os NPCs" : "personagem interpretado pelo narrador, junto com o mundo"}). Atualize o ESTADO DA CENA a partir do estado atual e das mensagens recentes, e aponte fatos novos que merecem virar lore.
+
+ESTADO ATUAL (JSON): ${JSON.stringify(st.state || {})}
+LORE JÁ EXISTENTE (nomes): ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}
+${st.memory ? "MEMÓRIA DA HISTÓRIA:\n" + trunc(st.memory, 2500) + "\n" : ""}
+MENSAGENS RECENTES:
+${recentLog(st, 8, 10000)}
+
+Responda SOMENTE com um objeto JSON neste formato:
+{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]}
+Cada campo do estado com no máximo 20 palavras; use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes, palavras aprendidas) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.`;
+  AUX.keeping = true; renderScene();
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:900});
+    const j = parseJSON(r.text);
+    const e = j && typeof j === "object" && !Array.isArray(j) ? (j.estado || j.state || {}) : {};
+    const next = {};
+    STATE_FIELDS.forEach(([k]) => { next[k] = str(e[k], 300); });
+    if (STATE_FIELDS.some(([k]) => filled(next[k]))) st.state = next;
+    const have = new Set(allLoreNames(st));
+    const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
+    st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
+    st.keepN = 0;
+    if (S.story === st) { persist(); if (sheetName === "memory") renderMemExtra(); }
+    if (force) toast("Estado da cena atualizado.");
+    return true;
+  } catch (err) {
+    if (force) toast("Não consegui atualizar o estado agora.");
+    return false;
+  } finally { AUX.keeping = false; renderScene(); }
+}
+function afterReply(){
+  const st = S.story; if (!st) return;
+  st.keepN = (st.keepN || 0) + 1;
+  if (prefs.keeper !== false && (st.keepN >= 3 || !st.state)) keeper(false);
+}
+function renderMemExtra(){
+  const box = $("#mem-extra"); if (!box || !S.story) return;
+  const st = S.story; box.textContent = "";
+  const a = el("div"); a.append(el("h4", "", "Estado da cena"));
+  const s = st.state || {};
+  STATE_FIELDS.forEach(([k, i, l]) => {
+    const w = el("div", "field"); w.style.marginBottom = "10px";
+    const lb = el("label", "", i + " " + l); lb.htmlFor = "st-" + k;
+    const t = el("textarea"); t.id = "st-" + k; t.rows = 1; t.maxLength = 300; t.value = filled(s[k]) ? s[k] : "";
+    w.append(lb, t); a.append(w);
+  });
+  const ac = el("div", "actions");
+  const sv = el("button", "btn sm", "Salvar estado"); sv.type = "button"; sv.dataset.mx = "st-save";
+  const up = el("button", "btn ghost sm", AUX.keeping ? "Anotando…" : "Atualizar agora"); up.type = "button"; up.dataset.mx = "st-up"; up.disabled = AUX.keeping || !hasAI();
+  ac.append(sv, up); a.append(ac);
+  a.append(el("p", "hint", prefs.keeper !== false ? "O app atualiza estas anotações sozinho a cada 3 respostas (uma consulta curta extra) e o narrador as lê antes de responder. Corrija à mão o que estiver errado." : "A atualização automática está desligada em Ajustes. Você pode atualizar à mão aqui."));
+  box.append(a);
+  const b = el("div"); b.append(el("h4", "", "Lore aprendida nesta história"));
+  const sug = st.sloreSug || [], got = st.slore || [];
+  if (!sug.length && !got.length) b.append(el("p", "hint", "Quando a história criar alguém, um lugar ou um combinado importante, a sugestão aparece aqui. Aceitas, elas entram na conversa quando a palavra-chave aparecer, como o lorebook do personagem."));
+  const ul = el("ul", "slist");
+  sug.forEach((e, idx) => {
+    const li = el("li"); li.append(el("b", "", "Nova: " + e.name), el("small", "", (e.keys || []).join(", ")), el("p", "", e.content));
+    li.lastChild.style.margin = "0";
+    const ac2 = el("div", "acts2");
+    const y = el("button", "btn sm", "Adicionar"); y.type = "button"; y.dataset.mx = "lo-add"; y.dataset.i = idx;
+    const nn = el("button", "btn ghost sm", "Ignorar"); nn.type = "button"; nn.dataset.mx = "lo-skip"; nn.dataset.i = idx;
+    ac2.append(y, nn); li.append(ac2); ul.append(li);
+  });
+  got.forEach((e, idx) => {
+    const li = el("li"); li.append(el("b", "", e.name), el("small", "", (e.keys || []).join(", ")), el("p", "", e.content));
+    li.lastChild.style.margin = "0";
+    const ac2 = el("div", "acts2"); const r = el("button", "btn ghost sm danger", "Remover"); r.type = "button"; r.dataset.mx = "lo-del"; r.dataset.i = idx; ac2.append(r); li.append(ac2); ul.append(li);
+  });
+  if (sug.length || got.length) b.append(ul);
+  box.append(b);
+}
+function bindFeatures(){
+  $("#b-ideas").addEventListener("click", showIdeas);
+  $("#b-polish").addEventListener("click", polishInput);
+  $("#in").addEventListener("input", () => { if (AUX.undo != null && $("#in").value !== AUX.polished) { AUX.undo = AUX.polished = null; $("#b-polish").textContent = "✨ Melhorar"; } });
+  $("#ideas").addEventListener("click", e => {
+    const b = e.target.closest("[data-idea]"); if (!b) return;
+    const box = $("#ideas"); box.hidden = true;
+    if (b.dataset.idea) { const ta = $("#in"); ta.value = b.dataset.idea; autosize(); ta.focus(); }
+  });
+  $("#scene").addEventListener("click", () => openSheet("memory"));
+  let t0 = null; const msgs = $("#msgs");
+  msgs.addEventListener("touchstart", e => {
+    const a = e.target.closest(".msg.tau"); if (!a || a.dataset.i == null || e.touches.length !== 1 || e.target.closest("textarea")) { t0 = null; return; }
+    const t = e.touches[0]; t0 = {x: t.clientX, y: t.clientY, i: Number(a.dataset.i), at: Date.now()};
+  }, {passive:true});
+  msgs.addEventListener("touchend", e => {
+    if (!t0) return; const s = t0; t0 = null; const t = e.changedTouches[0];
+    const dx = t.clientX - s.x, dy = t.clientY - s.y;
+    if (Math.abs(dx) < 70 || Math.abs(dy) > 45 || Date.now() - s.at > 800 || s.i < 0) return;
+    swipeMsg(s.i, dx < 0 ? 1 : -1);
+  }, {passive:true});
+  $("#mem-extra").addEventListener("click", async e => {
+    const b = e.target.closest("[data-mx]"); if (!b || !S.story) return;
+    const st = S.story, act = b.dataset.mx, i = Number(b.dataset.i);
+    if (act === "st-save") { const s = {}; STATE_FIELDS.forEach(([k]) => { s[k] = ($("#st-" + k).value || "").trim(); }); st.state = s; persist(); renderScene(); toast("Estado salvo."); }
+    else if (act === "st-up") { b.disabled = true; b.textContent = "Anotando…"; await keeper(true); renderMemExtra(); }
+    else if (act === "lo-add") { const x = (st.sloreSug || []).splice(i, 1)[0]; if (x) { st.slore = (st.slore || []).concat([x]); persist(); renderScene(); renderMemExtra(); toast("Entrou na lore desta história."); } }
+    else if (act === "lo-skip") { (st.sloreSug || []).splice(i, 1); persist(); renderScene(); renderMemExtra(); }
+    else if (act === "lo-del") { (st.slore || []).splice(i, 1); persist(); renderMemExtra(); }
+  });
+  const me = $("#me-box");
+  me.addEventListener("change", () => {
+    const v = id => ($("#" + id).value || "").trim();
+    LS.set("rp.me", JSON.stringify({name: v("me-name"), pro: v("me-pro") || "ele", look: v("me-look"), bio: v("me-bio")}));
+    toast("“Você” salvo. Vale para as próximas histórias.");
+  });
+}
+function renderMe(){
+  const box = $("#me-box"); if (!box) return; box.textContent = "";
+  const me = loadMe();
+  const r = el("div", "row");
+  r.append(fieldEl("Nome", "me-name", "input", me.name, {max:40, ph:"Como os personagens te chamam"}), fieldEl("Pronome", "me-pro", "select", me.pro, {options: Object.entries(PRO).map(([k, v]) => [k, v.replace(" (linguagem neutra)", "")])}));
+  box.append(r, fieldEl("Aparência", "me-look", "textarea", me.look, {rows:2, max:1500}), fieldEl("Sobre você", "me-bio", "textarea", me.bio, {rows:2, max:2000, help:"Usado quando o personagem não sugere um jogador próprio. “Escolher início”, no cartão, deixa trocar só para uma história."}));
 }
 
 /* ---------- modelos e API (cópia fora do Claude) ---------- */
