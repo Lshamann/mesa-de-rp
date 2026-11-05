@@ -66,7 +66,9 @@ button{cursor:pointer}
 .ib svg{width:18px;height:18px;flex:none}
 @media (max-width:640px){.ib .lbl{display:none}}
 .seam{height:0;border-top:2px dashed var(--ochre);opacity:.5;margin:0 max(16px,env(safe-area-inset-left,0px))}
-.banner{background:var(--surface-2);border-bottom:1px solid var(--line);font:500 13px/1.5 var(--f-mono);color:var(--fg);padding-block:10px}
+.banner{background:var(--surface-2);border-bottom:1px solid var(--line);font:500 13px/1.5 var(--f-mono);color:var(--fg);padding-block:8px}
+#banner-text{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+#banner-text>span{flex:1 1 180px;min-width:0}
 
 .mini{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--surface) center/cover no-repeat;border:1px solid var(--line);font:700 11px/1 var(--f-display);color:#fff;overflow:hidden}
 .mini.big{width:38px;height:38px;font-size:17px}
@@ -631,7 +633,19 @@ function fmt(text, live){
 let toastTimer = null;
 function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 4600); }
 function setStatus(msg){ const s = $("#status"); s.textContent = msg || ""; s.hidden = !msg; }
-function showBanner(msg){ $("#banner-text").textContent = msg; $("#banner").hidden = !msg; }
+function showBanner(msg){
+  const t = $("#banner-text"); t.textContent = "";
+  if (msg === NO_MODEL && S.noModelHidden) msg = "";
+  if (msg) {
+    t.append(el("span", "", msg));
+    if (msg === NO_MODEL) {
+      const b = el("button", "btn sm", "Configurar modelo"); b.type = "button"; b.dataset.bact = "models";
+      const x = el("button", "txt", "Agora não"); x.type = "button"; x.dataset.bact = "hide";
+      t.append(b, x);
+    }
+  }
+  $("#banner").hidden = !msg;
+}
 function lastAssistantIdx(){ const ms = S.story.messages; for (let i = ms.length - 1; i >= 0; i--) if (ms[i].role === "assistant") return i; return -1; }
 function nearBottom(){ const l = $("#log"); return l.scrollHeight - l.scrollTop - l.clientHeight < 110; }
 function toBottom(){ const l = $("#log"); l.scrollTop = l.scrollHeight; }
@@ -1554,6 +1568,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
+  $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
   $("#b-close").addEventListener("click", closeSheet);
@@ -1724,7 +1739,7 @@ if (!IN_CLAUDE) {
   window.addEventListener("appinstalled", () => { installEvt = null; if (S.view === "library") renderLibrary(); });
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) { try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch {} }
 }
-const NO_MODEL = "Nenhum modelo configurado. Toque em Modelo (o ícone de chip no topo) e adicione um provedor com sua chave de API para jogar. Você ainda pode ler, editar e exportar.";
+const NO_MODEL = "Nenhum modelo de IA configurado.";
 function noAIText(){ return IN_CLAUDE ? NO_CLAUDE : NO_MODEL; }
 const standNote = () => "Esta é a cópia com API: histórias, personagens, modelos e chaves ficam só neste navegador, neste aparelho. Baixe backups de vez em quando (a chave de API nunca entra nos backups)." +
   (LS_OK ? "" : " Atenção: este navegador não está guardando dados desta página, então tudo some ao fechar a aba. Abra o arquivo direto no Chrome ou no Firefox (endereço começando com file:///) em vez de abrir pelo gerenciador de arquivos.");
