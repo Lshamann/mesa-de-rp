@@ -2253,21 +2253,53 @@ function bindTranslate(){
 }
 
 /* ---------- tradutor offline (Bergamot, só no site) ---------- */
-const BMT_CAT = {"deen":{"a":"tiny","f":{"lex":["lex.50.50.deen.s2t.bin",2657472],"vocab":["vocab.deen.spm",410738],"model":["model.deen.intgemm.alphas.bin",12995752]}},"ende":{"a":"tiny","f":{"model":["model.ende.intgemm.alphas.bin",12768493],"lex":["lex.50.50.ende.s2t.bin",2113181],"vocab":["vocab.ende.spm",410738]}},"enes":{"a":"tiny","f":{"lex":["lex.50.50.enes.s2t.bin",1720700],"vocab":["vocab.enes.spm",414566],"model":["model.enes.intgemm.alphas.bin",12602853]}},"enfr":{"a":"tiny","f":{"lex":["lex.50.50.enfr.s2t.bin",4177155],"model":["model.enfr.intgemm.alphas.bin",12293754],"vocab":["vocab.enfr.spm",419721]}},"enit":{"a":"tiny","f":{"vocab":["vocab.enit.spm",408834],"model":["model.enit.intgemm.alphas.bin",13267138],"lex":["lex.50.50.enit.s2t.bin",2441969]}},"enpt":{"a":"tiny","f":{"vocab":["vocab.enpt.spm",410584],"model":["model.enpt.intgemm.alphas.bin",13099731],"lex":["lex.50.50.enpt.s2t.bin",2354273]}},"enru":{"a":"tiny","f":{"vocab":["vocab.enru.spm",419005],"model":["model.enru.intgemm.alphas.bin",12391312],"lex":["lex.50.50.enru.s2t.bin",1348215]}},"esen":{"a":"tiny","f":{"lex":["lex.50.50.esen.s2t.bin",1978538],"vocab":["vocab.esen.spm",414566],"model":["model.esen.intgemm.alphas.bin",13215960]}},"fren":{"a":"tiny","f":{"model":["model.fren.intgemm.alphas.bin",12641501],"lex":["lex.50.50.fren.s2t.bin",4761904],"vocab":["vocab.fren.spm",419721]}},"iten":{"a":"tiny","f":{"lex":["lex.50.50.iten.s2t.bin",2743096],"vocab":["vocab.iten.spm",408834],"model":["model.iten.intgemm.alphas.bin",13220889]}},"pten":{"a":"tiny","f":{"lex":["lex.50.50.pten.s2t.bin",2639080],"model":["model.pten.intgemm.alphas.bin",13204180],"vocab":["vocab.pten.spm",410584]}},"ruen":{"a":"tiny","f":{"vocab":["vocab.ruen.spm",419860],"model":["model.ruen.intgemm.alphas.bin",12613599],"lex":["lex.50.50.ruen.s2t.bin",1962008]}},"aren":{"a":"base","f":{"model":["model.aren.intgemm.alphas.bin",30454343],"vocab":["vocab.aren.spm",416700],"lex":["lex.50.50.aren.s2t.bin",2260042]}},"enar":{"a":"base","f":{"lex":["lex.50.50.enar.s2t.bin",1633784],"vocab":["vocab.enar.spm",418930],"model":["model.enar.intgemm.alphas.bin",32224151]}},"enja":{"a":"base","f":{"trgvocab":["trgvocab.enja.spm",431278],"lex":["lex.50.50.enja.s2t.bin",3504993],"model":["model.enja.intgemm.alphas.bin",44089580],"srcvocab":["srcvocab.enja.spm",404352]}},"enko":{"a":"base","f":{"model":["model.enko.intgemm.alphas.bin",45488445],"vocab":["vocab.enko.spm",706904],"lex":["lex.50.50.enko.s2t.bin",3697379]}},"enzh":{"a":"base","f":{"srcvocab":["srcvocab.enzh.spm",407784],"trgvocab":["trgvocab.enzh.spm",425748],"model":["model.enzh.intgemm.alphas.bin",30500315],"lex":["lex.50.50.enzh.s2t.bin",3537095]}},"jaen":{"a":"base","f":{"vocab":["vocab.jaen.spm",746616],"model":["model.jaen.intgemm.alphas.bin",43084737],"lex":["lex.50.50.jaen.s2t.bin",4819431]}},"koen":{"a":"base","f":{"lex":["lex.50.50.koen.s2t.bin",4380580],"vocab":["vocab.koen.spm",706864],"model":["model.koen.intgemm.alphas.bin",43140465]}},"zhen":{"a":"base","f":{"model":["model.zhen.intgemm.alphas.bin",44369188],"vocab":["vocab.zhen.spm",738862],"lex":["lex.50.50.zhen.s2t.bin",4824122]}}};
+const BMT_HF = "huggingface.co/midudev/firefox-translations";
+const BMT_LIST = ["https://huggingface.co/api/models/midudev/firefox-translations/tree/main?recursive=true", "https://huggingface.co/api/models/midudev/firefox-translations/tree/main"];
 const BMT_CDN = "https://cdn.jsdelivr.net/npm/@browsermt/bergamot-translator@0.4.9/";
 const BMT_NAMES = {pt:"português", en:"inglês", fr:"francês", es:"espanhol", it:"italiano", de:"alemão", ru:"russo", ar:"árabe", ja:"japonês", zh:"chinês", ko:"coreano"};
 const BMT_CODE = Object.fromEntries(Object.entries(BMT_NAMES).map(([k, v]) => [v, k]));
 const BMT_OK = !IN_CLAUDE && typeof location !== "undefined" && /^(https:|http:)$/.test(location.protocol) && window.isSecureContext && "caches" in window && "DecompressionStream" in window && "Worker" in window;
-const BMT = {ready:null, dl:{}, have:{}, err:""};
-const bmtUrl = (key, arch, name) => "https://media.githubusercontent.com/media/mozilla/firefox-translations-models/main/models/" + arch + "/" + key + "/" + name + ".gz";
-function bmtFiles(key){ const v = BMT_CAT[key]; return v ? Object.entries(v.f).map(([part, [name, size]]) => ({part, url: bmtUrl(key, v.a, name), size})) : []; }
+const BMT = {ready:null, dl:{}, have:{}, err:"", cat:null, catP:null};
+function bmtParse(items){
+  const cat = {};
+  for (const it of items || []) {
+    const p = String(it.path || ""); const m = p.match(/^([a-z]{2,3})-([a-z]{2,3})\/((model|lex|vocab|srcvocab|trgvocab)\.[^\/]+)$/); if (!m || it.type === "directory") continue;
+    const key = m[1] + m[2]; const part = m[4];
+    (cat[key] = cat[key] || {f:{}}).f[part] = ["https://" + BMT_HF + "/resolve/main/" + p, Number((it.lfs && it.lfs.size) || it.size) || 0];
+  }
+  return cat;
+}
+function bmtIndex(){
+  if (BMT.cat) return Promise.resolve(BMT.cat);
+  if (BMT.catP) return BMT.catP;
+  BMT.catP = (async () => {
+    for (const u of BMT_LIST) {
+      try { const r = await fetch(u, {credentials:"omit"}); if (!r.ok) continue; let items = await r.json();
+        let cat = bmtParse(items);
+        if (!Object.keys(cat).length && Array.isArray(items)) {
+          const dirs = items.filter(x => x.type === "directory" && /^[a-z]{2,3}-[a-z]{2,3}$/.test(x.path) && ["pt", "en", "fr", "es", "it", "de", "ru", "ar", "ja", "zh", "ko"].includes(x.path.slice(0, 2)) && ["pt", "en", "fr", "es", "it", "de", "ru", "ar", "ja", "zh", "ko"].includes(x.path.slice(-2)));
+          const subs = await Promise.all(dirs.map(d => fetch(u.replace(/\?.*$/, "") + "/" + d.path, {credentials:"omit"}).then(x => x.ok ? x.json() : []).catch(() => [])));
+          cat = bmtParse(subs.flat());
+        }
+        if (Object.keys(cat).length) { BMT.cat = cat; LS.set("rp.bmtIndex", JSON.stringify(cat)); return cat; }
+      } catch {}
+    }
+    try { const c = JSON.parse(LS.get("rp.bmtIndex") || "null"); if (c && Object.keys(c).length) { BMT.cat = c; return c; } } catch {}
+    throw new Error("não consegui ler a lista de idiomas do Hugging Face");
+  })();
+  BMT.catP.catch(() => { BMT.catP = null; });
+  return BMT.catP;
+}
+function bmtFiles(key){ const v = BMT.cat && BMT.cat[key]; return v ? Object.entries(v.f).map(([part, [url, size]]) => ({part, url, size})) : []; }
 function bmtPackKeys(code){ return code === "pt" ? ["pten", "enpt"] : code === "en" ? [] : ["en" + code, code + "en"]; }
 function bmtPackSize(code){ return bmtPackKeys(code).reduce((a, k) => a + bmtFiles(k).reduce((b, f) => b + f.size, 0), 0); }
+function bmtPackOk(code){ return code === "en" || bmtPackKeys(code).every(k => bmtFiles(k).some(f => f.part === "model")); }
 async function bmtCache(){ return caches.open("mesa-bergamot-v1"); }
 async function bmtRefresh(){
   if (!BMT_OK) return;
+  try { await bmtIndex(); } catch (e) { BMT.err = String((e && e.message) || e); }
   try { const c = await bmtCache(); const keys = new Set((await c.keys()).map(r => r.url));
-    for (const code of Object.keys(BMT_NAMES)) BMT.have[code] = code === "en" || bmtPackKeys(code).every(k => bmtFiles(k).every(f => keys.has(f.url))); } catch {}
+    for (const code of Object.keys(BMT_NAMES)) BMT.have[code] = code === "en" || (bmtPackOk(code) && bmtPackKeys(code).every(k => bmtFiles(k).every(f => keys.has(f.url)))); } catch {}
 }
 async function gunzipTo(buf){
   try { return await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer(); }
@@ -2276,17 +2308,20 @@ async function gunzipTo(buf){
 async function bmtGet(url, onBytes){
   const c = await bmtCache();
   const hit = await c.match(url); if (hit) return hit.arrayBuffer();
-  const r = await fetch(url, {credentials:"omit"});
+  const r = await fetch(url, {credentials:"omit", redirect:"follow"});
   if (!r.ok) throw new Error("download falhou (" + r.status + ")");
   const reader = r.body.getReader(); const parts = []; let got = 0;
   for (;;) { const {done, value} = await reader.read(); if (done) break; parts.push(value); got += value.length; if (onBytes) onBytes(value.length); }
   const raw = await new Blob(parts).arrayBuffer();
-  const buf = await gunzipTo(raw);
+  const u8 = new Uint8Array(raw, 0, Math.min(2, raw.byteLength));
+  const buf = u8[0] === 0x1f && u8[1] === 0x8b ? await gunzipTo(raw) : raw;
   await c.put(url, new Response(buf, {headers: {"Content-Type": "application/octet-stream"}}));
   return buf;
 }
 async function bmtDownload(code){
   if (BMT.dl[code]) return;
+  try { await bmtIndex(); } catch (e) { toast("Não consegui ler a lista de idiomas. Confira a internet e tente de novo."); return; }
+  if (!bmtPackOk(code)) { toast("Esse idioma não está disponível para baixar agora."); return; }
   const files = bmtPackKeys(code).flatMap(bmtFiles); const total = files.reduce((a, f) => a + f.size, 0);
   BMT.dl[code] = {got:0, total}; renderBmt();
   try {
@@ -2311,7 +2346,7 @@ function bmtLoad(){
     if (patched === src) throw new Error("versão inesperada do Bergamot");
     const mod = await import(URL.createObjectURL(new Blob([patched], {type:"text/javascript"})));
     class Backing extends mod.TranslatorBacking {
-      async loadModelRegistery(){ return Object.entries(BMT_CAT).map(([key, v]) => ({from: key.slice(0, 2), to: key.slice(2, 4), files: Object.fromEntries(Object.entries(v.f).map(([part, [name, size]]) => [part, {name: bmtUrl(key, v.a, name), size}]))})); }
+      async loadModelRegistery(){ const cat = await bmtIndex(); return Object.entries(cat).map(([key, v]) => ({from: key.slice(0, 2), to: key.slice(2), files: Object.fromEntries(Object.entries(v.f).map(([part, [url, size]]) => [part, {name: url, size}]))})); }
       async fetch(url){ return bmtGet(url); }
     }
     const opts = {pivotLanguage:"en", downloadTimeout:0, cacheSize:200};
@@ -2352,17 +2387,18 @@ async function bmtTranslateMsg(m, lang){
 function renderBmt(){
   const box = $("#bmt-box"); if (!box) return; box.textContent = "";
   if (!BMT_OK) { box.append(el("p", "hint", IN_CLAUDE ? "Disponível só na versão web (o site), porque aqui dentro do Claude a página não pode baixar os modelos." : "Disponível só no site (endereço https), não no arquivo aberto direto do celular.")); return; }
-  box.append(el("p", "hint", "Tradução feita no próprio celular, sem internet e sem gastar consultas, com os modelos do Firefox Translations (projeto Bergamot). Baixe o português (obrigatório) e os idiomas que quiser; cada pacote fica guardado no aparelho. Tradução mais literal que a da IA e só das falas entre aspas."));
+  if (!BMT.cat) { box.append(el("p", "hint", BMT.err ? "Não consegui ler a lista de idiomas (" + BMT.err + "). Confira a internet e abra Ajustes de novo." : "Carregando a lista de idiomas…")); if (!BMT.err) bmtRefresh().then(renderBmt); return; }
+  box.append(el("p", "hint", "Tradução feita no próprio celular, sem internet e sem gastar consultas, com os modelos do Firefox Translations (projeto Bergamot, cópia no Hugging Face). Baixe o português (obrigatório) e os idiomas que quiser; cada pacote fica guardado no aparelho. Tradução mais literal que a da IA e só das falas entre aspas."));
   const ul = el("ul", "slist");
   Object.entries(BMT_NAMES).filter(([c]) => c !== "en").sort((a, b) => a[0] === "pt" ? -1 : b[0] === "pt" ? 1 : a[1].localeCompare(b[1])).concat([["en", "inglês"]]).forEach(([code, name]) => {
     const li = el("li"); const h = el("div", "h"); h.append(el("b", "", name.charAt(0).toUpperCase() + name.slice(1) + (code === "pt" ? " (obrigatório)" : "")));
     li.append(h);
     const size = bmtPackSize(code);
-    li.append(el("small", "", code === "en" ? "Já incluído: usa os pacotes de português." : (BMT.have[code] ? "Baixado · " : "") + Math.round(size / 1048576) + " MB"));
+    li.append(el("small", "", code === "en" ? "Já incluído: usa os pacotes de português." : !bmtPackOk(code) ? "Indisponível no momento" : (BMT.have[code] ? "Baixado · " : "") + Math.round(size / 1048576) + " MB"));
     const ac = el("div", "acts2");
     if (BMT.dl[code]) { const sp = el("span", "status"); sp.id = "bmt-p-" + code; sp.textContent = Math.round(100 * BMT.dl[code].got / BMT.dl[code].total) + "%"; ac.append(el("span", "dots"), sp); }
-    else if (code !== "en" && !BMT.have[code]) { const b = el("button", "btn sm", "Baixar"); b.type = "button"; b.dataset.bmt = "dl"; b.dataset.code = code; if (code !== "pt" && !BMT.have.pt) { b.disabled = true; b.title = "Baixe o português primeiro"; } ac.append(b); }
-    else if (code !== "en") { const b = el("button", "btn ghost sm danger", "Remover"); b.type = "button"; b.dataset.bmt = "rm"; b.dataset.code = code; ac.append(b); }
+    else if (code !== "en" && !BMT.have[code] && bmtPackOk(code)) { const b = el("button", "btn sm", "Baixar"); b.type = "button"; b.dataset.bmt = "dl"; b.dataset.code = code; if (code !== "pt" && !BMT.have.pt) { b.disabled = true; b.title = "Baixe o português primeiro"; } ac.append(b); }
+    else if (code !== "en" && BMT.have[code]) { const b = el("button", "btn ghost sm danger", "Remover"); b.type = "button"; b.dataset.bmt = "rm"; b.dataset.code = code; ac.append(b); }
     li.append(ac); ul.append(li);
   });
   box.append(ul);
