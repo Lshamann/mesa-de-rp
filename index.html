@@ -181,6 +181,10 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .fala{color:var(--fg);font-weight:500}
 .cnote{display:inline-block;vertical-align:.08em;font:500 .7em/1.5 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ochre);border:1px solid var(--ochre);border-radius:3px;padding:.05em .6em;font-style:normal}
 .ooc{font:400 .82em/1.5 var(--f-mono);color:var(--faint)}
+.mimg{display:block;max-width:min(100%,320px);max-height:340px;border-radius:12px;border:1px solid var(--line);margin:0 0 8px auto;object-fit:contain;background:var(--surface)}
+.msg.tau .mimg{margin-left:0}
+.att{display:flex;align-items:center;gap:10px;font:500 12px/1.3 var(--f-mono);color:var(--muted)}
+.att img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .planb{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;border-top:1px dashed var(--line);padding-top:10px}
 .planb>span:first-child{flex-basis:100%}
 .planb a.btn{display:inline-flex;align-items:center;text-decoration:none}
@@ -328,6 +332,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <button class="chip" type="button" data-wrap="*|*" title="Ação em itálico">*ação*</button>
           <button class="chip" type="button" data-wrap='"|"' title="Fala entre aspas">“fala”</button>
           <button class="chip" type="button" data-wrap="((|))" title="Fora do personagem">(( fora do RP ))</button>
+          <button class="chip" type="button" id="b-img" title="Mostrar uma imagem na cena" hidden>📷 Imagem</button>
           <button class="chip" type="button" id="b-ideas" title="Três sugestões do que fazer agora">💡 Ideias</button>
           <button class="chip" type="button" id="b-polish" title="Deixa sua ação mais viva e bem formatada, sem mudar o que você decidiu">✨ Melhorar</button>
           <button class="chip" type="button" id="b-cont" title="Deixa a cena seguir sem uma ação sua">Continuar</button>
@@ -336,6 +341,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         </div>
         <div class="pop" id="timemenu" hidden></div>
         <div class="ideas" id="ideas" hidden></div>
+        <div class="att" id="att" hidden></div>
         <div class="send-row">
           <textarea id="in" rows="1" placeholder="O que você faz ou diz?" aria-label="Sua ação ou fala"></textarea>
           <button class="btn" type="button" id="b-send">Enviar</button>
@@ -408,6 +414,8 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
   </div>
   <input type="file" id="f-card" hidden>
   <input type="file" id="f-img" accept="image/*" hidden>
+  <input type="file" id="f-scene" accept="image/*" hidden>
+  <input type="file" id="f-charimg" accept="image/*" hidden>
   <input type="file" id="f-lore" hidden>
   <div class="toast" id="toast" role="status" hidden></div>
 </div>
@@ -488,6 +496,8 @@ function mkLocalStore(){
     async setArchive(id, n, m){ s("rp.arch." + id + "." + n, {n, messages:m}); },
     async delStory(id, count){ for (let n = 1; n <= count; n++) LS.del("rp.arch." + id + "." + n); LS.del("rp.story." + id); },
     async getChar(id){ return g("rp.char." + id); },
+    async getImg(id){ const v = g("rp.img." + id); return v ? v.data : null; },
+    async setImg(id, data){ s("rp.img." + id, {data}); },
     async setChar(c){ s("rp.char." + c.id, c); },
     async delChar(id){ LS.del("rp.char." + id); }
   };
@@ -507,6 +517,8 @@ function mkDbStore(db, uid){
     async setArchive(id, n, m){ await arch(id, n).set({n, messages: clean(m)}); },
     async delStory(id, count){ for (let n = 1; n <= count; n++) await arch(id, n).delete(); await stories.doc(id).delete(); },
     async getChar(id){ const s = await chars.doc(id).get(); return s.exists ? clean(s.data()) : null; },
+    async getImg(id){ const s = await base.collection("imgs").doc(id).get(); return s.exists ? s.data().data : null; },
+    async setImg(id, data){ await base.collection("imgs").doc(id).set({data}); },
     async setChar(c){ await chars.doc(c.id).set(clean(c)); },
     async delChar(id){ await chars.doc(id).delete(); }
   };
@@ -656,12 +668,20 @@ function buildTurns(st, ch, upto){
   const scan = msgs.slice(-4).map(m => m.text).join("\n");
   const lore = matchLore({lore: (ch.lore || []).concat(st.slore || [])}, scan);
   let turns = [{role:"user", content: header(st, ch, lore.filter(e => e.pos !== 1))}];
-  for (const m of msgs) turns.push({role: m.role, content: m.text});
+  const lastIdx = msgs.length - 1; let imgId = null;
+  msgs.forEach((m, k) => {
+    let t = m.text;
+    if (m.imgId) {
+      if (k === lastIdx) { imgId = m.imgId; t += "\n\n(" + st.setup.name + " mostra a imagem anexada. Olhe a imagem e faça a cena reagir ao que ela mostra, de dentro da história. Se for algo que só " + st.setup.name + " vê, como uma foto no celular, os personagens só sabem o que puderem ver ou ouvir.)"; }
+      else t += "\n\n[Neste ponto, " + st.setup.name + " mostrou uma imagem; a reação está na resposta seguinte.]";
+    }
+    turns.push({role: m.role, content: t});
+  });
   turns[turns.length - 1].content += tail(st, ch, lore.filter(e => e.pos === 1));
   let total = turns.reduce((a, t) => a + bytes(t.content), 0);
   while (total > maxBytes() && turns.length > 3) { total -= bytes(turns[1].content); turns.splice(1, 1); }
   turns = mergeTurns(turns);
-  return {turns, lore};
+  return {turns, lore, imgId};
 }
 
 /* ---------- formatação das mensagens ---------- */
@@ -853,7 +873,8 @@ function msgNode(m, i){
     a.append(ok, no); art.append(a);
     return art;
   }
-  const body = el("div", "body"); body.innerHTML = fmt(m.text); art.append(body);
+  if (m.imgId) art.append(imgEl(m.imgId));
+  const body = el("div", "body"); body.innerHTML = m.imgId && m.text === "[imagem]" ? "" : fmt(m.text); art.append(body);
   if (m.cut) art.append(el("div", "cutnote", "Resposta interrompida. Use Continuar ou Regerar."));
   if (!S.busy) {
     const a = el("div", "acts");
@@ -937,7 +958,9 @@ const ERR_TEXT = {
   api_credit: "Sem saldo ou cota neste provedor. Recarregue ou troque de modelo em Modelo.",
   api_bad: "O provedor rejeitou o pedido. Confira o nome do modelo e os ajustes em Modelo.",
   api_network: "Não consegui conectar ao provedor. Verifique a internet e a URL; servidores no seu PC precisam aceitar pedidos de páginas web (CORS).",
-  no_model: "Nenhum modelo em uso. Abra Modelo e adicione um."
+  no_model: "Nenhum modelo em uso. Abra Modelo e adicione um.",
+  image_rejected: "A imagem foi recusada (tamanho ou formato). Tente outra.",
+  images_unavailable: "Este modelo ou esta tela não aceita imagens. Remova a imagem e mande só o texto."
 };
 const NO_RETRY = new Set(["not_granted", "sampling_disabled", "session_expired", "capability_disabled", "not_declared", "api_auth", "api_notfound", "api_credit", "api_bad", "no_model"]);
 function lastIsUser(){ const ms = S.story.messages; return ms.length && ms[ms.length - 1].role === "user"; }
@@ -965,7 +988,9 @@ async function generate(kind){
   renderLog({liveAt}); toBottom();
   let partial = "", failed = false;
   try {
-    const res = await ask(built.turns, {main:true, cache:false, signal: ctl.signal, modelTier: prefs.mode, onText: ({text}) => { partial = text; live.set(text); }});
+    const gopts = {main:true, cache:false, signal: ctl.signal, modelTier: prefs.mode, onText: ({text}) => { partial = text; live.set(text); }};
+    if (built.imgId) { const blob = await imgBlob(built.imgId); if (blob) gopts.images = [blob]; }
+    const res = await ask(built.turns, gopts);
     finishAssistant(res.text, built.lore, {regen: kind === "regen", cut: res.truncated});
   } catch (e) {
     const code = e && e.code; const t = (e && e.text) || partial;
@@ -987,11 +1012,20 @@ async function generate(kind){
   setBusy(false); renderLog();
   if (!failed) { afterReply(); simAfterReply(kind); }
 }
-function send(text, label){
+async function send(text, label){
   if (S.busy || !hasAI() || !S.char) return;
-  text = text.trim(); if (!text || !S.story) return;
+  text = text.trim();
+  const img = !label ? S.pendingImg : null;
+  if (!text && img) text = "[imagem]";
+  if (!text || !S.story) return;
   const m = {id: rid(), role:"user", text};
   if (label) { m.kind = "cmd"; m.label = label; }
+  if (img) {
+    const id = "g" + rid();
+    try { await enqueue(() => S.store.setImg(id, img)); IMGS.set(id, img); m.imgId = id; }
+    catch { toast("Não consegui guardar a imagem; vou mandar só o texto."); }
+    S.pendingImg = null; renderAttach();
+  }
   S.story.messages.push(m);
   if (!label) { $("#in").value = ""; autosize(); }
   renderLog(); toBottom(); persist();
@@ -1076,6 +1110,7 @@ function aiBoxEl(){
   box.append(f);
   const a = el("div", "actions");
   const b = el("button", "btn", hasSheet ? "Aplicar mudança" : "Montar ficha"); b.type = "button"; b.dataset.ai = "full"; a.append(b);
+  if (S.imgOK) { const bi = el("button", "btn ghost", hasSheet ? "Mudar a partir de uma imagem" : "Montar a partir de uma imagem"); bi.type = "button"; bi.dataset.act = "ai-img"; bi.title = "Escolha uma arte ou foto; ela vira o retrato e a base da aparência e do clima"; a.append(bi); }
   const u = el("button", "btn ghost", "Desfazer"); u.type = "button"; u.id = "e-undo"; u.hidden = !S.undo; u.dataset.act = "undo-ai"; a.append(u);
   box.append(a);
   const st = el("div", "aistat"); st.id = "ai-status"; st.hidden = true; box.append(st);
@@ -1265,16 +1300,17 @@ function aiStatus(msg, busy){
   s.append(el("span", "", msg));
   if (busy) { const b = el("button", "btn ghost sm", "Parar"); b.type = "button"; b.dataset.act = "ai-stop"; s.append(b); }
 }
-async function runAI(kind){
+async function runAI(kind, imgData){
   if (S.ai.busy) return;
   if (!hasAI()) { toast(IN_CLAUDE ? "Abra o app dentro do Claude para usar o assistente." : "Escolha um modelo em Modelo para usar o assistente."); return; }
   collectDraft();
   let prompt, apply, label;
   if (kind === "full") {
-    const idea = ($("#e-idea").value || "").trim();
-    if (!idea) { toast("Escreva a ideia ou o pedido primeiro."); $("#e-idea").focus(); return; }
+    let idea = ($("#e-idea").value || "").trim();
+    if (!idea && !imgData) { toast("Escreva a ideia ou o pedido primeiro."); $("#e-idea").focus(); return; }
     const cur = (D.description || D.scenario) ? D : null;
-    prompt = promptFull(idea, cur); apply = j => applyFull(j); label = "Montando a ficha";
+    if (imgData) idea = "A IMAGEM ANEXADA mostra o personagem (ou o mundo dele). Use a aparência, as roupas, os objetos, o lugar e o clima da imagem como base da ficha, descrevendo-os com precisão; o que a imagem não mostra, invente de forma coerente com ela." + (idea ? "\nPedido do jogador junto com a imagem: " + idea : "");
+    prompt = promptFull(idea, cur); apply = j => applyFull(j); label = imgData ? "Olhando a imagem e montando a ficha" : "Montando a ficha";
   } else if (kind === "openings") {
     if (!D.name || !(D.description || D.scenario)) { toast("Preencha o nome e a descrição (ou o cenário) antes."); return; }
     prompt = promptOpenings(D); apply = j => { const l = genOpenings(asList(j, "openings")); if (!l.length) throw new Error("json"); D.openings = D.openings.filter(o => o.text).concat(l); }; label = "Escrevendo aberturas";
@@ -1288,7 +1324,9 @@ async function runAI(kind){
   aiStatus(label + "… 0 s", true);
   const timer = setInterval(() => aiStatus(label + (got ? "… " + got + " caracteres" : "… " + Math.round((Date.now() - t0) / 1000) + " s"), true), 1000);
   try {
-    const res = await ask(prompt, {cache:false, signal: ctl.signal, modelTier:"default", maxTokens: kind === "full" ? 7000 : 4500, onText: ({text}) => { got = text.length; }});
+    const aopts = {cache:false, signal: ctl.signal, modelTier:"default", maxTokens: kind === "full" ? 7000 : 4500, onText: ({text}) => { got = text.length; }};
+    if (imgData) { const bl = dataUrlBlob(imgData); if (bl) aopts.images = [bl]; }
+    const res = await ask(prompt, aopts);
     clearInterval(timer);
     let j; try { j = parseJSON(res.text); } catch { throw {code:"bad_json", truncated: res.truncated}; }
     try { apply(j); } catch { throw {code:"bad_json", truncated: res.truncated}; }
@@ -1578,11 +1616,14 @@ async function allJSON(){
   const personas = {};
   for (const c of S.chars.values()) { const p = LS.get("rp.persona." + c.id); if (p) personas[c.id] = p; }
   const me = LS.get("rp.me");
-  return JSON.stringify({format:"mesa-rp-all-v1", exported: Date.now(), chars, stories, me: me || "", personas});
+  const imgs = {};
+  for (const it of stories) for (const m of it.story.messages.concat(it.archive)) if (m.imgId && !imgs[m.imgId]) { const d = await imgData(m.imgId); if (d) imgs[m.imgId] = d; }
+  return JSON.stringify({format:"mesa-rp-all-v1", exported: Date.now(), chars, stories, me: me || "", personas, imgs});
 }
 async function importAllObj(j){
   let nc = 0, ns = 0, skip = 0, fail = 0;
   if (typeof j.me === "string" && j.me && !LS.get("rp.me")) LS.set("rp.me", j.me);
+  if (j.imgs && typeof j.imgs === "object") for (const [id, d] of Object.entries(j.imgs)) { if (typeof d === "string" && d.startsWith("data:image/")) { try { await enqueue(() => S.store.setImg(id, d)); IMGS.set(id, d); } catch {} } }
   if (j.personas && typeof j.personas === "object") Object.entries(j.personas).forEach(([id, p]) => { if (typeof p === "string" && !LS.get("rp.persona." + id)) LS.set("rp.persona." + id, p); });
   for (const c0 of (Array.isArray(j.chars) ? j.chars : [])) {
     if (!c0 || !c0.id || !c0.name) continue;
@@ -1653,7 +1694,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
-  bindFeatures(); bindSim();
+  bindFeatures(); bindSim(); bindImages();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
@@ -1703,6 +1744,7 @@ function bind(){
     else if (act === "pick-img") pickFile($("#f-img"), "image/*");
     else if (act === "rm-img") { collectDraft(); D.portrait = ""; D.face = ""; rerender(); }
     else if (act === "imp-lore") pickFile($("#f-lore"), "");
+    else if (act === "ai-img") pickFile($("#f-charimg"), "image/*");
   });
   $("#f-img").addEventListener("change", async e => {
     const f = e.target.files[0]; e.target.value = ""; if (!f || !D) return;
@@ -1922,6 +1964,63 @@ async function branchFrom(i){
   if (nst.sim) { nst.sim.snap = null; nst.sim.notes = []; }
   openStory(nst); persist(true);
   toast("Ramo criado a partir dessa mensagem. A história original continua em Histórias.");
+}
+
+/* ---------- imagens ---------- */
+const IMGS = new Map();
+function dataUrlBlob(u){
+  try { const m = String(u).match(/^data:([^;,]+)(;base64)?,(.*)$/); if (!m) return null;
+    const bin = m[2] ? atob(m[3]) : decodeURIComponent(m[3]); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+    return new Blob([a], {type: m[1]}); } catch { return null; }
+}
+async function imgData(id){
+  if (IMGS.has(id)) return IMGS.get(id);
+  try { const d = await S.store.getImg(id); if (d) IMGS.set(id, d); return d; } catch { return null; }
+}
+async function imgBlob(id){ const d = await imgData(id); return d ? dataUrlBlob(d) : null; }
+function imgEl(id){
+  const im = el("img", "mimg"); im.alt = "Imagem enviada na cena"; im.loading = "lazy";
+  imgData(id).then(d => { if (d) im.src = d; else im.alt = "(imagem não encontrada neste aparelho)"; });
+  return im;
+}
+async function fileToJpeg(file, max = 1024, q = 0.78){
+  let bmp; try { bmp = await createImageBitmap(file); }
+  catch { bmp = await new Promise((res, rej) => { const u = URL.createObjectURL(file); const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; }); }
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, 0, 0, c.width, c.height);
+  let out = c.toDataURL("image/jpeg", q);
+  if (out.length > 230000) out = c.toDataURL("image/jpeg", 0.55);
+  return out;
+}
+function renderAttach(){
+  const a = $("#att"); if (!a) return; a.textContent = "";
+  if (!S.pendingImg) { a.hidden = true; return; }
+  const im = el("img"); im.src = S.pendingImg; im.alt = "Imagem anexada";
+  const x = el("button", "txt", "Remover imagem"); x.type = "button"; x.dataset.att = "rm";
+  a.append(im, el("span", "", "Vai junto com a sua próxima mensagem."), x); a.hidden = false;
+}
+function bindImages(){
+  $("#b-img").addEventListener("click", () => pickFile($("#f-scene"), "image/*"));
+  $("#f-scene").addEventListener("change", async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { S.pendingImg = await fileToJpeg(f); renderAttach(); $("#in").focus(); } catch { toast("Não consegui abrir essa imagem."); }
+  });
+  $("#att").addEventListener("click", e => { if (e.target.closest("[data-att]")) { S.pendingImg = null; renderAttach(); } });
+  $("#f-charimg").addEventListener("change", async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f || !D) return;
+    try {
+      collectDraft();
+      const data = await fileToJpeg(f, 1024);
+      if (!D.portrait) { try { D.portrait = await fileToPortrait(f); D.face = ""; } catch {} }
+      renderEditor(); runAI("full", data);
+    } catch { toast("Não consegui abrir essa imagem."); }
+  });
+}
+async function detectImages(){
+  if (S.sample) { try { const l = S.sample.limits ? await S.sample.limits() : null; S.imgOK = !!(l && l.images); } catch { S.imgOK = false; } }
+  else S.imgOK = !IN_CLAUDE;
+  $("#b-img").hidden = !S.imgOK;
 }
 
 /* ---------- memória que se cuida sozinha ---------- */
@@ -2669,6 +2768,11 @@ async function apiAsk(input, o = {}, model){
   const ctx = Number(m.ctx) || 16000;
   let max = o.maxTokens || respTokens(m);
   max = Math.max(o.minTokens || 300, Math.min(max, ctx - est - 200));
+  if (o.images && o.images.length) {
+    const urls = await Promise.all([...o.images].map(b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => res(null); r.readAsDataURL(b); })));
+    const last = messages[messages.length - 1];
+    last.content = [{type:"text", text: last.content}].concat(urls.filter(Boolean).map(u => ({type:"image_url", image_url:{url: u}})));
+  }
   const body = {model: m.model.trim(), messages, stream: true};
   const newOpenAI = m.preset === "openai" && /^(o\d|gpt-5)/i.test(m.model);
   if (newOpenAI) body.max_completion_tokens = max; else body.max_tokens = max;
@@ -2899,7 +3003,7 @@ async function boot(){
   try { S.index = await loadIx(); }
   catch { S.store = mkLocalStore(); S.localNote = true; try { S.index = await loadIx(); } catch { S.index = {lastId:null, stories:[], chars:[]}; } }
   await loadChars();
-  showLibrary(); refreshAI();
+  showLibrary(); refreshAI(); detectImages();
   if (!IN_CLAUDE && location.hash === "#importar") { try { history.replaceState(null, "", location.pathname + location.search); } catch {} openSheet("stories"); impMsg("Toque em “Colar e importar” para trazer o que você copiou na versão do Claude."); }
   if (!IN_CLAUDE && !LS_OK) toast("Este navegador não está guardando dados desta página: o que você fizer some ao fechar. Veja as dicas em Modelo.");
 }
