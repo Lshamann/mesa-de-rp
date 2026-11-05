@@ -185,6 +185,9 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .msg.tau .mimg{margin-left:0}
 .att{display:flex;align-items:center;gap:10px;font:500 12px/1.3 var(--f-mono);color:var(--muted)}
 .att img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.qa{display:flex;flex-direction:column;gap:14px;border-top:1px dashed var(--line);padding-top:12px}
+.qa .opts2{display:flex;flex-wrap:wrap;gap:6px}
+.cast{display:flex;flex-direction:column;gap:8px}
 .planb{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;border-top:1px dashed var(--line);padding-top:10px}
 .planb>span:first-child{flex-basis:100%}
 .planb a.btn{display:inline-flex;align-items:center;text-decoration:none}
@@ -650,7 +653,7 @@ function header(st, ch, loreHead){
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), persona, examples, mem, stateBlock(st), simBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, mem, stateBlock(st), simBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -666,7 +669,7 @@ function tail(st, ch, loreTail){
 function buildTurns(st, ch, upto){
   const msgs = st.messages.slice(0, upto);
   const scan = msgs.slice(-4).map(m => m.text).join("\n");
-  const lore = matchLore({lore: (ch.lore || []).concat(st.slore || [])}, scan);
+  const lore = matchLore({lore: (ch.lore || []).concat(st.slore || [], ...castChars(st).map(x => x.lore || []))}, scan);
   let turns = [{role:"user", content: header(st, ch, lore.filter(e => e.pos !== 1))}];
   const lastIdx = msgs.length - 1; let imgId = null;
   msgs.forEach((m, k) => {
@@ -791,8 +794,11 @@ function renderLibrary(){
   const mk = el("button", "btn", "Criar personagem"); mk.dataset.act = "new";
   const im = el("button", "btn ghost", "Importar card ou backup"); im.dataset.act = "import";
   acts.append(mk, im);
+  const cb = el("div", "field"); cb.id = "chub-box"; cb.hidden = true;
+  if (!IN_CLAUDE) { const l = el("label", "", "Link do personagem no Chub"); l.htmlFor = "chub-url"; const i = el("input"); i.type = "text"; i.id = "chub-url"; i.placeholder = "https://chub.ai/characters/autor/nome"; i.autocomplete = "off"; const g = el("button", "btn sm", "Importar"); g.dataset.act = "chub-go"; g.style.alignSelf = "flex-start"; cb.append(l, i, g); }
+  if (!IN_CLAUDE) { const ch2 = el("button", "btn ghost", "Importar do Chub"); ch2.dataset.act = "chub"; acts.append(ch2); }
   if (installEvt) { const ins = el("button", "btn ghost", "Instalar na tela inicial"); ins.dataset.act = "install"; acts.append(ins); }
-  box.append(acts);
+  box.append(acts); if (!IN_CLAUDE) box.append(cb);
   const {mine, examples} = allChars();
   const sec = (title, list, withNew) => {
     const s = el("div", "sect"); s.append(el("h3", "", title));
@@ -894,7 +900,7 @@ function msgNode(m, i){
     art.append(a);
   }
   if (isTau && prefs.lore && m.lore && m.lore.length && S.char) {
-    const pool = S.char.lore.concat(st.slore || []); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
+    const pool = S.char.lore.concat(st.slore || [], ...castChars(st).map(x => x.lore || [])); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
     if (names.length) art.append(el("div", "tag", "Lore: " + names.map(x => sub(x, st.setup.name, S.char.name)).join(" · ")));
   }
   return art;
@@ -1097,7 +1103,7 @@ function fieldEl(label, id, kind, value, o = {}){
 function openEditor(ch){
   D = ch ? normChar(clean(ch)) : blankChar();
   D.isNew = !ch; if (D.isNew) { D.id = rid(); D.openings = [{id:"o" + rid(), label:"Abertura 1", blurb:"", text:""}]; }
-  S.undo = null;
+  S.undo = null; QA.list = [];
   renderEditor(true); showView("editor");
   $("#ed-scroll").scrollTop = 0;
 }
@@ -1113,7 +1119,10 @@ function aiBoxEl(){
   if (S.imgOK) { const bi = el("button", "btn ghost", hasSheet ? "Mudar a partir de uma imagem" : "Montar a partir de uma imagem"); bi.type = "button"; bi.dataset.act = "ai-img"; bi.title = "Escolha uma arte ou foto; ela vira o retrato e a base da aparência e do clima"; a.append(bi); }
   const u = el("button", "btn ghost", "Desfazer"); u.type = "button"; u.id = "e-undo"; u.hidden = !S.undo; u.dataset.act = "undo-ai"; a.append(u);
   box.append(a);
+  if (!hasSheet) { const q = el("button", "btn ghost", "Me faça perguntas antes"); q.type = "button"; q.dataset.act = "ai-ask"; q.title = "A IA faz 2 ou 3 perguntas rápidas sobre a sua ideia antes de montar"; a.insertBefore(q, u); }
   const st = el("div", "aistat"); st.id = "ai-status"; st.hidden = true; box.append(st);
+  const qa = el("div", "qa"); qa.id = "ai-qa"; qa.hidden = !QA.list.length; box.append(qa);
+  if (QA.list.length) renderQA(qa);
   return box;
 }
 function renderEditor(keepAI){
@@ -1724,6 +1733,8 @@ function bind(){
       renderLibrary(); toast("Personagem excluído. As histórias dele continuam na lista, só para leitura.");
     }
     else if (act === "resume") loadStory(id);
+    else if (act === "chub") { const box = $("#chub-box"); if (box) { box.hidden = !box.hidden; if (!box.hidden) $("#chub-url").focus(); } }
+    else if (act === "chub-go") importChub(($("#chub-url") || {}).value);
     else if (act === "install" && installEvt) { const ev = installEvt; ev.prompt(); try { await ev.userChoice; } catch {} installEvt = null; renderLibrary(); }
   });
   $("#f-card").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) importFile(f); });
@@ -1745,6 +1756,10 @@ function bind(){
     else if (act === "rm-img") { collectDraft(); D.portrait = ""; D.face = ""; rerender(); }
     else if (act === "imp-lore") pickFile($("#f-lore"), "");
     else if (act === "ai-img") pickFile($("#f-charimg"), "image/*");
+    else if (act === "ai-ask") askQuestions();
+    else if (act === "qa-go") buildFromQA();
+    else if (act === "qa-x") { QA.list = []; QA.idea = ""; renderEditor(); }
+    else if (act === "qa-opt") { const inp = $("#qa-" + b.dataset.q); if (inp) inp.value = b.dataset.v; }
   });
   $("#f-img").addEventListener("change", async e => {
     const f = e.target.files[0]; e.target.value = ""; if (!f || !D) return;
@@ -2023,6 +2038,91 @@ async function detectImages(){
   $("#b-img").hidden = !S.imgOK;
 }
 
+/* ---------- elenco (cenas em grupo) ---------- */
+function castChars(st){ return (st.cast || []).map(id => S.chars.get(id)).filter(c => c && c.id !== st.charId); }
+function castBlock(st, n){
+  const cs = castChars(st); if (!cs.length) return "";
+  return "OUTROS PERSONAGENS QUE VOCÊ TAMBÉM INTERPRETA NESTA HISTÓRIA (cada um com voz, objetivos, conhecimento e rotina próprios; só aparecem quando faz sentido estarem na cena; nenhum sabe o que não viu)\n" +
+    cs.map(c => { const S2 = t => sub(t, n, c.name); return "## " + c.name + "\n" + trunc(S2(c.description || ""), 1800) + (c.personality ? "\nPersonalidade: " + trunc(S2(c.personality), 700) : "") + (c.rules ? "\nRegras deste personagem: " + trunc(S2(c.rules), 600) : ""); }).join("\n\n");
+}
+function castEl(st){
+  const w = el("div", "cast"); w.append(el("h4", "", "Elenco desta história"));
+  const main = S.chars.get(st.charId);
+  w.append(el("p", "hint", "Principal: " + (main ? main.name : st.charName) + ". Adicione outros personagens da sua biblioteca para cenas em grupo; o narrador interpreta todos."));
+  const cs = castChars(st);
+  if (cs.length) { const ul = el("ul", "slist"); cs.forEach(c => { const li = el("li"); const h = el("div", "h"); h.append(avatarEl(c), el("b", "", c.name)); li.append(h); const ac = el("div", "acts2"); const r = el("button", "btn ghost sm danger", "Tirar do elenco"); r.type = "button"; r.dataset.mx = "cast-del"; r.dataset.id = c.id; ac.append(r); li.append(ac); ul.append(li); }); w.append(ul); }
+  const opts = [...S.chars.values()].filter(c => c.id !== st.charId && c.role !== "narrator" && !(st.cast || []).includes(c.id));
+  if (opts.length) {
+    const sel = el("select"); sel.id = "cast-pick"; sel.style.cssText = "width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:400 16px/1.4 var(--f-body)";
+    opts.forEach(c => { const o = el("option", "", c.name); o.value = c.id; sel.append(o); });
+    const ac = el("div", "actions");
+    const b1 = el("button", "btn sm", "Adicionar e trazer à cena"); b1.type = "button"; b1.dataset.mx = "cast-add"; b1.dataset.now = "1";
+    const b2 = el("button", "btn ghost sm", "Só adicionar"); b2.type = "button"; b2.dataset.mx = "cast-add";
+    ac.append(b1, b2); w.append(sel, ac);
+  } else w.append(el("p", "hint", "Crie ou importe mais personagens para formar um grupo."));
+  return w;
+}
+
+/* ---------- criação conversando ---------- */
+const QA = {list:[], idea:"", busy:false};
+async function askQuestions(){
+  if (QA.busy || S.ai.busy) return;
+  if (!hasAI()) { toast("Escolha um modelo em Modelo primeiro."); return; }
+  const idea = ($("#e-idea").value || "").trim();
+  if (!idea) { toast("Escreva a ideia primeiro, mesmo que seja curta."); $("#e-idea").focus(); return; }
+  QA.busy = true; aiStatus("Pensando em perguntas…", false);
+  const prompt = `Um jogador quer criar um personagem de roleplay a partir desta ideia: "${idea}".
+Faça de 2 a 3 perguntas curtas e concretas cujas respostas mais mudariam a ficha (por exemplo: tom e gênero, onde e quando se passa, como o personagem trata o jogador no começo, o que o jogador quer viver). Não pergunte o que a ideia já responde. Para cada pergunta, dê 3 opções curtas e bem diferentes (até 6 palavras cada). Escreva no idioma da ideia.
+Responda SOMENTE com JSON: [{"q":"pergunta","opcoes":["...","...","..."]}]`;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:600});
+    const list = asList(parseJSON(r.text), "perguntas").filter(x => x && (x.q || x.pergunta)).slice(0, 3).map(x => ({q: str(x.q || x.pergunta, 200), opts: (Array.isArray(x.opcoes || x.options) ? (x.opcoes || x.options) : []).map(o => str(String(o), 60)).filter(Boolean).slice(0, 4)}));
+    if (!list.length) throw 0;
+    collectDraft(); QA.list = list; QA.idea = idea; renderEditor(); aiStatus("", false);
+    const qa = $("#ai-qa"); if (qa) qa.scrollIntoView({block:"nearest"});
+  } catch { aiStatus("Não consegui gerar perguntas agora. Você pode montar direto.", false); }
+  finally { QA.busy = false; }
+}
+function renderQA(box){
+  box.textContent = "";
+  QA.list.forEach((x, i) => {
+    const w = el("div", "field"); const l = el("label", "", x.q); l.htmlFor = "qa-" + i; w.append(l);
+    if (x.opts.length) { const o = el("div", "opts2"); x.opts.forEach(v => { const c = el("button", "chip", v); c.type = "button"; c.dataset.act = "qa-opt"; c.dataset.q = i; c.dataset.v = v; o.append(c); }); w.append(o); }
+    const inp = el("input"); inp.type = "text"; inp.id = "qa-" + i; inp.placeholder = "Toque numa opção ou escreva a sua"; inp.maxLength = 300; w.append(inp);
+    box.append(w);
+  });
+  const ac = el("div", "actions");
+  const go = el("button", "btn", "Montar ficha com as respostas"); go.type = "button"; go.dataset.act = "qa-go";
+  const x = el("button", "txt", "Descartar perguntas"); x.type = "button"; x.dataset.act = "qa-x";
+  ac.append(go, x); box.append(ac);
+}
+function buildFromQA(){
+  const ans = QA.list.map((x, i) => { const v = ($("#qa-" + i) || {}).value || ""; return v.trim() ? "- " + x.q + " → " + v.trim() : ""; }).filter(Boolean);
+  const idea = QA.idea + (ans.length ? "\n\nRespostas do jogador às perguntas:\n" + ans.join("\n") : "");
+  QA.list = []; $("#e-idea").value = idea; runAI("full");
+}
+
+/* ---------- importar do Chub (versão web) ---------- */
+function chubPath(u){
+  const m = String(u || "").trim().match(/(?:chub\.ai|characterhub\.org)\/(?:characters\/)?([^\/?#\s]+\/[^\/?#\s]+)/i);
+  if (m) return m[1];
+  return /^[\w.-]+\/[\w.-]+$/.test(String(u || "").trim()) ? String(u).trim() : null;
+}
+async function importChub(link){
+  const path = chubPath(link);
+  if (!path) { toast("Cole o link da página do personagem no Chub (chub.ai/characters/autor/nome)."); return; }
+  toast("Buscando no Chub…");
+  try {
+    const r = await fetch("https://avatars.charhub.io/avatars/" + path + "/chara_card_v2.png");
+    if (r.ok) { const blob = await r.blob(); const j = pngCard(await blob.arrayBuffer()); if (j) { let portrait = ""; try { portrait = await fileToPortrait(blob); } catch {} importCardObj(j, portrait); return; } }
+  } catch {}
+  try {
+    const r = await fetch("https://api.chub.ai/api/characters/" + path + "?full=true");
+    if (r.ok) { const j = await r.json(); const d = (j.node && j.node.definition) || j.definition; if (d) { importCardObj({name: d.name || (j.node && j.node.name), description: d.personality || d.description, personality: d.tavern_personality || "", scenario: d.scenario, first_mes: d.first_message, mes_example: d.example_dialogs, system_prompt: d.system_prompt, post_history_instructions: d.post_history_instructions, alternate_greetings: d.alternate_greetings, creator_notes: d.tagline || d.description, character_book: d.embedded_lorebook}, ""); return; } }
+  } catch {}
+  toast("Não consegui baixar desse link. No Chub, baixe o card em PNG e use Importar card ou backup.");
+}
+
 /* ---------- memória que se cuida sozinha ---------- */
 const STATE_FIELDS = [["lugar", "📍", "Lugar"], ["hora", "🕐", "Hora e tempo"], ["presentes", "👥", "Quem está na cena"], ["corpo", "🩹", "Corpo e condição"], ["itens", "🎒", "Itens"], ["relacao", "🤝", "Relação"], ["pendencias", "❗", "Em aberto"]];
 const filled = v => typeof v === "string" && v.trim() && v.trim() !== "—" && v.trim() !== "-";
@@ -2116,6 +2216,7 @@ function renderMemExtra(){
   ac.append(sv, up); a.append(ac);
   a.append(el("p", "hint", prefs.keeper !== false ? "O app atualiza estas anotações sozinho a cada 3 respostas (uma consulta curta extra) e o narrador as lê antes de responder. Corrija à mão o que estiver errado." : "A atualização automática está desligada em Ajustes. Você pode atualizar à mão aqui."));
   box.append(a);
+  box.append(castEl(st));
   const b = el("div"); b.append(el("h4", "", "Lore aprendida nesta história"));
   const sug = st.sloreSug || [], got = st.slore || [];
   if (!sug.length && !got.length) b.append(el("p", "hint", "Quando a história criar alguém, um lugar ou um combinado importante, a sugestão aparece aqui. Aceitas, elas entram na conversa quando a palavra-chave aparecer, como o lorebook do personagem."));
@@ -2164,6 +2265,13 @@ function bindFeatures(){
     else if (act === "st-up") { b.disabled = true; b.textContent = "Anotando…"; await keeper(true); renderMemExtra(); }
     else if (act === "lo-add") { const x = (st.sloreSug || []).splice(i, 1)[0]; if (x) { st.slore = (st.slore || []).concat([x]); persist(); renderScene(); renderMemExtra(); toast("Entrou na lore desta história."); } }
     else if (act === "lo-skip") { (st.sloreSug || []).splice(i, 1); persist(); renderScene(); renderMemExtra(); }
+    else if (act === "cast-add") {
+      const id = ($("#cast-pick") || {}).value; const ch = S.chars.get(id); if (!ch) return;
+      st.cast = (st.cast || []).filter(x => x !== id).concat([id]); persist(); renderMemExtra();
+      if (!S.busy && hasAI() && b.dataset.now === "1") { closeSheet(); sendCmd("➕ " + ch.name + " entra na história", "Instrução de direção (escreva dentro da história): " + ch.name + " entra na história agora. Apresente a chegada de forma natural, coerente com o lugar, a hora e o que " + ch.name + " estaria fazendo, sem decidir nada por " + st.setup.name + "."); }
+      else toast(ch.name + " agora faz parte desta história.");
+    }
+    else if (act === "cast-del") { st.cast = (st.cast || []).filter(x => x !== b.dataset.id); persist(); renderMemExtra(); toast("Saiu do elenco. O narrador não interpreta mais esse personagem aqui."); }
     else if (act === "lo-del") { (st.slore || []).splice(i, 1); persist(); renderMemExtra(); }
   });
   const me = $("#me-box");
