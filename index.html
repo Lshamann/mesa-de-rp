@@ -188,6 +188,11 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .qa{display:flex;flex-direction:column;gap:14px;border-top:1px dashed var(--line);padding-top:12px}
 .qa .opts2{display:flex;flex-wrap:wrap;gap:6px}
 .cast{display:flex;flex-direction:column;gap:8px}
+#trmenu a{display:block;text-decoration:none}
+#trmenu .lbl2{padding:6px 10px 4px;font:600 10px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ochre)}
+.trbox{margin-top:10px;border-left:2px solid var(--ochre);padding:4px 0 4px 12px;font:400 14px/1.55 var(--f-body);color:var(--muted)}
+.trbox p{margin:0 0 .4em}.trbox p:last-child{margin:0}
+.trbox b{font-weight:600;color:var(--fg)}
 .planb{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;border-top:1px dashed var(--line);padding-top:10px}
 .planb>span:first-child{flex-basis:100%}
 .planb a.btn{display:inline-flex;align-items:center;text-decoration:none}
@@ -251,9 +256,9 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .chip:hover{border-color:var(--accent);color:var(--fg)}
 .chip[disabled]{opacity:.4;cursor:default}
 .pop{position:relative}
-#timemenu{position:absolute;bottom:calc(100% - 4px);left:max(16px,env(safe-area-inset-left,0px));z-index:5;min-width:190px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column}
-#timemenu button{background:none;border:0;text-align:left;padding:9px 10px;border-radius:6px;font:500 13px/1 var(--f-mono);color:var(--fg)}
-#timemenu button:hover{background:var(--surface-2)}
+#timemenu,#trmenu{position:absolute;bottom:calc(100% - 4px);left:max(16px,env(safe-area-inset-left,0px));z-index:5;min-width:190px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column}
+#timemenu button,#trmenu button,#trmenu a{background:none;border:0;text-align:left;padding:9px 10px;border-radius:6px;font:500 13px/1 var(--f-mono);color:var(--fg)}
+#timemenu button:hover,#trmenu button:hover,#trmenu a:hover{background:var(--surface-2)}
 .send-row{display:flex;gap:8px;align-items:flex-end}
 #in{flex:1;min-width:0;resize:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font:400 17px/1.5 var(--f-body);max-height:40vh;overflow-y:auto}
 #in::placeholder{color:var(--faint)}
@@ -337,12 +342,14 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <button class="chip" type="button" data-wrap="((|))" title="Fora do personagem">(( fora do RP ))</button>
           <button class="chip" type="button" id="b-img" title="Mostrar uma imagem na cena" hidden>📷 Imagem</button>
           <button class="chip" type="button" id="b-ideas" title="Três sugestões do que fazer agora">💡 Ideias</button>
+          <button class="chip" type="button" id="b-tr" aria-expanded="false" aria-controls="trmenu" title="Traduz as falas que você escreveu entre aspas">🌐 Traduzir ▾</button>
           <button class="chip" type="button" id="b-polish" title="Deixa sua ação mais viva e bem formatada, sem mudar o que você decidiu">✨ Melhorar</button>
           <button class="chip" type="button" id="b-cont" title="Deixa a cena seguir sem uma ação sua">Continuar</button>
           <span class="pop"><button class="chip" type="button" id="b-time" aria-expanded="false" aria-controls="timemenu">Avançar tempo ▾</button></span>
           <button class="chip" type="button" id="b-model" title="Trocar de modelo">Modelo</button>
         </div>
         <div class="pop" id="timemenu" hidden></div>
+        <div class="pop" id="trmenu" hidden></div>
         <div class="ideas" id="ideas" hidden></div>
         <div class="att" id="att" hidden></div>
         <div class="send-row">
@@ -410,6 +417,8 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <div><h4>Lore ativada</h4><div class="seg" id="seg-lore"></div><p class="hint">Mostra, abaixo de cada resposta, quais entradas do lorebook entraram na consulta.</p></div>
         <div><h4>Simulação em histórias novas</h4><div class="seg" id="seg-sim"></div><p class="hint">Status (fome, sede, energia, higiene, necessidades), relógio e inventário realista. Dá para ligar ou desligar em cada história, na Ficha.</p></div>
         <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens e relação a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra.</p></div>
+        <div><h4>Tradução</h4><div class="seg" id="seg-treng"></div><p class="hint" id="treng-hint">Quem traduz as falas das respostas quando você toca em Traduzir.</p></div>
+        <div><h4>Tradutor offline</h4><div id="bmt-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
         <div><h4>Uso</h4><p class="hint" id="usage" style="margin:0"></p></div>
         <div><h4>Tema</h4><div class="seg" id="seg-theme"></div></div>
       </div>
@@ -750,7 +759,7 @@ function markSvg(){
 function updateComposer(){
   const ok = !!(hasAI() && S.char);
   $("#b-send").disabled = !ok; $("#in").disabled = !ok || S.busy;
-  $("#b-cont").disabled = !ok || S.busy; $("#b-ideas").disabled = !ok || S.busy || AUX.ideas; $("#b-polish").disabled = !ok || AUX.polish; $("#b-time").disabled = !ok || S.busy;
+  $("#b-cont").disabled = !ok || S.busy; $("#b-tr").disabled = !ok || TRX.inBusy; $("#b-ideas").disabled = !ok || S.busy || AUX.ideas; $("#b-polish").disabled = !ok || AUX.polish; $("#b-time").disabled = !ok || S.busy;
 }
 
 /* ---------- biblioteca ---------- */
@@ -891,6 +900,7 @@ function msgNode(m, i){
       sw.append(l, document.createTextNode((m.ai + 1) + "/" + m.alts.length), r); a.append(sw);
     }
     const ed = el("button", "", "Editar"); ed.dataset.act = "edit"; ed.dataset.i = i; a.append(ed);
+    if (isTau && i >= 0 && hasAI()) { const tb = el("button", "", m.tr ? (m.trHide ? "Mostrar tradução" : "Esconder tradução") : (TRX.busy === m.id ? "Traduzindo…" : "Traduzir")); tb.dataset.act = "tr-msg"; tb.dataset.i = i; a.append(tb); }
     if (i >= 0 && S.char) { const br = el("button", "", "Ramificar"); br.dataset.act = "branch"; br.dataset.i = i; br.title = "Cria uma história nova que segue daqui, sem mexer nesta"; a.append(br); }
     if (isTau && i >= 0 && window.speechSynthesis) { const sp = el("button", "", VOICE.on === i ? "Parar voz" : "Ouvir"); sp.dataset.act = "speak"; sp.dataset.i = i; a.append(sp); }
     if (isTau && i === lastAssistantIdx() && i > 0 && S.char) {
@@ -899,6 +909,7 @@ function msgNode(m, i){
     }
     art.append(a);
   }
+  if (isTau && m.tr && !m.trHide) { const tb = el("div", "trbox"); tb.innerHTML = fmt(m.tr); art.append(tb); }
   if (isTau && prefs.lore && m.lore && m.lore.length && S.char) {
     const pool = S.char.lore.concat(st.slore || [], ...castChars(st).map(x => x.lore || [])); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
     if (names.length) art.append(el("div", "tag", "Lore: " + names.map(x => sub(x, st.setup.name, S.char.name)).join(" · ")));
@@ -1593,6 +1604,8 @@ function renderSettings(){
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
   seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim !== false ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
+  if (BMT_OK) seg($("#seg-treng"), [["ia", "IA (melhor)"], ["off", "Offline (Bergamot)"]], prefs.trEngine === "off" ? "off" : "ia", id => { prefs.trEngine = id; savePrefs(); });
+  $("#seg-treng").parentElement.hidden = !BMT_OK; renderBmt();
   renderMe(); const ut = $("#usage"); if (ut) ut.textContent = usageText();
   hint();
   $("#sec-mode").hidden = !S.sample;
@@ -1738,13 +1751,14 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
-  bindFeatures(); bindSim(); bindImages();
+  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
   $("#b-close").addEventListener("click", closeSheet);
   $("#sheet").addEventListener("click", e => { if (e.target.id === "sheet") closeSheet(); });
   document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !$("#trmenu").hidden) { $("#trmenu").hidden = true; return; }
     if (e.key === "Escape") { if (!$("#timemenu").hidden) { $("#timemenu").hidden = true; $("#b-time").setAttribute("aria-expanded", "false"); } else if (sheetName) closeSheet(); }
   });
 
@@ -1888,6 +1902,7 @@ function bind(){
       catch { await openSheet("stories"); copyText(data); }
     }
     else if (act === "branch") branchFrom(i);
+    else if (act === "tr-msg") translateMsg(i);
     else if (act === "old") {
       b.disabled = true; b.textContent = "Carregando…";
       try { let arc = []; for (let n = 1; n <= st.archiveChunks; n++) arc = arc.concat(await S.store.getArchive(st.id, n)); S.old = arc; }
@@ -2156,6 +2171,207 @@ async function importChub(link){
     if (r.ok) { const j = await r.json(); const d = (j.node && j.node.definition) || j.definition; if (d) { importCardObj({name: d.name || (j.node && j.node.name), description: d.personality || d.description, personality: d.tavern_personality || "", scenario: d.scenario, first_mes: d.first_message, mes_example: d.example_dialogs, system_prompt: d.system_prompt, post_history_instructions: d.post_history_instructions, alternate_greetings: d.alternate_greetings, creator_notes: d.tagline || d.description, character_book: d.embedded_lorebook}, ""); return; } }
   } catch {}
   toast("Não consegui baixar desse link. No Chub, baixe o card em PNG e use Importar card ou backup.");
+}
+
+/* ---------- tradução ---------- */
+const TR_LANGS = ["francês", "inglês", "espanhol", "italiano", "alemão", "árabe", "wolof", "japonês", "português"];
+const TRX = {busy:null, undo:null, out:null, inBusy:false};
+function trLang(){ return (S.story && S.story.trLang) || LS.get("rp.trLang") || "francês"; }
+function renderTrMenu(){
+  const m = $("#trmenu"); m.textContent = "";
+  const cur = trLang();
+  m.append(el("div", "lbl2", BMT_OK ? "Com a IA" : "Traduzir minhas falas para"));
+  [cur].concat(TR_LANGS.filter(x => x !== cur)).forEach(l => { const b = el("button", "", (l === cur ? "✓ " : "") + l.charAt(0).toUpperCase() + l.slice(1)); b.type = "button"; b.dataset.lang = l; m.append(b); });
+  if (BMT_OK) {
+    m.append(el("div", "lbl2", "Offline (Bergamot)"));
+    const got = Object.entries(BMT_NAMES).filter(([c]) => c !== "pt" && BMT.have.pt && BMT.have[c]);
+    got.forEach(([c, n]) => { const b = el("button", "", n.charAt(0).toUpperCase() + n.slice(1) + " (offline)"); b.type = "button"; b.dataset.lang = n; b.dataset.eng = "off"; m.append(b); });
+    const g = el("button", "", got.length ? "Baixar mais idiomas…" : "Baixar idiomas…"); g.type = "button"; g.dataset.goset = "1"; m.append(g);
+  }
+  const t = ($("#in").value || "").trim();
+  const gl = {"francês":"fr", "inglês":"en", "espanhol":"es", "italiano":"it", "alemão":"de", "árabe":"ar", "wolof":"wo", "japonês":"ja", "português":"pt"}[cur] || "fr";
+  const a = el("a", "", "Abrir no Google Tradutor ↗"); a.href = "https://translate.google.com/?sl=auto&tl=" + gl + "&op=translate" + (t ? "&text=" + encodeURIComponent(t.slice(0, 2000)) : ""); a.target = "_blank"; a.rel = "noopener";
+  m.append(a);
+}
+async function translateInput(lang){
+  const ta = $("#in"), b = $("#b-tr");
+  const t = ta.value.trim();
+  if (!t) { toast("Escreva sua fala primeiro. Só o que estiver entre aspas é traduzido."); ta.focus(); return; }
+  if (TRX.inBusy || !hasAI() || !S.story) return;
+  if (S.story) { S.story.trLang = lang; persist(); } LS.set("rp.trLang", lang);
+  const st = S.story, n = st.setup.name;
+  const hasQuotes = /["“”]/.test(t);
+  const prompt = `Traduza para ${lang} ${hasQuotes ? "SOMENTE as falas entre aspas" : "a fala"} do texto de roleplay abaixo, escrito por ${n}.
+Regras: ${hasQuotes ? "ações e narração entre *asteriscos* e qualquer coisa fora das aspas ficam exatamente como estão, em português; " : "se o texto for só uma fala, devolva-a traduzida e entre aspas retas; "}use um registro natural, falado, coerente com a cena${st.setup.bio ? " e com quem " + n + " é (" + trunc(st.setup.bio, 300) + ")" : ""}; mantenha nomes próprios; não acrescente nada. Trechos entre (( )) ficam iguais.
+TEXTO:
+${t}
+
+Responda só com o texto final.`;
+  TRX.inBusy = true; b.disabled = true; b.textContent = "🌐 Traduzindo…";
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:500});
+    const out = r.text.trim();
+    if (out) { TRX.undo = ta.value; TRX.out = out; ta.value = out; autosize(); b.textContent = "↶ Desfazer tradução"; return; }
+  } catch { toast("Não consegui traduzir agora."); }
+  finally { TRX.inBusy = false; b.disabled = false; }
+  b.textContent = "🌐 Traduzir ▾";
+}
+async function translateMsg(i){
+  const st = S.story; const m = st && st.messages[i]; if (!m || TRX.busy) return;
+  if (m.tr) { m.trHide = !m.trHide; persist(); renderLog(); return; }
+  TRX.busy = m.id; renderLog();
+  const lang = trLang();
+  if (BMT_OK && prefs.trEngine === "off" && BMT.have.pt && BMT.have[BMT_CODE[lang]]) {
+    try { m.tr = await bmtTranslateMsg(m, lang); m.trHide = false; persist(); }
+    catch (e) { toast("O tradutor offline falhou; tente pela IA em Ajustes → Tradução."); BMT.err = String((e && e.message) || e); }
+    finally { TRX.busy = null; renderLog(); }
+    return;
+  }
+  const prompt = `Abaixo está uma mensagem de roleplay narrada em português, com falas em outras línguas (por exemplo francês, wolof ou outra). Para cada fala ou expressão que NÃO esteja em português, escreva uma linha no formato:
+**“fala original”** — tradução para o português (e, se ajudar, uma nota curtíssima de pronúncia ou sentido entre parênteses).
+Se uma fala vier só indicada, como [fala em wolof], explique em uma linha o que a cena dá a entender, sem inventar palavras. Se não houver nada em outra língua, responda apenas: Tudo já está em português.
+MENSAGEM:
+${m.text}`;
+  try { const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:700}); m.tr = r.text.trim(); m.trHide = false; persist(); }
+  catch { toast("Não consegui traduzir agora."); }
+  finally { TRX.busy = null; renderLog(); }
+}
+function bindTranslate(){
+  const b = $("#b-tr"), m = $("#trmenu");
+  b.addEventListener("click", () => {
+    if (TRX.undo != null && $("#in").value === TRX.out) { $("#in").value = TRX.undo; TRX.undo = TRX.out = null; b.textContent = "🌐 Traduzir ▾"; autosize(); return; }
+    if (m.hidden) { renderTrMenu(); m.hidden = false; b.setAttribute("aria-expanded", "true"); } else { m.hidden = true; b.setAttribute("aria-expanded", "false"); }
+  });
+  m.addEventListener("click", e => {
+    const x = e.target.closest("[data-lang]"); if (e.target.closest("a")) { m.hidden = true; return; }
+    if (e.target.closest("[data-goset]")) { m.hidden = true; openSheet("settings"); setTimeout(() => { const bx = $("#bmt-box"); if (bx) bx.scrollIntoView({block:"start"}); }, 50); return; }
+    if (!x) return; m.hidden = true; b.setAttribute("aria-expanded", "false");
+    if (x.dataset.eng === "off") { if (S.story) { S.story.trLang = x.dataset.lang; persist(); } bmtTranslateInput(x.dataset.lang); } else translateInput(x.dataset.lang);
+  });
+  document.addEventListener("click", e => { if (!m.hidden && !e.target.closest("#trmenu") && !e.target.closest("#b-tr")) { m.hidden = true; b.setAttribute("aria-expanded", "false"); } });
+  $("#in").addEventListener("input", () => { if (TRX.undo != null && $("#in").value !== TRX.out) { TRX.undo = TRX.out = null; b.textContent = "🌐 Traduzir ▾"; } });
+}
+
+/* ---------- tradutor offline (Bergamot, só no site) ---------- */
+const BMT_CAT = {"deen":{"a":"tiny","f":{"lex":["lex.50.50.deen.s2t.bin",2657472],"vocab":["vocab.deen.spm",410738],"model":["model.deen.intgemm.alphas.bin",12995752]}},"ende":{"a":"tiny","f":{"model":["model.ende.intgemm.alphas.bin",12768493],"lex":["lex.50.50.ende.s2t.bin",2113181],"vocab":["vocab.ende.spm",410738]}},"enes":{"a":"tiny","f":{"lex":["lex.50.50.enes.s2t.bin",1720700],"vocab":["vocab.enes.spm",414566],"model":["model.enes.intgemm.alphas.bin",12602853]}},"enfr":{"a":"tiny","f":{"lex":["lex.50.50.enfr.s2t.bin",4177155],"model":["model.enfr.intgemm.alphas.bin",12293754],"vocab":["vocab.enfr.spm",419721]}},"enit":{"a":"tiny","f":{"vocab":["vocab.enit.spm",408834],"model":["model.enit.intgemm.alphas.bin",13267138],"lex":["lex.50.50.enit.s2t.bin",2441969]}},"enpt":{"a":"tiny","f":{"vocab":["vocab.enpt.spm",410584],"model":["model.enpt.intgemm.alphas.bin",13099731],"lex":["lex.50.50.enpt.s2t.bin",2354273]}},"enru":{"a":"tiny","f":{"vocab":["vocab.enru.spm",419005],"model":["model.enru.intgemm.alphas.bin",12391312],"lex":["lex.50.50.enru.s2t.bin",1348215]}},"esen":{"a":"tiny","f":{"lex":["lex.50.50.esen.s2t.bin",1978538],"vocab":["vocab.esen.spm",414566],"model":["model.esen.intgemm.alphas.bin",13215960]}},"fren":{"a":"tiny","f":{"model":["model.fren.intgemm.alphas.bin",12641501],"lex":["lex.50.50.fren.s2t.bin",4761904],"vocab":["vocab.fren.spm",419721]}},"iten":{"a":"tiny","f":{"lex":["lex.50.50.iten.s2t.bin",2743096],"vocab":["vocab.iten.spm",408834],"model":["model.iten.intgemm.alphas.bin",13220889]}},"pten":{"a":"tiny","f":{"lex":["lex.50.50.pten.s2t.bin",2639080],"model":["model.pten.intgemm.alphas.bin",13204180],"vocab":["vocab.pten.spm",410584]}},"ruen":{"a":"tiny","f":{"vocab":["vocab.ruen.spm",419860],"model":["model.ruen.intgemm.alphas.bin",12613599],"lex":["lex.50.50.ruen.s2t.bin",1962008]}},"aren":{"a":"base","f":{"model":["model.aren.intgemm.alphas.bin",30454343],"vocab":["vocab.aren.spm",416700],"lex":["lex.50.50.aren.s2t.bin",2260042]}},"enar":{"a":"base","f":{"lex":["lex.50.50.enar.s2t.bin",1633784],"vocab":["vocab.enar.spm",418930],"model":["model.enar.intgemm.alphas.bin",32224151]}},"enja":{"a":"base","f":{"trgvocab":["trgvocab.enja.spm",431278],"lex":["lex.50.50.enja.s2t.bin",3504993],"model":["model.enja.intgemm.alphas.bin",44089580],"srcvocab":["srcvocab.enja.spm",404352]}},"enko":{"a":"base","f":{"model":["model.enko.intgemm.alphas.bin",45488445],"vocab":["vocab.enko.spm",706904],"lex":["lex.50.50.enko.s2t.bin",3697379]}},"enzh":{"a":"base","f":{"srcvocab":["srcvocab.enzh.spm",407784],"trgvocab":["trgvocab.enzh.spm",425748],"model":["model.enzh.intgemm.alphas.bin",30500315],"lex":["lex.50.50.enzh.s2t.bin",3537095]}},"jaen":{"a":"base","f":{"vocab":["vocab.jaen.spm",746616],"model":["model.jaen.intgemm.alphas.bin",43084737],"lex":["lex.50.50.jaen.s2t.bin",4819431]}},"koen":{"a":"base","f":{"lex":["lex.50.50.koen.s2t.bin",4380580],"vocab":["vocab.koen.spm",706864],"model":["model.koen.intgemm.alphas.bin",43140465]}},"zhen":{"a":"base","f":{"model":["model.zhen.intgemm.alphas.bin",44369188],"vocab":["vocab.zhen.spm",738862],"lex":["lex.50.50.zhen.s2t.bin",4824122]}}};
+const BMT_CDN = "https://cdn.jsdelivr.net/npm/@browsermt/bergamot-translator@0.4.9/";
+const BMT_NAMES = {pt:"português", en:"inglês", fr:"francês", es:"espanhol", it:"italiano", de:"alemão", ru:"russo", ar:"árabe", ja:"japonês", zh:"chinês", ko:"coreano"};
+const BMT_CODE = Object.fromEntries(Object.entries(BMT_NAMES).map(([k, v]) => [v, k]));
+const BMT_OK = !IN_CLAUDE && typeof location !== "undefined" && /^(https:|http:)$/.test(location.protocol) && window.isSecureContext && "caches" in window && "DecompressionStream" in window && "Worker" in window;
+const BMT = {ready:null, dl:{}, have:{}, err:""};
+const bmtUrl = (key, arch, name) => "https://media.githubusercontent.com/media/mozilla/firefox-translations-models/main/models/" + arch + "/" + key + "/" + name + ".gz";
+function bmtFiles(key){ const v = BMT_CAT[key]; return v ? Object.entries(v.f).map(([part, [name, size]]) => ({part, url: bmtUrl(key, v.a, name), size})) : []; }
+function bmtPackKeys(code){ return code === "pt" ? ["pten", "enpt"] : code === "en" ? [] : ["en" + code, code + "en"]; }
+function bmtPackSize(code){ return bmtPackKeys(code).reduce((a, k) => a + bmtFiles(k).reduce((b, f) => b + f.size, 0), 0); }
+async function bmtCache(){ return caches.open("mesa-bergamot-v1"); }
+async function bmtRefresh(){
+  if (!BMT_OK) return;
+  try { const c = await bmtCache(); const keys = new Set((await c.keys()).map(r => r.url));
+    for (const code of Object.keys(BMT_NAMES)) BMT.have[code] = code === "en" || bmtPackKeys(code).every(k => bmtFiles(k).every(f => keys.has(f.url))); } catch {}
+}
+async function gunzipTo(buf){
+  try { return await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer(); }
+  catch { return buf; }
+}
+async function bmtGet(url, onBytes){
+  const c = await bmtCache();
+  const hit = await c.match(url); if (hit) return hit.arrayBuffer();
+  const r = await fetch(url, {credentials:"omit"});
+  if (!r.ok) throw new Error("download falhou (" + r.status + ")");
+  const reader = r.body.getReader(); const parts = []; let got = 0;
+  for (;;) { const {done, value} = await reader.read(); if (done) break; parts.push(value); got += value.length; if (onBytes) onBytes(value.length); }
+  const raw = await new Blob(parts).arrayBuffer();
+  const buf = await gunzipTo(raw);
+  await c.put(url, new Response(buf, {headers: {"Content-Type": "application/octet-stream"}}));
+  return buf;
+}
+async function bmtDownload(code){
+  if (BMT.dl[code]) return;
+  const files = bmtPackKeys(code).flatMap(bmtFiles); const total = files.reduce((a, f) => a + f.size, 0);
+  BMT.dl[code] = {got:0, total}; renderBmt();
+  try {
+    for (const f of files) await bmtGet(f.url, n => { BMT.dl[code].got += n; const p = $("#bmt-p-" + code); if (p) p.textContent = Math.round(100 * BMT.dl[code].got / total) + "%"; });
+    BMT.have[code] = true; toast(BMT_NAMES[code].charAt(0).toUpperCase() + BMT_NAMES[code].slice(1) + " baixado para usar sem internet.");
+  } catch (e) { toast("Não consegui baixar o pacote: " + ((e && e.message) || "erro") + ". Tente de novo com boa conexão."); }
+  finally { delete BMT.dl[code]; renderBmt(); }
+}
+async function bmtRemove(code){
+  const c = await bmtCache();
+  for (const f of bmtPackKeys(code).flatMap(bmtFiles)) await c.delete(f.url);
+  BMT.have[code] = false; if (code === "pt") Object.keys(BMT.have).forEach(k => { if (k !== "en") BMT.have[k] = false; });
+  if (BMT.ready) { try { (await BMT.ready).tr.delete(); } catch {} BMT.ready = null; }
+  await bmtRefresh(); renderBmt(); toast("Pacote removido do aparelho.");
+}
+function bmtLoad(){
+  if (BMT.ready) return BMT.ready;
+  BMT.ready = (async () => {
+    const src = await (await fetch(BMT_CDN + "translator.js", {credentials:"omit"})).text();
+    const workerUrl = new URL("bergamot-worker.js", location.href).href;
+    const patched = src.replace(/new URL\(\s*['"]\.\/worker\/translator-worker\.js['"]\s*,\s*import\.meta\.url\s*\)/, JSON.stringify(workerUrl));
+    if (patched === src) throw new Error("versão inesperada do Bergamot");
+    const mod = await import(URL.createObjectURL(new Blob([patched], {type:"text/javascript"})));
+    class Backing extends mod.TranslatorBacking {
+      async loadModelRegistery(){ return Object.entries(BMT_CAT).map(([key, v]) => ({from: key.slice(0, 2), to: key.slice(2, 4), files: Object.fromEntries(Object.entries(v.f).map(([part, [name, size]]) => [part, {name: bmtUrl(key, v.a, name), size}]))})); }
+      async fetch(url){ return bmtGet(url); }
+    }
+    const opts = {pivotLanguage:"en", downloadTimeout:0, cacheSize:200};
+    const tr = new mod.LatencyOptimisedTranslator(opts, new Backing(opts));
+    return {mod, tr};
+  })();
+  BMT.ready.catch(() => { BMT.ready = null; });
+  return BMT.ready;
+}
+async function bmtTranslate(text, from, to){
+  if (from === to || !text.trim()) return text;
+  const {tr} = await bmtLoad();
+  const r = await tr.translate({from, to, text, html:false});
+  return r.target.text;
+}
+function quoteParts(t){ const re = /"([^"\n]+)"|“([^”\n]+)”/g; const out = []; let m; while ((m = re.exec(t))) out.push({i: m.index, len: m[0].length, txt: m[1] || m[2]}); return out; }
+async function bmtTranslateInput(lang){
+  const code = BMT_CODE[lang]; const ta = $("#in"), b = $("#b-tr");
+  const t = ta.value.trim(); if (!t) { toast("Escreva sua fala primeiro."); return; }
+  if (!BMT.have.pt || !BMT.have[code]) { toast("Baixe o português e o " + lang + " em Ajustes → Tradutor offline."); return; }
+  b.disabled = true; b.textContent = "🌐 Traduzindo offline…";
+  try {
+    const parts = quoteParts(t); let out = t;
+    if (!parts.length) out = "\"" + (await bmtTranslate(t, "pt", code)) + "\"";
+    else for (const p of parts.reverse()) { const tt = await bmtTranslate(p.txt, "pt", code); out = out.slice(0, p.i) + "\"" + tt + "\"" + out.slice(p.i + p.len); }
+    TRX.undo = ta.value; TRX.out = out; ta.value = out; autosize(); b.textContent = "↶ Desfazer tradução"; b.disabled = false; return;
+  } catch (e) { toast("O tradutor offline falhou: " + ((e && e.message) || "erro") + ". Use a tradução pela IA."); BMT.err = String((e && e.message) || e); }
+  b.disabled = false; b.textContent = "🌐 Traduzir ▾";
+}
+async function bmtTranslateMsg(m, lang){
+  const code = BMT_CODE[lang];
+  const parts = quoteParts(m.text);
+  if (!parts.length) return "Não há falas entre aspas nesta mensagem.";
+  const lines = [];
+  for (const p of parts.slice(0, 12)) { const tt = await bmtTranslate(p.txt, code, "pt"); lines.push("**“" + p.txt + "”** — " + tt); }
+  return lines.join("\n\n");
+}
+function renderBmt(){
+  const box = $("#bmt-box"); if (!box) return; box.textContent = "";
+  if (!BMT_OK) { box.append(el("p", "hint", IN_CLAUDE ? "Disponível só na versão web (o site), porque aqui dentro do Claude a página não pode baixar os modelos." : "Disponível só no site (endereço https), não no arquivo aberto direto do celular.")); return; }
+  box.append(el("p", "hint", "Tradução feita no próprio celular, sem internet e sem gastar consultas, com os modelos do Firefox Translations (projeto Bergamot). Baixe o português (obrigatório) e os idiomas que quiser; cada pacote fica guardado no aparelho. Tradução mais literal que a da IA e só das falas entre aspas."));
+  const ul = el("ul", "slist");
+  Object.entries(BMT_NAMES).filter(([c]) => c !== "en").sort((a, b) => a[0] === "pt" ? -1 : b[0] === "pt" ? 1 : a[1].localeCompare(b[1])).concat([["en", "inglês"]]).forEach(([code, name]) => {
+    const li = el("li"); const h = el("div", "h"); h.append(el("b", "", name.charAt(0).toUpperCase() + name.slice(1) + (code === "pt" ? " (obrigatório)" : "")));
+    li.append(h);
+    const size = bmtPackSize(code);
+    li.append(el("small", "", code === "en" ? "Já incluído: usa os pacotes de português." : (BMT.have[code] ? "Baixado · " : "") + Math.round(size / 1048576) + " MB"));
+    const ac = el("div", "acts2");
+    if (BMT.dl[code]) { const sp = el("span", "status"); sp.id = "bmt-p-" + code; sp.textContent = Math.round(100 * BMT.dl[code].got / BMT.dl[code].total) + "%"; ac.append(el("span", "dots"), sp); }
+    else if (code !== "en" && !BMT.have[code]) { const b = el("button", "btn sm", "Baixar"); b.type = "button"; b.dataset.bmt = "dl"; b.dataset.code = code; if (code !== "pt" && !BMT.have.pt) { b.disabled = true; b.title = "Baixe o português primeiro"; } ac.append(b); }
+    else if (code !== "en") { const b = el("button", "btn ghost sm danger", "Remover"); b.type = "button"; b.dataset.bmt = "rm"; b.dataset.code = code; ac.append(b); }
+    li.append(ac); ul.append(li);
+  });
+  box.append(ul);
+  if (BMT.err) box.append(el("p", "hint", "Último erro: " + BMT.err));
+}
+function bindBmt(){
+  const box = $("#bmt-box"); if (!box) return;
+  box.addEventListener("click", e => { const b = e.target.closest("[data-bmt]"); if (!b) return; if (b.dataset.bmt === "dl") bmtDownload(b.dataset.code); else bmtRemove(b.dataset.code); });
+  bmtRefresh();
 }
 
 /* ---------- memória que se cuida sozinha ---------- */
