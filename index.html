@@ -185,6 +185,28 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .scene .s{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .scene .n{flex:none;color:var(--ochre)}
 .ideas{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.simbar{flex:none;display:flex;align-items:center;gap:8px;width:100%;border:0;border-bottom:1px solid var(--line);background:var(--bg);color:var(--muted);font:500 11px/1.2 var(--f-mono);padding-block:6px;text-align:left;overflow:hidden}
+.simbar .clk{flex:none;color:var(--fg)}
+.simbar .s{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.simbar .mb{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:3px}
+.simbar .mb i{font-style:normal;font-size:12px;flex:none}
+.simbar .mb b,.sbar b{display:block;flex:1;min-width:10px;height:6px;border-radius:3px;background:linear-gradient(var(--c),var(--c)) 0 0/var(--v) 100% no-repeat,var(--surface-2)}
+.lv0{--c:var(--accent)}.lv1{--c:var(--ochre)}.lv2,.lv3{--c:var(--danger)}
+.srow{display:grid;grid-template-columns:minmax(0,9.5em) 1fr;gap:4px 10px;align-items:center;margin-bottom:10px;font:500 13px/1.3 var(--f-mono)}
+.srow .sbar{display:flex}.srow .sbar b{height:10px}
+.srow .sv{grid-column:1/-1;color:var(--muted);font-size:12px}
+.srow.lv3 .sv{color:var(--danger);font-weight:600}
+.srow .sadj{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.inv{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.inv .slot{font:600 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ochre);margin-top:10px}
+.inv .slot .mt{letter-spacing:0;text-transform:none;color:var(--faint);font-weight:400}
+.inv .it{margin-left:calc(var(--d) * 16px);border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.inv .it.open{border-color:var(--accent)}
+.ib2{display:flex;flex-direction:column;gap:2px;width:100%;background:none;border:0;padding:9px 12px;text-align:left}
+.ib2 .nm{font:600 15px/1.3 var(--f-display);color:var(--fg)}
+.ib2 .mt,.inv .mt{font:400 12px/1.3 var(--f-mono);color:var(--faint)}
+.inv .acts2{display:flex;flex-wrap:wrap;gap:8px;padding:0 12px 10px}
+.inv .it .hint{padding:0 12px 10px;margin:0}
 .idea{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font:400 15px/1.45 var(--f-body);color:var(--fg)}
 .idea:hover{border-color:var(--accent)}
 .idea p{margin:0}
@@ -263,6 +285,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
       </button>
       <div class="tools">
         <button class="ib" id="b-stories" type="button" title="Histórias" aria-label="Histórias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V5.5"/></svg><span class="lbl">Histórias</span></button>
+        <button class="ib" id="b-sim" type="button" title="Ficha" aria-label="Ficha do personagem" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg><span class="lbl">Ficha</span></button>
         <button class="ib" id="b-memory" type="button" title="Memória" aria-label="Memória" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span class="lbl">Memória</span></button>
         <button class="ib" id="b-models" type="button" title="Modelo" aria-label="Modelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg><span class="lbl">Modelo</span></button>
         <button class="ib" id="b-settings" type="button" title="Ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span class="lbl">Ajustes</span></button>
@@ -293,6 +316,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
 
     <section class="view" id="v-chat" hidden>
       <button class="scene gut" id="scene" type="button" hidden title="Abrir estado da cena e memória"></button>
+      <button class="simbar gut" id="simbar" type="button" hidden title="Abrir a ficha: status e inventário"></button>
       <div id="log" tabindex="-1"><div class="gut"><div class="col" id="msgs" role="log" aria-label="Conversa"></div></div></div>
       <div class="composer"><div class="gut"><div class="col">
         <div class="status" id="status" hidden></div>
@@ -362,6 +386,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         </div>
         <div id="mem-extra" style="display:flex;flex-direction:column;gap:22px"></div>
       </div>
+      <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
         <div><h4>Você</h4><div id="me-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
@@ -370,6 +395,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <div><h4>Idioma da narração</h4><div class="seg" id="seg-lang"></div></div>
         <div><h4>Nota de cena</h4><textarea class="big" id="notes" style="min-height:96px" placeholder="Ex.: mais tensão, ritmo lento, mais humor seco. Vale só para esta história."></textarea></div>
         <div><h4>Lore ativada</h4><div class="seg" id="seg-lore"></div><p class="hint">Mostra, abaixo de cada resposta, quais entradas do lorebook entraram na consulta.</p></div>
+        <div><h4>Simulação em histórias novas</h4><div class="seg" id="seg-sim"></div><p class="hint">Status (fome, sede, energia, higiene, necessidades), relógio e inventário realista. Dá para ligar ou desligar em cada história, na Ficha.</p></div>
         <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens e relação a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra.</p></div>
         <div><h4>Tema</h4><div class="seg" id="seg-theme"></div></div>
       </div>
@@ -432,7 +458,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:true};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -607,7 +633,7 @@ function header(st, ch, loreHead){
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), persona, examples, mem, stateBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), persona, examples, mem, stateBlock(st), simBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -616,6 +642,7 @@ function tail(st, ch, loreTail){
     `Continue a cena a partir do que já foi estabelecido: confira quem está presente, o que cada um sabe, quanto tempo passou e o estado do corpo e do ambiente. Não escreva nada por ${n}. Varie o ritmo e não repita fórmulas das respostas anteriores.`];
   if (ch.post && ch.post.trim()) parts.push(sub(ch.post, n, ch.name));
   if (st.notes && st.notes.trim()) parts.push("Nota de cena do jogador: " + st.notes.trim());
+  const sn = simTail(st); if (sn) parts.push(sn);
   if (loreTail.length) parts.push("Lore ativa:\n" + loreTail.map(e => "- " + sub(e.content, n, ch.name)).join("\n"));
   return "\n\n---\n" + parts.join("\n");
 }
@@ -673,7 +700,7 @@ function showView(name){
   S.view = name; $("#app").dataset.view = name;
   VIEWS.forEach(v => { $("#v-" + v).hidden = v !== name; });
   if (name !== "chat" && window.speechSynthesis) { try { speechSynthesis.cancel(); } catch {} VOICE.on = null; }
-  renderScene();
+  renderScene(); renderSimBar();
   updateHeader(); updateComposer();
 }
 function updateHeader(){
@@ -684,7 +711,7 @@ function updateHeader(){
   else if (v === "editor") { title = "Editor"; sub_ = D && D.name ? D.name : "Novo personagem"; }
   if (v === "library") av.append(markSvg()); else if (ch) av.append(avatarEl(ch, "big"));
   $("#h-title").textContent = title; $("#h-sub").textContent = sub_;
-  $("#b-memory").hidden = v !== "chat";
+  $("#b-memory").hidden = v !== "chat"; $("#b-sim").hidden = v !== "chat";
 }
 function markSvg(){
   const d = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -792,11 +819,12 @@ function newStory(ch, setup){
   const op = ch.openings.find(o => o.id === setup.opening) || ch.openings[0];
   const text = sub(op.text, setup.name, ch.name);
   return {id: rid(), charId: ch.id, charName: ch.name, title: setup.name + " · " + op.label, created: Date.now(), updated: Date.now(), setup,
-    messages: [{id: rid(), role:"assistant", text, alts:[text], ai:0, lore:[]}], memory:"", notes:"", archived:0, archiveChunks:0};
+    messages: [{id: rid(), role:"assistant", text, alts:[text], ai:0, lore:[]}], memory:"", notes:"", archived:0, archiveChunks:0, sim: prefs.sim !== false ? newSim() : undefined};
 }
 function openStory(st){
   S.story = st; S.char = S.chars.get(st.charId) || null; S.index.lastId = st.id; S.old = null; S.error = null; S.editing = null;
-  showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene();
+  showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene(); SIMX.open = null; renderSimBar();
+  if (simOn(st) && !st.sim.ready && hasAI() && st.messages.some(m => m.role === "assistant")) simInit();
   if (st.messages.length <= 1) $("#log").scrollTop = 0; else toBottom();
   if (!S.char) showBanner("O personagem desta história foi excluído. Você pode ler e exportar, mas não continuar."); else showBanner(hasAI() ? "" : noAIText());
   persist();
@@ -840,7 +868,7 @@ function msgNode(m, i){
   }
   if (isTau && prefs.lore && m.lore && m.lore.length && S.char) {
     const pool = S.char.lore.concat(st.slore || []); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
-    if (names.length) art.append(el("div", "tag", "Lore: " + names.join(" · ")));
+    if (names.length) art.append(el("div", "tag", "Lore: " + names.map(x => sub(x, st.setup.name, S.char.name)).join(" · ")));
   }
   return art;
 }
@@ -943,7 +971,7 @@ async function generate(kind){
   renderLog(); persist();
   if (!failed) await compact(false);
   setBusy(false); renderLog();
-  if (!failed) afterReply();
+  if (!failed) { afterReply(); simAfterReply(kind); }
 }
 function send(text, label){
   if (S.busy || !hasAI() || !S.char) return;
@@ -1419,18 +1447,20 @@ async function backupJSON(){
 
 /* ---------- painéis ---------- */
 let sheetName = null, lastFocus = null;
-const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo"};
+const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha"};
 async function openSheet(name){
   if (name === "memory" && !S.story) { toast("Abra uma história para usar a memória."); return; }
+  if (name === "sim" && !S.story) { toast("Abra uma história para ver a ficha."); return; }
   if (name === "stories" && dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
   lastFocus = document.activeElement; sheetName = name;
-  ["stories", "memory", "settings", "models"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
+  ["stories", "memory", "settings", "models", "sim"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
   $("#sheet-title").textContent = SHEET_TITLES[name];
   $("#sheet").hidden = false;
   if (name === "stories") renderStories();
   if (name === "memory") { $("#mem").value = S.story.memory || ""; $("#mem-hint").textContent = "Mensagens recentes: " + S.story.messages.length + " · arquivadas: " + S.story.archived + ". " + (S.sample ? "O app resume sozinho quando a conversa passa de cerca de 60 mil caracteres." : "O app resume sozinho quando a conversa se aproxima do limite de contexto do modelo em uso."); }
   if (name === "models") renderModels();
   if (name === "memory") renderMemExtra();
+  if (name === "sim") renderSim();
   if (name === "settings") { renderSettings(); $("#notes").value = S.story ? S.story.notes || "" : ""; $("#notes").disabled = !S.story; }
   $("#b-close").focus();
 }
@@ -1454,6 +1484,7 @@ function renderSettings(){
   seg($("#seg-lang"), Object.entries(LANGS).map(([k, v]) => [k, v[0]]), prefs.lang, id => { prefs.lang = id; savePrefs(); });
   seg($("#seg-lore"), [["on", "Mostrar"], ["off", "Esconder"]], prefs.lore ? "on" : "off", id => { prefs.lore = id === "on"; savePrefs(); if (S.story && S.view === "chat") renderLog(); });
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
+  seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim !== false ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
   renderMe();
   hint();
@@ -1592,7 +1623,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
-  bindFeatures();
+  bindFeatures(); bindSim();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
@@ -1694,7 +1725,7 @@ function bind(){
   const tm = $("#timemenu");
   TIME_JUMPS.forEach(([label, text]) => {
     const b = el("button", "", label); b.type = "button";
-    b.addEventListener("click", () => { tm.hidden = true; $("#b-time").setAttribute("aria-expanded", "false"); sendCmd("⏩ " + label, text + " Narre a transição: o que mudou no corpo, no ambiente, nas pessoas e na relação entre os personagens. Não resolva nada importante sem uma ação minha."); });
+    b.addEventListener("click", () => { tm.hidden = true; $("#b-time").setAttribute("aria-expanded", "false"); sendCmd("⏩ " + label, text + " Narre a transição: o que mudou no corpo, no ambiente, nas pessoas e na relação entre os personagens. Não resolva nada importante sem uma ação minha." + simTimeHint(S.story)); });
     tm.append(b);
   });
   $("#b-time").addEventListener("click", () => { tm.hidden = !tm.hidden; $("#b-time").setAttribute("aria-expanded", String(!tm.hidden)); });
@@ -1713,6 +1744,7 @@ function bind(){
     else if (act === "speak") speak(i, b);
     else if (act === "undo") {
       const idx = lastAssistantIdx(); if (idx < 1) return;
+      simUndoLast();
       const prev = st.messages[idx - 1];
       st.messages.splice(prev && prev.role === "user" ? idx - 1 : idx);
       S.error = null;
@@ -1745,7 +1777,7 @@ function surpriseStart(ch){
   if (!hasAI()) { toast(IN_CLAUDE ? "O Claude precisa estar disponível para inventar a cena." : "Escolha um modelo em Modelo para usar o Me surpreenda."); return; }
   const setup = Object.assign(personaFor(ch), {opening: null});
   const st = {id: rid(), charId: ch.id, charName: ch.name, title: setup.name + " · Surpresa", created: Date.now(), updated: Date.now(), setup,
-    messages: [], memory:"", notes:"", archived:0, archiveChunks:0};
+    messages: [], memory:"", notes:"", archived:0, archiveChunks:0, sim: prefs.sim !== false ? newSim() : undefined};
   openStory(st);
   sendCmd("🎲 Me surpreenda", "Instrução de direção (escreva dentro da história, não fora do personagem): comece esta história com uma cena de abertura original e inesperada, coerente com a ficha e o cenário, num lugar ou momento diferente do óbvio. Comece no meio da ação, com um detalhe sensorial concreto, situe " + setup.name + " na cena sem escrever ações, falas ou pensamentos por " + setup.name + ", e termine num gancho que peça uma reação.");
 }
@@ -1977,6 +2009,479 @@ function renderMe(){
   const r = el("div", "row");
   r.append(fieldEl("Nome", "me-name", "input", me.name, {max:40, ph:"Como os personagens te chamam"}), fieldEl("Pronome", "me-pro", "select", me.pro, {options: Object.entries(PRO).map(([k, v]) => [k, v.replace(" (linguagem neutra)", "")])}));
   box.append(r, fieldEl("Aparência", "me-look", "textarea", me.look, {rows:2, max:1500}), fieldEl("Sobre você", "me-bio", "textarea", me.bio, {rows:2, max:2000, help:"Usado quando o personagem não sugere um jogador próprio. “Escolher início”, no cartão, deixa trocar só para uma história."}));
+}
+
+/* ---------- simulação: status, relógio e inventário ---------- */
+const STATS = [
+  {k:"saude", ic:"❤️", l:"Saúde", t:["bem", "machucado", "ferido", "em estado grave"]},
+  {k:"fome", ic:"🍖", l:"Fome", t:["satisfeito", "com fome", "faminto", "fraco de fome"]},
+  {k:"sede", ic:"💧", l:"Sede", t:["hidratado", "com sede", "com muita sede", "desidratado"]},
+  {k:"energia", ic:"⚡", l:"Energia", t:["descansado", "cansado", "exausto", "à beira de desmaiar"]},
+  {k:"higiene", ic:"🧼", l:"Higiene", t:["limpo", "suado", "sujo", "imundo"]},
+  {k:"bexiga", ic:"🚻", l:"Necessidades", t:["tranquilo", "precisa ir ao banheiro", "apertado", "não aguenta mais"]}
+];
+/* perda por hora acordado (fome/sede/energia/higiene/bexiga) e ganho ao dormir */
+const DECAY = {fome:2.5, sede:4, energia:5, higiene:1.5, bexiga:10};
+const SIZES = {P:{l:"pequeno", v:1}, M:{l:"médio", v:4}, G:{l:"grande", v:12}, GG:{l:"enorme", v:30}};
+const SIZE_ORD = ["P", "M", "G", "GG"];
+const BODY = [["cabeca", "Cabeça"], ["torso", "Torso"], ["pernas", "Pernas"], ["pes", "Pés"], ["costas", "Costas"], ["cintura", "Cintura"], ["maoD", "Mão direita"], ["maoE", "Mão esquerda"], ["maos", "Duas mãos"]];
+const BODY_L = Object.fromEntries(BODY);
+const CARRY_OK = 20, CARRY_MAX = 40;
+const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+const stLevel = v => v >= 70 ? 0 : v >= 40 ? 1 : v >= 15 ? 2 : 3;
+function blankStats(){ return {saude:100, fome:80, sede:80, energia:80, higiene:80, bexiga:80}; }
+function simOf(st){ return st && st.sim; }
+function simOn(st){ return !!(st && st.sim && st.sim.on); }
+function hasNpc(st){ const ch = S.chars.get(st.charId) || S.char; return !!(ch && ch.role !== "narrator"); }
+function newSim(){ return {on:true, mode:"real", clock:{day:1, min:8 * 60}, player:blankStats(), npc:blankStats(), items:[], notes:[], ready:false, snap:null}; }
+function clockText(c){ if (!c) return ""; const m = Math.round(c.min) % 1440; return "Dia " + c.day + " · " + String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); }
+function advanceClock(c, minutes){ let t = c.min + minutes; while (t >= 1440) { t -= 1440; c.day += 1; } c.min = t; }
+
+/* inventário */
+const itemById = (sim, id) => sim.items.find(x => x.id === id);
+function itemVol(it){ return (SIZES[it.size] || SIZES.M).v * Math.max(1, it.qty || 1); }
+function itemKg(sim, it){ const own = (Number(it.kg) || 0) * Math.max(1, it.qty || 1); return own + sim.items.filter(x => x.in === it.id).reduce((a, x) => a + itemKg(sim, x), 0); }
+function contUsed(sim, c){ return sim.items.filter(x => x.in === c.id).reduce((a, x) => a + itemVol(x), 0); }
+function contKg(sim, c){ return sim.items.filter(x => x.in === c.id).reduce((a, x) => a + itemKg(sim, x), 0); }
+function topOf(sim, it){ let cur = it, guard = 0; while (cur && cur.in && guard++ < 20) cur = itemById(sim, cur.in); return cur; }
+function onGround(sim, it){ const t = topOf(sim, it); return !t || t.at === "chao"; }
+function isCarried(sim, it){ const t = topOf(sim, it); return !!(t && t.at && t.at !== "chao"); }
+function carriedKg(sim){ return sim.items.filter(x => !x.in && x.at && x.at !== "chao").reduce((a, x) => a + itemKg(sim, x), 0); }
+function slotUser(sim, slot){ return sim.items.find(x => !x.in && x.at === slot); }
+function handsFree(sim){ const both = slotUser(sim, "maos"); return {D: !both && !slotUser(sim, "maoD"), E: !both && !slotUser(sim, "maoE")}; }
+function isAncestor(sim, maybeAnc, it){ let cur = maybeAnc, g = 0; while (cur && g++ < 20) { if (cur.id === it.id) return true; cur = cur.in ? itemById(sim, cur.in) : null; } return false; }
+function placeName(sim, it){
+  if (it.in) { const c = itemById(sim, it.in); return c ? "dentro de " + c.name : "?"; }
+  if (it.at === "chao") return "no chão" + (it.spot ? " (" + it.spot + ")" : "");
+  if (it.wear && it.at === it.wear && !["maoD", "maoE", "maos"].includes(it.at)) return "vestido (" + (BODY_L[it.at] || it.at) + ")";
+  return BODY_L[it.at] || it.at || "?";
+}
+/* devolve "" se cabe; senão o motivo */
+function whyNot(sim, it, dest){
+  const sz = SIZE_ORD.indexOf(it.size || "M");
+  if (dest === "chao") return "";
+  const occ = sl => { const x = slotUser(sim, sl); return x && x.id !== it.id ? x : null; };
+  if (dest === "maoD" || dest === "maoE") {
+    if (sz > 1) return it.name + " é " + SIZES[it.size].l + " demais para uma mão só (use as duas)";
+    if (occ("maos")) return "as duas mãos estão ocupadas com " + occ("maos").name;
+    if (occ(dest)) return "a " + BODY_L[dest].toLowerCase() + " está ocupada com " + occ(dest).name;
+    return "";
+  }
+  if (dest === "maos") {
+    const busy = ["maoD", "maoE", "maos"].map(s => slotUser(sim, s)).filter(x => x && x.id !== it.id);
+    return busy.length ? "as mãos estão ocupadas com " + busy.map(x => x.name).join(" e ") : "";
+  }
+  if (BODY_L[dest]) {
+    if (it.wear !== dest) return it.name + " não é algo que se veste " + (dest === "cintura" ? "na cintura" : "em " + BODY_L[dest].toLowerCase());
+    const cur = slotUser(sim, dest); return cur && cur.id !== it.id ? "já tem " + cur.name + " em " + BODY_L[dest].toLowerCase() : "";
+  }
+  const c = itemById(sim, dest);
+  if (!c || !c.cap) return "isso não guarda coisas";
+  if (c.id === it.id || isAncestor(sim, c, it)) return "não dá para guardar algo dentro dele mesmo";
+  const max = SIZE_ORD.indexOf(c.cap.max || "M");
+  if (sz > max) return it.name + " é " + SIZES[it.size].l + " demais para " + c.name;
+  const vol = Number(c.cap.vol) || 0, used = contUsed(sim, c) - (it.in === c.id ? itemVol(it) : 0);
+  if (used + itemVol(it) > vol) return c.name + " está cheio" + (c.cap.vol ? " (" + used + "/" + vol + " de espaço)" : "");
+  if (c.cap.kg && contKg(sim, c) - (it.in === c.id ? itemKg(sim, it) : 0) + itemKg(sim, it) > c.cap.kg) return c.name + " não aguenta esse peso";
+  return "";
+}
+function carryProblem(sim, it, dest){
+  if (dest === "chao" || isCarried(sim, it)) return "";
+  if (!BODY_L[dest]) { const c = itemById(sim, dest); if (!c || !isCarried(sim, c)) return ""; }
+  const after = carriedKg(sim) + itemKg(sim, it);
+  return after > CARRY_MAX ? "peso demais: ficaria com " + Math.round(after) + " kg (limite " + CARRY_MAX + " kg)" : "";
+}
+function wherePhrase(sim, it){
+  if (it.in) { const c = itemById(sim, it.in); return "em " + (c ? c.name : "?"); }
+  if (it.at === "chao") return "no chão";
+  if (it.at === "maos") return "nas duas mãos";
+  if (it.at === "maoD") return "na mão direita";
+  if (it.at === "maoE") return "na mão esquerda";
+  return "em " + (BODY_L[it.at] || "?").toLowerCase();
+}
+function putItem(sim, it, dest, spot){
+  if (BODY_L[dest] || dest === "chao") { it.at = dest; delete it.in; if (dest === "chao") it.spot = spot || ""; else delete it.spot; }
+  else { it.in = dest; delete it.at; delete it.spot; }
+}
+function tryPlace(sim, it, dest, o = {}){
+  const why = whyNot(sim, it, dest) || carryProblem(sim, it, dest);
+  if (why && sim.mode === "real" && !o.force) return why;
+  putItem(sim, it, dest, o.spot);
+  return why ? "(aceito no modo ajuda) " + why : "";
+}
+function destOptions(sim, it){
+  const out = [];
+  if (it.wear && BODY_L[it.wear]) out.push([it.wear, "Vestir/usar (" + BODY_L[it.wear] + ")"]);
+  out.push(["maoD", "Mão direita"], ["maoE", "Mão esquerda"], ["maos", "Duas mãos"]);
+  sim.items.filter(c => c.cap && c.id !== it.id).forEach(c => out.push([c.id, "Guardar em " + c.name + (onGround(sim, c) ? " (no chão)" : "")]));
+  out.push(["chao", "Largar no chão"]);
+  return out.filter(([d]) => !(it.in ? it.in === d : it.at === d)).map(([d, l]) => [d, l, whyNot(sim, it, d) || carryProblem(sim, it, d)]);
+}
+function findDest(sim, name){
+  const n = String(name || "").toLowerCase().trim(); if (!n || n === "auto") return "auto";
+  if (["chao", "chão", "ground", "chão (aqui)"].includes(n)) return "chao";
+  const body = {"cabeca":"cabeca", "cabeça":"cabeca", "torso":"torso", "pernas":"pernas", "pes":"pes", "pés":"pes", "costas":"costas", "cintura":"cintura", "maod":"maoD", "mao direita":"maoD", "mão direita":"maoD", "maoe":"maoE", "mão esquerda":"maoE", "mao esquerda":"maoE", "maos":"maos", "mãos":"maos", "duas mãos":"maos"};
+  if (body[n]) return body[n];
+  const c = sim.items.find(x => x.cap && (x.id === name || x.name.toLowerCase() === n)) || sim.items.find(x => x.cap && (x.name.toLowerCase().includes(n) || n.includes(x.name.toLowerCase())));
+  return c ? c.id : "auto";
+}
+function autoPlace(sim, it, spot){
+  const tries = [];
+  if (it.wear) tries.push(it.wear);
+  sim.items.filter(c => c.cap && !onGround(sim, c)).sort((a, b) => (SIZE_ORD.indexOf(a.cap.max) - SIZE_ORD.indexOf(b.cap.max))).forEach(c => tries.push(c.id));
+  tries.push("maoD", "maoE", "maos");
+  for (const d of tries) if (!whyNot(sim, it, d) && !carryProblem(sim, it, d)) { putItem(sim, it, d); return ""; }
+  putItem(sim, it, "chao", spot); return it.name + " não coube em lugar nenhum e ficou no chão";
+}
+function normItem(x){
+  const size = SIZES[String(x.size || "").toUpperCase()] ? String(x.size).toUpperCase() : "M";
+  const it = {id: "i" + rid(), name: str(x.name || x.nome, 60) || "item", size, kg: Math.max(0, Math.min(500, Number(x.kg) || 0)), qty: Math.max(1, Math.min(999, parseInt(x.qty || x.quantidade, 10) || 1))};
+  const wear = String(x.wear || x.vestir || "").toLowerCase(); const wmap = {cabeca:"cabeca", "cabeça":"cabeca", torso:"torso", pernas:"pernas", pes:"pes", "pés":"pes", costas:"costas", cintura:"cintura"};
+  if (wmap[wear]) it.wear = wmap[wear];
+  const cap = x.cap || x.capacidade;
+  if (cap && typeof cap === "object" && Number(cap.vol) > 0) it.cap = {vol: Math.min(200, Number(cap.vol)), max: SIZES[String(cap.max || "").toUpperCase()] ? String(cap.max).toUpperCase() : "M", kg: Number(cap.kg) > 0 ? Number(cap.kg) : 0};
+  const food = x.food || x.comida;
+  if (food && typeof food === "object") it.food = {fome: clamp(Number(food.fome) || 0, -100, 100), sede: clamp(Number(food.sede) || 0, -100, 100)};
+  if (x.nota || x.note) it.note = str(x.nota || x.note, 140);
+  return it;
+}
+function invText(sim, who){
+  const lines = [];
+  const desc = it => it.name + (it.qty > 1 ? " ×" + it.qty : "") + " [" + it.size + ", " + Math.round(itemKg(sim, it) * 10) / 10 + " kg]";
+  const contents = (c, depth) => sim.items.filter(x => x.in === c.id).map(x => "  ".repeat(depth) + "- " + desc(x) + (x.cap ? "\n" + contents(x, depth + 1) : "")).join("\n");
+  BODY.forEach(([s, l]) => {
+    const it = slotUser(sim, s); if (!it) return;
+    lines.push(l + ": " + desc(it) + (it.cap ? " — guarda (" + contUsed(sim, it) + "/" + it.cap.vol + " de espaço, até tamanho " + it.cap.max + ")" + (sim.items.some(x => x.in === it.id) ? ":\n" + contents(it, 1) : ": vazio") : ""));
+  });
+  const ground = sim.items.filter(x => !x.in && x.at === "chao");
+  if (ground.length) lines.push("No chão: " + ground.map(x => desc(x) + (x.spot ? " (" + x.spot + ")" : "")).join("; "));
+  if (!lines.length) lines.push("(nada)");
+  lines.push("Carga: " + Math.round(carriedKg(sim)) + " kg (confortável até " + CARRY_OK + " kg)");
+  return "INVENTÁRIO DE " + who.toUpperCase() + " (só existe o que está listado; não há bolsos ou espaço além disso)\n" + lines.join("\n");
+}
+function statsLine(name, s){
+  return name + ": " + STATS.map(d => d.l.toLowerCase() + " " + Math.round(s[d.k]) + " (" + d.t[stLevel(s[d.k])] + ")").join(", ");
+}
+function simBlock(st){
+  const sim = simOf(st); if (!simOn(st) || !sim.ready) return "";
+  const n = st.setup.name, c = st.charName;
+  const parts = ["SIMULAÇÃO (números do app; são fatos da cena e mandam mais que a narração anterior)", "Relógio: " + clockText(sim.clock),
+    statsLine(n, sim.player), hasNpc(st) ? statsLine(c, sim.npc) : "", invText(sim, n),
+    "Regras da simulação: valores de 0 a 100, onde 100 é ótimo. Mostre os efeitos de status baixos no corpo, no humor e no desempenho (fome e sede tiram força e foco; cansaço deixa lento e irritado; sujeira e cheiro são notados pelos outros; necessidade apertada distrai). " + n + " só pode usar, mostrar, entregar ou vestir o que está no inventário, e pegar algo guardado leva tempo (tirar a mochila, abrir, procurar). Não invente itens, bolsos ou espaço. Se " + n + " tentar pegar ou guardar algo que não cabe, descreva a dificuldade real." + (sim.mode === "real" ? "" : " (Modo ajuda: os limites são orientação, não bloqueio.)")];
+  return parts.filter(Boolean).join("\n");
+}
+function simTail(st){
+  const sim = simOf(st); if (!simOn(st) || !sim.notes || !sim.notes.length) return "";
+  return "Mudanças registradas pelo app desde a última resposta (já valem; incorpore na cena com naturalidade):\n" + sim.notes.map(x => "- " + x).join("\n");
+}
+
+/* passo da simulação a cada resposta */
+function applyTime(s, minutes, sleepMin, carriedHeavy){
+  const awake = Math.max(0, minutes - sleepMin) / 60, sleep = Math.max(0, sleepMin) / 60, h = minutes / 60;
+  const zeroH = (v0, perH) => perH > 0 ? Math.max(0, h - v0 / perH) : 0;
+  const f0 = s.fome, d0 = s.sede, e0 = s.energia;
+  s.fome = clamp(s.fome - DECAY.fome * h);
+  s.sede = clamp(s.sede - DECAY.sede * h);
+  s.higiene = clamp(s.higiene - DECAY.higiene * h);
+  s.bexiga = clamp(s.bexiga - DECAY.bexiga * awake - DECAY.bexiga * 0.5 * sleep);
+  const eNet = (DECAY.energia * awake * (carriedHeavy ? 1.5 : 1) - 12 * sleep) / Math.max(h, 0.001);
+  s.energia = clamp(s.energia - eNet * h);
+  const dmg = 0.5 * zeroH(f0, DECAY.fome) + 2 * zeroH(d0, DECAY.sede) + 0.5 * zeroH(e0, eNet);
+  if (dmg > 0) s.saude = clamp(s.saude - dmg);
+  else if (s.fome > 30 && s.sede > 30) s.saude = clamp(s.saude + 0.5 * h + 1.5 * sleep);
+}
+function applyEffects(s, e){
+  if (!e || typeof e !== "object") return;
+  STATS.forEach(d => { const v = Number(e[d.k]); if (Number.isFinite(v) && v) s[d.k] = clamp(s[d.k] + clamp(v, -100, 100)); });
+}
+function invOps(sim, ops, spot){
+  const notes = [];
+  for (const op of (Array.isArray(ops) ? ops.slice(0, 12) : [])) {
+    if (!op || typeof op !== "object") continue;
+    const kind = String(op.op || "").toLowerCase();
+    const find = () => itemById(sim, op.id) || sim.items.find(x => x.name.toLowerCase() === String(op.name || op.id || "").toLowerCase());
+    if (kind === "add") {
+      const it = normItem(op); sim.items.push(it);
+      const d = findDest(sim, op.to);
+      let why = d === "auto" ? autoPlace(sim, it, spot) : tryPlace(sim, it, d, {spot});
+      if (why && sim.mode === "real" && (d === "maoD" || d === "maoE") && !tryPlace(sim, it, "maos", {spot})) why = "";
+      if (why && d !== "auto" && sim.mode === "real") { const w2 = autoPlace(sim, it, spot); notes.push(it.name + ": não deu para pôr onde a cena disse (" + why + ")" + (w2 ? "; " + w2 : "; foi para " + placeName(sim, it))); }
+      else if (why) notes.push(why);
+    } else if (kind === "remove") {
+      const it = find(); if (!it) continue;
+      const q = parseInt(op.qty, 10);
+      if (q > 0 && q < (it.qty || 1)) it.qty -= q;
+      else { sim.items.filter(x => x.in === it.id).forEach(x => putItem(sim, x, "chao", spot)); sim.items = sim.items.filter(x => x.id !== it.id); }
+    } else if (kind === "move" || kind === "wear" || kind === "unwear") {
+      const it = find(); if (!it) continue;
+      let d = kind === "wear" ? (it.wear || "auto") : findDest(sim, op.to);
+      if (d === "auto") { const w = autoPlace(sim, it, spot); if (w) notes.push(w); continue; }
+      const why = tryPlace(sim, it, d, {spot});
+      if (why && sim.mode === "real") notes.push(it.name + " continua " + placeName(sim, it) + ": " + why);
+    }
+  }
+  return notes;
+}
+async function simStep(kind){
+  const st = S.story; const sim = simOf(st);
+  if (!simOn(st) || !hasAI() || !S.char) return;
+  if (!sim.ready) { await simInit(); return; }
+  const li = lastAssistantIdx(); if (li < 0) return;
+  const reply = st.messages[li];
+  if ((kind === "regen") && sim.snap && sim.snap.msgId === reply.id) { Object.assign(sim, JSON.parse(sim.snap.before)); }
+  const before = JSON.stringify({clock: sim.clock, player: sim.player, npc: sim.npc, items: sim.items});
+  const n = st.setup.name, c = S.char.name, npc = hasNpc(st);
+  const prevUser = st.messages.slice(0, li).reverse().find(m => m.role === "user");
+  const prompt = `Você é o motor de simulação de um roleplay. Leia a última troca e diga o que mudou, em JSON. Não invente nada que não esteja no texto.
+
+RELÓGIO ATUAL: ${clockText(sim.clock)}
+${statsLine(n, sim.player)}
+${npc ? statsLine(c, sim.npc) + "\n" : ""}${invText(sim, n)}
+IDs dos itens: ${sim.items.map(x => x.id + "=" + x.name).join("; ") || "(nenhum)"}
+
+AÇÃO DE ${n.toUpperCase()}:
+${prevUser ? trunc(prevUser.text, 2500) : "(nenhuma)"}
+
+NARRAÇÃO:
+${trunc(reply.text, 6000)}
+
+Responda SOMENTE com um objeto JSON:
+{"minutos": tempo que passou na história durante esta narração (número; uma conversa curta = 2 a 10; "passam-se algumas horas" = 180; "um dia" = 1440),
+ "sono": {"${n}": minutos dormindo dentro desse tempo${npc ? `, "${c}": minutos dormindo` : ""}},
+ "efeitos": {"${n}": {"fome": +/-pontos, "sede": ..., "energia": ..., "higiene": ..., "bexiga": ..., "saude": ...}${npc ? `, "${c}": {...}` : ""}},
+ "inventario": [operações no inventário de ${n}]}
+Efeitos: só o que aconteceu na narração ou na ação. Exemplos: refeição completa fome +40 a +60; lanche +15; beber água sede +30 a +60; banho higiene +60; ir ao banheiro bexiga = +100; ferimento leve saude -10, grave -40; esforço pesado energia -10. Não inclua o desgaste normal do tempo (o app calcula sozinho). Omita campos sem mudança.
+Operações de inventário (só para ${n}, e só se a ação ou a narração mostrar isso acontecendo): {"op":"add","name":"...","size":"P|M|G|GG","kg":número,"qty":1,"to":"maoD|maoE|maos|chao|nome do recipiente|auto","wear":"cabeca|torso|pernas|pes|costas|cintura (se for vestível)","cap":{"vol":n,"max":"P|M|G","kg":n} (se guardar coisas),"food":{"fome":n,"sede":n} (se for comida ou bebida)}; {"op":"remove","id":"...","qty":n} (comido, usado, entregue, perdido); {"op":"move","id":"...","to":"..."}; {"op":"wear","id":"..."}; {"op":"unwear","id":"...","to":"..."}. Tamanhos: P cabe no bolso (isqueiro, faca pequena); M ocupa uma mão (garrafa, peixe, camisa dobrada); G pede as duas mãos ou uma mochila grande (machado, lança, rede); GG é enorme (tronco, pessoa).`;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:700});
+    const j = parseJSON(r.text);
+    if (!j || typeof j !== "object" || Array.isArray(j)) return;
+    if (S.story !== st) return;
+    sim.snap = {msgId: reply.id, before};
+    const minutes = clamp(Number(j.minutos) || 0, 0, 60 * 24 * 60);
+    const sono = j.sono || {}; const eff = j.efeitos || {};
+    const pick = (o, name, alt) => o[name] || o[alt] || o[name.toLowerCase()] || null;
+    const heavy = carriedKg(sim) > CARRY_OK;
+    applyTime(sim.player, minutes, clamp(Number(pick(sono, n, "jogador")) || 0, 0, minutes), heavy);
+    if (npc) applyTime(sim.npc, minutes, clamp(Number(pick(sono, c, "personagem")) || 0, 0, minutes), false);
+    applyEffects(sim.player, pick(eff, n, "jogador")); if (npc) applyEffects(sim.npc, pick(eff, c, "personagem"));
+    advanceClock(sim.clock, minutes);
+    const spot = (st.state && filled(st.state.lugar)) ? st.state.lugar : "";
+    const notes = invOps(sim, j.inventario, spot);
+    sim.notes = (sim.notes || []).concat(notes).slice(-8);
+    const warn = STATS.filter(d => stLevel(sim.player[d.k]) >= 2).map(d => d.t[stLevel(sim.player[d.k])]);
+    persist(); renderSimBar(); if (sheetName === "sim") renderSim();
+    if (warn.length) toast(n + ": " + warn.join(", ") + ".");
+  } catch {}
+}
+async function simInit(force){
+  const st = S.story; const sim = simOf(st);
+  if (!sim || !hasAI() || !S.char || SIMX.init) return;
+  SIMX.init = true; renderSimBar(); if (sheetName === "sim") renderSim();
+  const n = st.setup.name, c = S.char.name, u = st.setup, npc = hasNpc(st);
+  const prompt = `Você monta o estado inicial da simulação de um roleplay (status e inventário realista). Use só o que a ficha, o jogador e a cena indicam, completando com o óbvio e plausível (roupas que a pessoa está usando, por exemplo).
+
+CENÁRIO DE ${c.toUpperCase()}: ${trunc(S.char.scenario || S.char.description || "", 1800)}
+JOGADOR ${n}: ${[u.look, u.bio, u.extra].filter(Boolean).join(" | ") || "(sem detalhes)"}
+${st.state && st.state.corpo && filled(st.state.corpo) ? "ESTADO ANOTADO: " + st.state.corpo + " | " + (st.state.itens || "") + "\n" : ""}CENA ATÉ AGORA:
+${recentLog(st, 4, 5000)}
+
+Responda SOMENTE com um objeto JSON:
+{"hora":"HH:MM em que a cena está agora","dia":número do dia da história (1 se não houver pista),
+ "status": {"${n}": {"saude":0-100,"fome":0-100,"sede":0-100,"energia":0-100,"higiene":0-100,"bexiga":0-100}${npc ? `, "${c}": {...}` : ""}},
+ "itens": [{"name":"...","size":"P|M|G|GG","kg":número,"qty":1,"where":"cabeca|torso|pernas|pes|costas|cintura|maoD|maoE|maos|chao|nome do recipiente onde está","wear":"slot do corpo se for vestível","cap":{"vol":espaço,"max":"P|M|G","kg":peso máximo} só para o que guarda coisas,"food":{"fome":n,"sede":n} só para comida e bebida}]}
+Status: 100 é ótimo, 0 é péssimo; reflita a situação (dias perdido = fome e higiene baixas; ferido = saúde menor). Itens só de ${n}: roupas vestidas, calçado, recipientes (mochila vol 30 a 50 max G kg 15 a 25; bolsos de calça vol 2 max P; bolsa de cintura vol 4 max P), e o que ${n} carrega. Tamanhos: P cabe no bolso; M ocupa uma mão; G pede as duas mãos ou mochila; GG é enorme. Pesos realistas em kg. Liste os recipientes antes do que vai dentro deles.`;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"default", maxTokens:1800});
+    const j = parseJSON(r.text);
+    if (S.story !== st || !j || typeof j !== "object") throw 0;
+    const hm = String(j.hora || "").match(/(\d{1,2})[:h](\d{2})?/);
+    sim.clock = {day: Math.max(1, parseInt(j.dia, 10) || 1), min: hm ? clamp(parseInt(hm[1], 10), 0, 23) * 60 + clamp(parseInt(hm[2] || "0", 10), 0, 59) : 8 * 60};
+    const stt = j.status || {};
+    const fix = o => { const b = blankStats(); STATS.forEach(d => { const v = Number(o && o[d.k]); if (Number.isFinite(v)) b[d.k] = clamp(v); }); return b; };
+    sim.player = fix(stt[n] || stt.jogador || Object.values(stt)[0]);
+    sim.npc = fix(stt[c] || stt.personagem || Object.values(stt)[1]);
+    sim.items = []; const pend = [];
+    for (const x of (Array.isArray(j.itens) ? j.itens.slice(0, 40) : [])) { const it = normItem(x); sim.items.push(it); pend.push([it, x.where || x.onde || "auto"]); }
+    const notes = [];
+    for (const [it, w] of pend) {
+      const d = findDest(sim, w);
+      if (d === "auto") { const why = autoPlace(sim, it); if (why) notes.push(why); }
+      else { const why = tryPlace(sim, it, d); if (why && sim.mode === "real") { const w2 = autoPlace(sim, it); notes.push(it.name + " não coube em " + w + (w2 ? "; " + w2 : "; foi para " + placeName(sim, it))); } }
+    }
+    sim.notes = notes; sim.ready = true; sim.snap = null;
+    persist(); toast("Ficha montada: status e inventário prontos.");
+  } catch { if (force) toast("Não consegui montar a ficha agora. Tente de novo na Ficha."); }
+  finally { SIMX.init = false; renderSimBar(); if (sheetName === "sim") renderSim(); }
+}
+const SIMX = {init:false, open:null, tab:"status", adjust:false};
+
+/* faixa compacta na conversa */
+function renderSimBar(){
+  const b = $("#simbar"); if (!b) return;
+  const st = S.story;
+  if (!st || S.view !== "chat" || !simOn(st)) { b.hidden = true; return; }
+  const sim = st.sim; b.textContent = "";
+  if (!sim.ready) { b.append(el("span", "s", SIMX.init ? "Montando a ficha…" : "Simulação ligada · toque para montar a ficha")); b.hidden = false; return; }
+  b.append(el("span", "clk", clockText(sim.clock)));
+  STATS.forEach(d => {
+    const v = Math.round(sim.player[d.k]); const lv = stLevel(v);
+    const m = el("span", "mb lv" + lv); m.title = d.l + ": " + v + " (" + d.t[lv] + ")";
+    m.append(el("i", "", d.ic)); const bar = el("b"); bar.style.setProperty("--v", v + "%"); m.append(bar); b.append(m);
+  });
+  b.hidden = false;
+}
+
+/* painel Ficha */
+function statRows(box, name, s, who){
+  const w = el("div"); w.append(el("h4", "", name));
+  STATS.forEach(d => {
+    const v = Math.round(s[d.k]); const lv = stLevel(v);
+    const r = el("div", "srow lv" + lv);
+    r.append(el("span", "sl", d.ic + " " + d.l));
+    const bar = el("span", "sbar"); const f = el("b"); f.style.setProperty("--v", v + "%"); bar.append(f); r.append(bar);
+    r.append(el("span", "sv", v + " · " + d.t[lv]));
+    if (SIMX.adjust) { const inp = el("input"); inp.type = "range"; inp.min = 0; inp.max = 100; inp.value = v; inp.dataset.who = who; inp.dataset.k = d.k; inp.className = "sadj"; inp.setAttribute("aria-label", "Ajustar " + d.l + " de " + name); r.append(inp); }
+    w.append(r);
+  });
+  box.append(w);
+}
+function renderSim(){
+  const box = $("#sim-box"); if (!box) return; box.textContent = "";
+  const st = S.story; if (!st) return;
+  if (!st.sim) st.sim = Object.assign(newSim(), {on:false});
+  const sim = st.sim;
+  const top = el("div");
+  top.append(el("h4", "", "Simulação"));
+  const sg = el("div", "seg"); box.append(top); top.append(sg);
+  seg(sg, [["on", "Ligada"], ["off", "Desligada"]], sim.on ? "on" : "off", id => { sim.on = id === "on"; persist(); renderSimBar(); renderSim(); if (sim.on && !sim.ready) simInit(true); });
+  if (sim.on) {
+    const md = el("div", "seg"); md.style.marginTop = "8px"; top.append(md);
+    seg(md, [["real", "Realista"], ["ajuda", "Ajuda"]], sim.mode, id => { sim.mode = id; persist(); renderSim(); });
+    top.append(el("p", "hint", sim.mode === "real" ? "Realista: o app bloqueia o que não cabe ou pesa demais, e status zerados afetam a saúde." : "Ajuda: o app mostra e avisa a IA, mas não bloqueia nada."));
+  } else top.append(el("p", "hint", "Ligue para acompanhar fome, sede, energia, higiene e necessidades, com relógio da história e inventário realista. Cada resposta faz uma consulta curta extra."));
+  if (!sim.on) return;
+  if (!sim.ready) {
+    const p = el("div"); p.append(el("p", "hint", SIMX.init ? "Montando status e inventário a partir da ficha e da cena…" : "A ficha ainda não foi montada."));
+    if (!SIMX.init) { const b = el("button", "btn sm", "Montar ficha agora"); b.type = "button"; b.dataset.sx = "init"; p.append(b); }
+    box.append(p); return;
+  }
+  const tabs = el("div", "seg"); box.append(tabs);
+  seg(tabs, [["status", "Status"], ["inv", "Inventário"]], SIMX.tab, id => { SIMX.tab = id; renderSim(); });
+  if (SIMX.tab === "status") {
+    const ck = el("div"); ck.append(el("h4", "", "Relógio da história"), el("p", "empty", clockText(sim.clock)));
+    box.append(ck);
+    statRows(box, st.setup.name, sim.player, "player");
+    if (hasNpc(st)) statRows(box, st.charName, sim.npc, "npc");
+    box.append(el("p", "hint", "As barras caem com o tempo da história e sobem com o que acontece na cena (comer, beber, dormir, tomar banho)."));
+    const ac = el("div", "actions");
+    const aj = el("button", "btn ghost sm", SIMX.adjust ? "Terminar ajuste" : "Ajustar à mão"); aj.type = "button"; aj.dataset.sx = "adjust"; ac.append(aj);
+    const b = el("button", "btn ghost sm", "Remontar ficha do zero"); b.type = "button"; b.dataset.sx = "reinit"; ac.append(b); box.append(ac);
+  } else renderInv(box, sim, st);
+}
+function renderInv(box, sim, st){
+  const kg = carriedKg(sim);
+  const head = el("div"); head.append(el("h4", "", "Inventário de " + st.setup.name));
+  head.append(el("p", "empty", "Carga: " + (Math.round(kg * 10) / 10) + " kg " + (kg > CARRY_MAX ? "· pesado demais" : kg > CARRY_OK ? "· pesado (cansa mais rápido)" : "· confortável")));
+  box.append(head);
+  const ul = el("ul", "inv");
+  const row = (it, depth) => {
+    const li = el("li", "it" + (SIMX.open === it.id ? " open" : "")); li.style.setProperty("--d", depth);
+    const b = el("button", "ib2"); b.type = "button"; b.dataset.sx = "open"; b.dataset.id = it.id;
+    b.append(el("span", "nm", it.name + (it.qty > 1 ? " ×" + it.qty : "")), el("span", "mt", SIZES[it.size].l + " · " + (Math.round(itemKg(sim, it) * 10) / 10) + " kg" + (it.cap ? " · " + contUsed(sim, it) + "/" + it.cap.vol + " espaço" : "")));
+    li.append(b);
+    if (SIMX.open === it.id) {
+      const ac = el("div", "acts2");
+      if (it.food) { const e = el("button", "btn sm", it.food.sede > it.food.fome ? "Beber" : "Comer"); e.type = "button"; e.dataset.sx = "eat"; e.dataset.id = it.id; ac.append(e); }
+      destOptions(sim, it).forEach(([d, l, why]) => {
+        if (why && sim.mode === "real") return;
+        const x = el("button", "btn ghost sm", l + (why ? " ⚠" : "")); x.type = "button"; x.dataset.sx = "mv"; x.dataset.id = it.id; x.dataset.to = d; if (why) x.title = why; ac.append(x);
+      });
+      const blocked = destOptions(sim, it).filter(([, , w]) => w && sim.mode === "real");
+      const del = el("button", "btn ghost sm danger", "Tirar da ficha"); del.type = "button"; del.dataset.sx = "del"; del.dataset.id = it.id; del.title = "Remove sem que isso aconteça na história (para corrigir erros)"; ac.append(del);
+      li.append(ac);
+      if (blocked.length) li.append(el("p", "hint", "Não dá: " + blocked.map(([, l, w]) => l.replace(/^Guardar em /, "") + " (" + w + ")").slice(0, 4).join("; ") + "."));
+    }
+    ul.append(li);
+    sim.items.filter(x => x.in === it.id).forEach(x => row(x, depth + 1));
+  };
+  BODY.forEach(([s, l]) => {
+    const it = slotUser(sim, s);
+    if (s === "maos" && !it) return;
+    if ((s === "maoD" || s === "maoE") && slotUser(sim, "maos")) return;
+    const hdr = el("li", "slot"); hdr.textContent = l; if (!it) hdr.append(el("span", "mt", " · vazio")); ul.append(hdr);
+    if (it) row(it, 0);
+  });
+  const ground = sim.items.filter(x => !x.in && x.at === "chao");
+  const gh = el("li", "slot"); gh.textContent = "No chão"; if (!ground.length) gh.append(el("span", "mt", " · nada")); ul.append(gh);
+  ground.forEach(it => row(it, 0));
+  box.append(ul);
+  const add = el("details", "adv"); add.append(el("summary", "", "Adicionar item à mão"));
+  const inner = el("div", "inner");
+  inner.append(fieldEl("Nome", "ia-name", "input", "", {max:60, ph:"ex.: corda de fibra"}));
+  const r = el("div", "row");
+  r.append(fieldEl("Tamanho", "ia-size", "select", "M", {options: SIZE_ORD.map(k => [k, SIZES[k].l + " (" + k + ")"])}), fieldEl("Peso (kg)", "ia-kg", "input", "0.5", {max:6}));
+  inner.append(r);
+  const r2 = el("div", "row");
+  r2.append(fieldEl("Vestível em", "ia-wear", "select", "", {options: [["", "não é roupa"]].concat(BODY.slice(0, 6))}), fieldEl("Guarda coisas? (espaço)", "ia-cap", "input", "", {max:4, ph:"vazio = não"}));
+  inner.append(r2);
+  const ac = el("div", "actions"); const b = el("button", "btn sm", "Adicionar"); b.type = "button"; b.dataset.sx = "add"; ac.append(b); inner.append(ac);
+  inner.append(el("p", "hint", "Use para corrigir a ficha. O item vai para o primeiro lugar onde couber; o que pegar na história o app adiciona sozinho."));
+  add.append(inner); box.append(add);
+}
+function simNote(st, text){ st.sim.notes = (st.sim.notes || []).concat([text]).slice(-8); }
+function bindSim(){
+  $("#b-sim").addEventListener("click", () => openSheet("sim"));
+  $("#simbar").addEventListener("click", () => openSheet("sim"));
+  $("#sim-box").addEventListener("input", e => {
+    const t = e.target; if (!t.classList.contains("sadj") || !S.story) return;
+    const s = S.story.sim[t.dataset.who]; s[t.dataset.k] = clamp(Number(t.value));
+    const row = t.closest(".srow"); const d = STATS.find(x => x.k === t.dataset.k); const lv = stLevel(s[d.k]);
+    row.className = "srow lv" + lv; row.querySelector(".sbar b").style.setProperty("--v", s[d.k] + "%"); row.querySelector(".sv").textContent = Math.round(s[d.k]) + " · " + d.t[lv];
+  });
+  $("#sim-box").addEventListener("change", e => { if (e.target.classList.contains("sadj") && S.story) { persist(); renderSimBar(); } });
+  $("#sim-box").addEventListener("click", e => {
+    const b = e.target.closest("[data-sx]"); if (!b || !S.story) return;
+    const st = S.story, sim = st.sim, act = b.dataset.sx, it = b.dataset.id ? itemById(sim, b.dataset.id) : null, n = st.setup.name;
+    if (act === "init" || act === "reinit") {
+      if (act === "reinit" && b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar: refazer status e inventário"; return; }
+      sim.ready = false; simInit(true); renderSim();
+    }
+    else if (act === "adjust") { SIMX.adjust = !SIMX.adjust; renderSim(); }
+    else if (act === "open") { SIMX.open = SIMX.open === b.dataset.id ? null : b.dataset.id; renderSim(); }
+    else if (act === "mv" && it) {
+      const from = placeName(sim, it); const why = tryPlace(sim, it, b.dataset.to, {spot: st.state && filled(st.state.lugar) ? st.state.lugar : ""});
+      if (why && sim.mode === "real") { toast(why); return; }
+      const worn = it.wear && it.at === it.wear;
+      simNote(st, (worn ? n + " vestiu " + it.name : n + " pôs " + it.name + " " + wherePhrase(sim, it)) + " (estava " + from + ")" + (why ? " " + why : ""));
+      persist(); renderSim(); toast("Feito. O narrador vai saber na próxima resposta.");
+    }
+    else if (act === "eat" && it) {
+      applyEffects(sim.player, it.food);
+      if ((it.qty || 1) > 1) it.qty -= 1; else sim.items = sim.items.filter(x => x.id !== it.id);
+      simNote(st, n + " " + (it.food.sede > it.food.fome ? "bebeu" : "comeu") + " " + it.name);
+      SIMX.open = null; persist(); renderSim(); renderSimBar();
+    }
+    else if (act === "del" && it) {
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
+      sim.items.filter(x => x.in === it.id).forEach(x => putItem(sim, x, "chao"));
+      sim.items = sim.items.filter(x => x.id !== it.id); SIMX.open = null; persist(); renderSim();
+    }
+    else if (act === "add") {
+      const name = ($("#ia-name").value || "").trim(); if (!name) { toast("Dê um nome ao item."); return; }
+      const capv = parseInt($("#ia-cap").value, 10);
+      const nit = normItem({name, size: $("#ia-size").value, kg: parseFloat(String($("#ia-kg").value).replace(",", ".")), wear: $("#ia-wear").value, cap: capv > 0 ? {vol: capv, max: capv >= 20 ? "G" : capv >= 6 ? "M" : "P"} : null});
+      sim.items.push(nit); const why = autoPlace(sim, nit); if (why) toast(why);
+      persist(); renderSim();
+    }
+  });
+}
+function simAfterReply(kind){ if (simOn(S.story)) { if (S.story.sim) S.story.sim.notes = []; simStep(kind); } }
+function simUndoLast(){ const st = S.story; const sim = simOf(st); if (sim && sim.snap) { const li = lastAssistantIdx(); if (li >= 0 && st.messages[li].id === sim.snap.msgId) { Object.assign(sim, JSON.parse(sim.snap.before)); sim.snap = null; renderSimBar(); } } }
+function simTimeHint(st, label){
+  if (!simOn(st) || !st.sim.ready) return "";
+  const n = st.setup.name, c = st.charName;
+  return " Simulação ligada: mostre de forma resumida como " + (hasNpc(st) ? n + " e " + c : n) + " atravessaram esse tempo em relação a comida, água, sono, higiene e necessidades, coerente com os recursos que têm, os hábitos de cada um e o estado atual (" + statsLine(n, st.sim.player) + (hasNpc(st) ? "; " + statsLine(c, st.sim.npc) : "") + "). Para " + n + ", só rotinas óbvias de sobrevivência que combinem com quem é; nada de decisões importantes. Se faltou comida ou água, mostre o custo.";
 }
 
 /* ---------- modelos e API (cópia fora do Claude) ---------- */
