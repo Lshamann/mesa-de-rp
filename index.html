@@ -1418,6 +1418,13 @@ function cardToChar(j){
   const greets = [d.first_mes || d.char_greeting, ...(Array.isArray(d.alternate_greetings) ? d.alternate_greetings : [])].filter(g => typeof g === "string" && g.trim());
   c.openings = greets.map((g, i) => ({id:"o" + rid() + i, label: "Abertura " + (i + 1), blurb:"", text: str(g, 4000)}));
   c.lore = convLore(d.character_book && d.character_book.entries);
+  const ext = d.extensions && typeof d.extensions === "object" ? d.extensions.mesa_rp : null;
+  if (ext && typeof ext === "object") {
+    if (ext.persona && typeof ext.persona === "object") c.persona = {name: str(ext.persona.name, 40) || "Alex", pro: PRO[ext.persona.pro] ? ext.persona.pro : "ele", look: str(ext.persona.look, 1500), bio: str(ext.persona.bio, 3000), extra: str(ext.persona.extra, 3000)};
+    if (Array.isArray(ext.openings)) c.openings.forEach((o, i) => { const x = ext.openings[i]; if (x && typeof x === "object") { if (x.label) o.label = str(x.label, 50); if (x.blurb) o.blurb = str(x.blurb, 200); } });
+    if (ext.role === "narrator") c.role = "narrator";
+    if (typeof ext.tagline === "string" && ext.tagline.trim()) c.tagline = str(ext.tagline, 140);
+  }
   return c;
 }
 function charToCard(ch){
@@ -1427,7 +1434,7 @@ function charToCard(ch){
   const g = ch.openings.map(o => o.text);
   const data = {name:ch.name, description:ch.description, personality:ch.personality, scenario:ch.scenario, first_mes:g[0] || "", mes_example:mes,
     creator_notes:ch.tagline || "", system_prompt:ch.rules || "", post_history_instructions:ch.post || "", alternate_greetings:g.slice(1), tags:[], creator:"Mesa de RP", character_version:"1.0",
-    extensions:{}, character_book:{name:ch.name, description:"", scan_depth:4, token_budget:1200, recursive_scanning:false, extensions:{}, entries}};
+    extensions:{mesa_rp:{role:ch.role, tagline:ch.tagline || "", persona:ch.persona, openings:ch.openings.map(o => ({label:o.label, blurb:o.blurb || ""}))}}, character_book:{name:ch.name, description:"", scan_depth:4, token_budget:1200, recursive_scanning:false, extensions:{}, entries}};
   return {spec:"chara_card_v2", spec_version:"2.0", name:data.name, description:data.description, personality:data.personality, scenario:data.scenario, first_mes:data.first_mes, mes_example:data.mes_example, data};
 }
 async function saveFile(filename, data){
