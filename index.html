@@ -226,6 +226,29 @@ html.locked #app>:not(#lock),html.veil #app>:not(#lock){visibility:hidden}
 .vcard .vm{margin:0;font:400 18px/1.45 var(--f-body);color:var(--nar)}
 .vcard small{font:400 12px/1.4 var(--f-mono);color:var(--faint)}
 .vcard .hint{margin:0}
+.xgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.xcell{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
+.xcell b{font:600 14px/1.2 var(--f-display)}
+.xcell .acts2{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.xth{width:84px;height:84px;border-radius:50%;background:var(--surface-2) center/cover no-repeat;display:grid;place-items:center;font-size:34px;border:1px solid var(--line)}
+.field input[type=range]{width:100%;accent-color:var(--accent)}
+.trychat{display:flex;flex-direction:column;gap:10px;max-height:440px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface)}
+.tmsg{font:400 15px/1.55 var(--f-body);color:var(--nar);min-width:0}
+.tmsg p{margin:0 0 6px}.tmsg p:last-child{margin:0}
+.tmsg.you{align-self:flex-end;max-width:88%;background:var(--surface-2);border:1px solid var(--line);border-radius:12px 12px 4px 12px;padding:8px 12px;color:var(--fg)}
+.pin{flex:1;min-width:0;resize:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:400 16px/1.45 var(--f-body);color:var(--fg)}
+.chap{border-left:2px solid var(--ochre);padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:4px}
+.chap small{font:600 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ochre)}
+.chap h3{margin:0;font:700 19px/1.3 var(--f-display);text-wrap:balance}
+.chap p{margin:0;font:400 16px/1.65 var(--f-body);color:var(--nar)}
+.pdet>summary{cursor:pointer;display:flex;flex-direction:column;gap:2px;list-style:none}
+.pdet>summary::-webkit-details-marker{display:none}
+.pdet[open]>summary b{color:var(--accent)}
+.pform{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.slist li.branch{border-style:dashed}
+.slist .bfrom{color:var(--ochre)}
+ol.steps{margin:4px 0 0;padding-left:20px;font:400 14px/1.55 var(--f-body);color:var(--fg)}
+ol.steps a{color:var(--accent)}
 .ideas{display:flex;flex-direction:column;gap:6px;align-items:stretch}
 .simbar{flex:none;display:flex;align-items:center;gap:8px;width:100%;border:0;border-bottom:1px solid var(--line);background:var(--bg);color:var(--muted);font:500 11px/1.2 var(--f-mono);padding-block:6px;text-align:left;overflow:hidden}
 .simbar .clk{flex:none;color:var(--fg)}
@@ -404,6 +427,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
             <button class="btn ghost sm" type="button" id="b-exp-json">Baixar backup (.json)</button>
             <button class="btn ghost sm" type="button" id="b-copy-json">Copiar backup</button>
             <button class="btn ghost sm" type="button" id="b-copy">Copiar texto</button>
+            <button class="btn ghost sm" type="button" id="b-diary">📜 Diário</button>
           </div>
           <p class="hint">O backup guarda a história inteira, as mensagens antigas, o personagem, as palavras aprendidas e os pontos de volta do estado. “Copiar backup” serve quando o download não funciona: cole o texto em outro aparelho.</p>
         </div>
@@ -434,12 +458,16 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         </div>
         <div id="mem-extra" style="display:flex;flex-direction:column;gap:22px"></div>
       </div>
+      <div class="content" id="sh-look" hidden><div id="look-box" style="display:flex;flex-direction:column;gap:22px"></div></div>
+      <div class="content" id="sh-diary" hidden><div id="diary-box" style="display:flex;flex-direction:column;gap:24px"></div></div>
       <div class="content" id="sh-vocab" hidden><div id="vocab-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
         <div><h4>Login e bloqueio</h4><div id="lock-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
+        <div id="sec-sync"><h4>Sincronizar e proteger</h4><div id="sync-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
         <div><h4>Você</h4><div id="me-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
+        <div><h4>Rosto e voz</h4><div id="look-entry"></div></div>
         <div id="sec-mode"><h4>Velocidade e cuidado</h4><div class="seg" id="seg-mode"></div><p class="hint" id="mode-hint"></p></div>
         <div><h4>Tamanho das respostas</h4><div class="seg" id="seg-len"></div></div>
         <div><h4>Idioma da narração</h4><div class="seg" id="seg-lang"></div></div>
@@ -448,6 +476,8 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <div><h4>Simulação em histórias novas</h4><div class="seg" id="seg-sim"></div><p class="hint">Status (fome, sede, energia, higiene, necessidades), relógio e inventário realista. Dá para ligar ou desligar em cada história, na Ficha.</p></div>
         <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens, relação e quem sabe o quê a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra. Voltar, Regerar, trocar de versão e Ramificar levam esse estado junto.</p></div>
         <div><h4>Dicionário de palavras</h4><div class="seg" id="seg-vocab"></div><p class="hint">Guarda as palavras de outros idiomas que os personagens aprendem de verdade em cena (alguém ensina ou explica) e faz o narrador respeitar o que cada um entende. Vai junto das consultas da simulação e do estado da cena; sem elas, só consulta quando a cena tem cara de aula.</p></div>
+        <div><h4>Fichas de NPC e boatos</h4><div class="seg" id="seg-npcs"></div><p class="hint">O anotador do estado da cena também mantém fichas das pessoas com nome (aparência, jeito, rotina, o que sabem, o que acham de você) e os boatos que podem correr. Deixa a consulta curta um pouco maior.</p></div>
+        <div><h4>Diário automático</h4><div class="seg" id="seg-diary"></div><p class="hint">Um capítulo com título e resumo a cada 24 mensagens (uma consulta). Fica em Histórias → Diário.</p></div>
         <div><h4>Tradução</h4><div class="seg" id="seg-treng"></div><p class="hint" id="treng-hint">Quem traduz as falas das respostas quando você toca em Traduzir.</p></div>
         <div><h4>Tradutor offline</h4><div id="bmt-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
         <div><h4>Uso</h4><p class="hint" id="usage" style="margin:0"></p></div>
@@ -459,6 +489,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
   <input type="file" id="f-img" accept="image/*" hidden>
   <input type="file" id="f-scene" accept="image/*" hidden>
   <input type="file" id="f-charimg" accept="image/*" hidden>
+  <input type="file" id="f-expr" accept="image/*" hidden>
   <input type="file" id="f-lore" hidden>
   <div class="toast" id="toast" role="status" hidden></div>
   <div class="lock" id="lock" hidden></div>
@@ -515,7 +546,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:true, vocab:true};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:true, vocab:true, npcs:true, diary:true};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -533,7 +564,7 @@ function mkLocalStore(){
   return {
     kind:"local",
     async getIndex(){ return g("rp.index"); },
-    async setIndex(v){ s("rp.index", v); },
+    async setIndex(v){ s("rp.index", v); syncDirty(); },
     async getStory(id){ return g("rp.story." + id); },
     async setStory(st){ s("rp.story." + st.id, st); },
     async getCk(id){ return g("rp.ck." + id); },
@@ -597,7 +628,7 @@ async function flush(retried){
   try {
     await S.store.setStory(st);
     const ix = S.index;
-    const meta = {id:st.id, title:st.title, updated:st.updated, count:st.archived + st.messages.length, chunks:st.archiveChunks, charId:st.charId, charName:st.charName};
+    const meta = {id:st.id, title:st.title, updated:st.updated, count:st.archived + st.messages.length, chunks:st.archiveChunks, charId:st.charId, charName:st.charName, parent: st.parent ? st.parent.id : null, from: st.parent ? st.parent.from : ""};
     const i = ix.stories.findIndex(x => x.id === st.id);
     if (i >= 0) ix.stories[i] = meta; else ix.stories.push(meta);
     ix.lastId = st.id;
@@ -709,7 +740,7 @@ function header(st, ch, loreHead){
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, mem, stateBlock(st), simBlock(st), vocabBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, mem, stateBlock(st), npcBlock(st), rumorBlock(st), simBlock(st), vocabBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -793,7 +824,7 @@ function updateHeader(){
   if (v === "chat") { ch = S.char; title = ch ? ch.name : "Personagem removido"; sub_ = S.story ? S.story.title : ""; }
   else if (v === "setup") { ch = S.setupChar; title = ch ? ch.name : ""; sub_ = "Nova história"; }
   else if (v === "editor") { title = "Editor"; sub_ = D && D.name ? D.name : "Novo personagem"; }
-  if (v === "library") av.append(markSvg()); else if (ch) av.append(avatarEl(ch, "big"));
+  if (v === "library") av.append(markSvg()); else if (ch) av.append(v === "chat" && S.story ? moodAvatar(ch, lastTauMsg(), "big") : avatarEl(ch, "big"));
   $("#h-title").textContent = title; $("#h-sub").textContent = sub_;
   $("#b-memory").hidden = v !== "chat"; $("#b-sim").hidden = v !== "chat";
 }
@@ -826,7 +857,7 @@ function charCard(ch){
   const play = el("button", "btn sm", "Jogar"); play.dataset.act = "quick"; play.dataset.id = ch.id; go.append(play);
   const links = el("div", "links");
   const add = (label, act, cls) => { const b = el("button", "txt" + (cls ? " " + cls : ""), label); b.dataset.act = act; b.dataset.id = ch.id; links.append(b); return b; };
-  add("Escolher início", "play"); add("Me surpreenda", "surprise");
+  add("Escolher início", "play"); add("Me surpreenda", "surprise"); add("Rosto e voz", "look");
   if (!ch.builtin) add("Editar", "edit");
   add("Duplicar", "dup"); add("Baixar", "export");
   if (!ch.builtin) add("Excluir", "del", "danger");
@@ -926,7 +957,7 @@ function msgNode(m, i){
   const isTau = m.role === "assistant";
   const art = el("article", "msg " + (isTau ? "tau" : "you")); art.dataset.i = i;
   const who = el("div", "who");
-  if (isTau) { who.append(avatarEl(S.char || {name:st.charName}), document.createTextNode(S.char ? S.char.name : st.charName || "Narrador")); } else who.textContent = st.setup.name;
+  if (isTau) { who.append(moodAvatar(S.char || {name:st.charName}, m), document.createTextNode(S.char ? S.char.name : st.charName || "Narrador")); } else who.textContent = st.setup.name;
   art.append(who);
   if (S.editing === i) {
     const ta = el("textarea", "editor"); ta.value = m.text; ta.id = "editor"; art.append(ta);
@@ -1004,6 +1035,7 @@ function renderLog(o = {}){
   if (o.liveAt == null && S.live) box.append(S.live.node);
   if (S.error) box.append(errNode());
   if (stick) toBottom();
+  if (S.view === "chat") updateHeader();
 }
 function setBusy(b){
   S.busy = b; $("#b-send").hidden = b; $("#b-stop").hidden = !b; updateComposer();
@@ -1090,7 +1122,7 @@ async function generate(kind){
     if (!changed && CK.map[oldKey]) { ckApply(st, CK.map[oldKey]); refreshDerived(); persist(); }
     else if (changed && !hadOld) delete CK.map[oldKey];
   }
-  if (!failed && changed) { afterReply(); simAfterReply(kind); ckMark(st); }
+  if (!failed && changed) { afterReply(); simAfterReply(kind); ckMark(st); if (diaryDue(st)) setTimeout(() => { if (S.story === st && !S.busy) writeChapter(false); }, 6000); }
 }
 async function send(text, label){
   if (S.busy || !hasAI() || !S.char) return;
@@ -1177,7 +1209,7 @@ function fieldEl(label, id, kind, value, o = {}){
 function openEditor(ch){
   D = ch ? normChar(clean(ch)) : blankChar();
   D.isNew = !ch; if (D.isNew) { D.id = rid(); D.openings = [{id:"o" + rid(), label:"Abertura 1", blurb:"", text:""}]; }
-  S.undo = null; QA.list = [];
+  S.undo = null; QA.list = []; TRY.msgs = []; TRY.review = null;
   renderEditor(true); showView("editor");
   $("#ed-scroll").scrollTop = 0;
 }
@@ -1259,6 +1291,7 @@ function renderEditor(keepAI){
   const il = el("button", "btn ghost sm", "Importar lorebook (.json)"); il.type = "button"; il.dataset.act = "imp-lore";
   la.append(al, gl, il); s4.append(la);
   body.append(s4);
+  body.append(tryEl());
   /* avançado */
   const adv = el("details", "adv"); adv.append(el("summary", "", "Avançado: exemplos de fala, lembrete e jogador padrão"));
   const inner = el("div", "inner");
@@ -1637,14 +1670,15 @@ async function backupJSON(){
 
 /* ---------- painéis ---------- */
 let sheetName = null, lastFocus = null;
-const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha", vocab:"Palavras"};
+const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha", vocab:"Palavras", look:"Rosto e voz", diary:"Diário"};
 async function openSheet(name){
   if (name === "memory" && !S.story) { toast("Abra uma história para usar a memória."); return; }
   if (name === "sim" && !S.story) { toast("Abra uma história para ver a ficha."); return; }
   if (name === "vocab" && !S.story) { toast("Abra uma história para ver as palavras."); return; }
+  if (name === "diary" && !S.story) { toast("Abra uma história para ver o diário."); return; }
   if (name === "stories" && dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
   lastFocus = document.activeElement; sheetName = name;
-  ["stories", "memory", "settings", "models", "sim", "vocab"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
+  ["stories", "memory", "settings", "models", "sim", "vocab", "look", "diary"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
   $("#sheet-title").textContent = SHEET_TITLES[name];
   $("#sheet").hidden = false;
   if (name === "stories") renderStories();
@@ -1653,6 +1687,8 @@ async function openSheet(name){
   if (name === "memory") renderMemExtra();
   if (name === "sim") renderSim();
   if (name === "vocab") renderVocab();
+  if (name === "look") renderLook();
+  if (name === "diary") renderDiary();
   if (name === "settings") { renderSettings(); $("#notes").value = S.story ? S.story.notes || "" : ""; $("#notes").disabled = !S.story; }
   $("#b-close").focus();
 }
@@ -1679,6 +1715,9 @@ function renderSettings(){
   seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim !== false ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
   seg($("#seg-vocab"), [["on", "Ligado"], ["off", "Desligado"]], prefs.vocab !== false ? "on" : "off", id => { prefs.vocab = id === "on"; savePrefs(); updateVocabChip(); });
+  seg($("#seg-npcs"), [["on", "Ligadas"], ["off", "Desligadas"]], prefs.npcs !== false ? "on" : "off", id => { prefs.npcs = id === "on"; savePrefs(); });
+  seg($("#seg-diary"), [["on", "Ligado"], ["off", "Desligado"]], prefs.diary !== false ? "on" : "off", id => { prefs.diary = id === "on"; savePrefs(); });
+  renderSync(); renderLookEntry();
   if (BMT_OK) seg($("#seg-treng"), [["ia", "IA (melhor)"], ["off", "Offline (Bergamot)"]], prefs.trEngine === "off" ? "off" : "ia", id => { prefs.trEngine = id; savePrefs(); });
   $("#seg-treng").parentElement.hidden = !BMT_OK; renderBmt();
   renderLockSettings(); renderMe(); const ut = $("#usage"); if (ut) ut.textContent = usageText();
@@ -1687,12 +1726,19 @@ function renderSettings(){
 }
 function renderStories(){
   const ul = $("#stlist"); ul.textContent = "";
-  const items = [...S.index.stories].sort((a, b) => b.updated - a.updated);
-  if (!items.length) { const li = el("li"); li.append(el("p", "empty", "Nenhuma história salva ainda.")); ul.append(li); }
-  items.forEach(s => {
+  const all = S.index.stories, ids = new Set(all.map(x => x.id)), kids = new Map(), roots = [];
+  all.forEach(s => { if (s.parent && s.parent !== s.id && ids.has(s.parent)) { if (!kids.has(s.parent)) kids.set(s.parent, []); kids.get(s.parent).push(s); } else roots.push(s); });
+  const newest = (s, d = 0) => d > 20 ? 0 : Math.max(s.updated || 0, ...(kids.get(s.id) || []).map(k => newest(k, d + 1)));
+  roots.sort((a, b) => newest(b) - newest(a));
+  if (!all.length) { const li = el("li"); li.append(el("p", "empty", "Nenhuma história salva ainda.")); ul.append(li); }
+  const seen = new Set();
+  const row = (s, depth) => {
+    if (seen.has(s.id)) return; seen.add(s.id);
     const li = el("li", S.story && S.story.id === s.id ? "cur" : "");
+    if (depth) { li.classList.add("branch"); li.style.marginLeft = Math.min(depth, 4) * 18 + "px"; }
     const h = el("div", "h"); h.append(avatarEl(S.chars.get(s.charId) || {name:s.charName || "?"}), el("b", "", s.title)); li.append(h);
     li.append(el("small", "", (s.charName || "") + " · " + (s.count || 0) + " mensagens · " + fmtDate(s.updated)));
+    if (depth) li.append(el("small", "bfrom", "↳ ramo" + (s.from ? " a partir de “" + s.from + "”" : "")));
     const a = el("div", "acts2");
     const open = el("button", "btn ghost sm", "Abrir"); open.addEventListener("click", () => loadStory(s.id));
     const del = el("button", "btn ghost sm danger", "Excluir");
@@ -1702,10 +1748,12 @@ function renderStories(){
       clearTimeout(t); await deleteStory(s);
     });
     a.append(open, del); li.append(a); ul.append(li);
-  });
+    (kids.get(s.id) || []).sort((x, y) => (x.updated || 0) - (y.updated || 0)).forEach(k => row(k, depth + 1));
+  };
+  roots.forEach(s => row(s, 0));
   $("#store-note").textContent = S.store && S.store.kind === "db" && !S.localNote ? "Suas histórias e personagens ficam salvos na sua conta, neste app: abrindo o link dentro do Claude em qualquer aparelho, eles aparecem." : S.sample ? "Suas histórias e personagens estão salvos só neste navegador. Baixe backups de vez em quando." : (IN_CLAUDE ? "Você abriu uma cópia fora do Claude: o que for salvo aqui fica só neste navegador e pode se perder. Para jogar e guardar tudo na sua conta, abra o link do app dentro do Claude." : standNote());
   const im = $("#imp-msg"); if (im) im.hidden = true;
-  $("#b-exp-md").disabled = $("#b-exp-json").disabled = $("#b-copy").disabled = $("#b-copy-json").disabled = !S.story;
+  $("#b-diary").disabled = $("#b-exp-md").disabled = $("#b-exp-json").disabled = $("#b-copy").disabled = $("#b-copy-json").disabled = !S.story;
 }
 async function loadStory(id){
   try {
@@ -1716,6 +1764,7 @@ async function loadStory(id){
 }
 async function deleteStory(meta){
   try { await S.store.delStory(meta.id, meta.chunks || 0); } catch {}
+  markGone(meta.id, "story");
   S.index.stories = S.index.stories.filter(x => x.id !== meta.id);
   if (S.index.lastId === meta.id) S.index.lastId = null;
   try { await enqueue(() => S.store.setIndex(S.index)); } catch {}
@@ -1752,15 +1801,18 @@ async function allJSON(){
   const me = LS.get("rp.me");
   const imgs = {};
   for (const it of stories) for (const m of it.story.messages.concat(it.archive)) if (m.imgId && !imgs[m.imgId]) { const d = await imgData(m.imgId); if (d) imgs[m.imgId] = d; }
-  return JSON.stringify({format:"mesa-rp-all-v1", exported: Date.now(), chars, stories, me: me || "", personas, imgs});
+  for (const L of Object.values(S.index.looks || {})) for (const id of Object.values((L && L.expr) || {})) if (id && !imgs[id]) { const d = await imgData(id); if (d) imgs[id] = d; }
+  return JSON.stringify({format:"mesa-rp-all-v1", exported: Date.now(), chars, stories, me: me || "", personas, imgs, gone: S.index.gone || [], looks: S.index.looks || {}});
 }
-async function importAllObj(j){
+async function importAllObj(j, o = {}){
   let nc = 0, ns = 0, skip = 0, fail = 0;
+  if (Array.isArray(j.gone)) await applyGone(j.gone);
+  if (j.looks && typeof j.looks === "object") { const cur = S.index.looks || {}; S.index.looks = Object.assign({}, cur); for (const [k, v] of Object.entries(j.looks)) if (v && typeof v === "object" && (!cur[k] || (v.upd || 0) > (cur[k].upd || 0))) S.index.looks[k] = v; }
   if (typeof j.me === "string" && j.me && !LS.get("rp.me")) LS.set("rp.me", j.me);
   if (j.imgs && typeof j.imgs === "object") for (const [id, d] of Object.entries(j.imgs)) { if (typeof d === "string" && d.startsWith("data:image/")) { try { await enqueue(() => S.store.setImg(id, d)); IMGS.set(id, d); } catch {} } }
   if (j.personas && typeof j.personas === "object") Object.entries(j.personas).forEach(([id, p]) => { if (typeof p === "string" && !LS.get("rp.persona." + id)) LS.set("rp.persona." + id, p); });
   for (const c0 of (Array.isArray(j.chars) ? j.chars : [])) {
-    if (!c0 || !c0.id || !c0.name) continue;
+    if (!c0 || !c0.id || !c0.name || isGone(c0.id, c0.updated)) continue;
     const c = normChar(c0); delete c.builtin; const cur = S.chars.get(c.id);
     if (cur && cur.builtin) continue;
     if (cur && (cur.updated || 0) >= (c.updated || 0)) { skip++; continue; }
@@ -1768,7 +1820,7 @@ async function importAllObj(j){
   }
   for (const it of (Array.isArray(j.stories) ? j.stories : [])) {
     const st = it && it.story;
-    if (!st || !st.id || !Array.isArray(st.messages) || !st.messages.length) continue;
+    if (!st || !st.id || !Array.isArray(st.messages) || !st.messages.length || isGone(st.id, st.updated)) continue;
     const meta = S.index.stories.find(x => x.id === st.id);
     if (meta && (meta.updated || 0) >= (st.updated || 0)) { skip++; continue; }
     try {
@@ -1780,7 +1832,7 @@ async function importAllObj(j){
       st.updated = st.updated || Date.now(); st.charName = st.charName || (S.chars.get(st.charId) || {}).name || "";
       await enqueue(() => S.store.setStory(st));
       if (it.ck && typeof it.ck.data === "string") { const ckv = {v:2, data: it.ck.data}; try { await enqueue(() => S.store.setCk(st.id, ckv)); } catch {} }
-      const m = {id: st.id, title: st.title, updated: st.updated, count: st.archived + st.messages.length, chunks: n, charId: st.charId, charName: st.charName};
+      const m = {id: st.id, title: st.title, updated: st.updated, count: st.archived + st.messages.length, chunks: n, charId: st.charId, charName: st.charName, parent: st.parent ? st.parent.id : null, from: st.parent ? st.parent.from : ""};
       const i = S.index.stories.findIndex(x => x.id === st.id); if (i >= 0) S.index.stories[i] = m; else S.index.stories.push(m);
       if (S.story && S.story.id === st.id) { S.story = st; dirty = false; S.old = null; CK.dirty = false; ckLoad(st); if (S.view === "chat") { renderLog(); refreshDerived(); } }
       ns++;
@@ -1792,7 +1844,8 @@ async function importAllObj(j){
   const parts = [];
   if (nc) parts.push(nc + (nc === 1 ? " personagem" : " personagens"));
   if (ns) parts.push(ns + (ns === 1 ? " história" : " histórias"));
-  impMsg((parts.length ? "Importado: " + parts.join(" e ") + "." : "Nada novo para importar.") + (skip ? " " + skip + " já estavam aqui iguais ou mais novos." : "") + (fail ? " " + fail + " não couberam ou deram erro." : ""));
+  if (!o.quiet) impMsg((parts.length ? "Importado: " + parts.join(" e ") + "." : "Nada novo para importar.") + (skip ? " " + skip + " já estavam aqui iguais ou mais novos." : "") + (fail ? " " + fail + " não couberam ou deram erro." : ""));
+  return {nc, ns};
 }
 async function copyText(text){
   try { await navigator.clipboard.writeText(text); toast("Texto copiado."); }
@@ -1829,7 +1882,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
-  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt(); bindLock(); bindVocab();
+  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt(); bindLock(); bindVocab(); bindSync(); bindPeople(); bindDiary(); bindLook(); bindTry();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
@@ -1849,12 +1902,14 @@ function bind(){
     else if (act === "play" && ch) showSetup(ch);
     else if (act === "quick" && ch) quickStart(ch);
     else if (act === "surprise" && ch) surpriseStart(ch);
+    else if (act === "look" && ch) { LOOKX.id = ch.id; openSheet("look"); }
     else if (act === "edit" && ch && !ch.builtin) openEditor(ch);
     else if (act === "dup" && ch) { const c = normChar(clean(ch)); delete c.builtin; c.name = ch.name + " (cópia)"; openEditor(null); D = Object.assign(c, {id: rid(), isNew:true}); renderEditor(); updateHeader(); }
     else if (act === "export" && ch) saveFile(slug(ch.name) + ".json", JSON.stringify(charToCard(ch), null, 2));
     else if (act === "del" && ch && !ch.builtin) {
       if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Excluir"; }, 4000); return; }
       try { await enqueue(() => S.store.delChar(ch.id)); } catch {}
+      markGone(ch.id, "char");
       S.chars.delete(ch.id); S.index.chars = S.index.chars.filter(x => x.id !== ch.id);
       try { await enqueue(() => S.store.setIndex(S.index)); } catch {}
       renderLibrary(); toast("Personagem excluído. As histórias dele continuam na lista, só para leitura.");
@@ -2084,28 +2139,13 @@ function swipeMsg(i, d){
   if (d < 0 && (m.ai || 0) <= 0) return;
   m.alts = alts; m.ai = (m.ai || 0) + d; m.text = m.alts[m.ai]; persist(); renderLog(); afterSwipe(i);
 }
-const VOICE = {on:null};
-function speak(i, btn){
-  const ss = window.speechSynthesis; if (!ss) return;
-  if (VOICE.on === i) { ss.cancel(); VOICE.on = null; renderLog(); return; }
-  ss.cancel();
-  const m = S.story.messages[i]; if (!m) return;
-  const text = m.text.replace(/\(\([\s\S]*?\)\)/g, "").replace(/[*_]/g, "").replace(/\[([^\]]*)\]/g, "$1").replace(/["“”]/g, "");
-  const lang = {pt:"pt-BR", en:"en-US", es:"es-ES"}[prefs.lang] || "pt-BR";
-  const u = new SpeechSynthesisUtterance(text); u.lang = lang;
-  const v = (ss.getVoices() || []).find(x => x.lang && x.lang.replace("_", "-").toLowerCase().startsWith(lang.toLowerCase().slice(0, 2)));
-  if (v) u.voice = v;
-  u.onend = u.onerror = () => { if (VOICE.on === i) { VOICE.on = null; if (S.view === "chat") renderLog(); } };
-  VOICE.on = i;
-  try { ss.speak(u); } catch { VOICE.on = null; toast("Este navegador não conseguiu ler em voz alta."); }
-  renderLog();
-}
 
 async function branchFrom(i){
   const st = S.story; if (!st || S.busy || i < 0) return;
   if (dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
   const nst = clean(st); nst.id = rid(); nst.created = nst.updated = Date.now();
   nst.title = st.title.replace(/ · ramo$/, "") + " · ramo";
+  nst.parent = {id: st.id, from: trunc(String(st.messages[i].text || "").replace(/[*"“”]/g, "").replace(/\s+/g, " ").trim(), 70)};
   nst.messages = clean(st.messages.slice(0, i + 1));
   let n = 0;
   try { for (let k = 1; k <= (st.archiveChunks || 0); k++) { const arc = await S.store.getArchive(st.id, k); n += 1; const kk = n; await enqueue(() => S.store.setArchive(nst.id, kk, arc)); } }
@@ -2750,7 +2790,7 @@ async function keeper(force, o = {}){
   const st = S.story; if (!st || !S.char || !hasAI() || AUX.keeping) return false;
   if (!st.messages.some(m => m.role === "assistant")) return false;
   const n = st.setup.name, c = S.char.name, fresh = !!o.fresh;
-  const tok = ckTok(st), vs = vocabOn() ? vocabSpec(st) : null;
+  const tok = ckTok(st), vs = vocabOn() ? vocabSpec(st) : null, ns = npcOn() ? npcSpec(st) : null;
   const prompt = `Você é o anotador de continuidade de um roleplay entre ${n} (jogador) e ${c} (${S.char.role === "narrator" ? "narrador que interpreta o mundo e todos os NPCs" : "personagem interpretado pelo narrador, junto com o mundo"}). ${fresh ? "Monte o ESTADO DA CENA do zero, só a partir da memória e das mensagens abaixo (anotações antigas foram descartadas porque podiam ter coisas de um caminho que o jogador desfez)" : "Atualize o ESTADO DA CENA a partir do estado atual e das mensagens recentes"}, e aponte fatos novos que merecem virar lore.
 
 ${fresh ? "" : "ESTADO ATUAL (JSON): " + JSON.stringify(st.state || {}) + "\n"}LORE JÁ EXISTENTE (nomes): ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}
@@ -2759,11 +2799,11 @@ MENSAGENS RECENTES:
 ${fresh ? recentLog(st, 40, 24000) : recentLog(st, 8, 10000)}
 
 Responda SOMENTE com um objeto JSON neste formato:
-{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]${vs ? vs.json : ""}}
-Cada campo do estado com no máximo 20 palavras (\"saber\" até 50, uma linha por fato); use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes${vocabOn() ? "" : ", palavras aprendidas"}) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.${vs ? "\n" + vs.rules : ""}`;
+{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]${vs ? vs.json : ""}${ns ? ns.json : ""}}
+Cada campo do estado com no máximo 20 palavras (\"saber\" até 50, uma linha por fato); use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes${vocabOn() ? "" : ", palavras aprendidas"}) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.${vs ? "\n" + vs.rules : ""}${ns ? "\n" + ns.rules : ""}`;
   AUX.keeping = true; renderScene();
   try {
-    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: (fresh ? 1400 : 900) + (vs ? 250 : 0)});
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: (fresh ? 1400 : 900) + (vs ? 250 : 0) + (ns ? 900 : 0)});
     const j = parseJSON(r.text);
     if (!ckValid(tok, st)) return false;
     if (fresh) st.sloreSug = [];
@@ -2786,6 +2826,7 @@ function applyKeeperJSON(st, j, fresh){
   const have = new Set(allLoreNames(st));
   const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
   st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
+  if (npcOn() && j && typeof j === "object" && !Array.isArray(j)) { applyNpcs(st, j.npcs); if (Array.isArray(j.boatos)) applyRumors(st, j.boatos); }
   st.keepN = 0; st.keepDue = false;
   renderScene();
 }
@@ -2809,6 +2850,7 @@ function afterReply(){
 function renderMemExtra(){
   const box = $("#mem-extra"); if (!box || !S.story) return;
   const st = S.story; box.textContent = "";
+  const dr = el("div", "actions"); const dbt = el("button", "btn ghost sm", "📜 Diário da história" + ((st.diary || []).length ? " · " + st.diary.length + (st.diary.length === 1 ? " capítulo" : " capítulos") : "")); dbt.type = "button"; dbt.dataset.px = "diary"; dr.append(dbt); box.append(dr);
   const a = el("div"); a.append(el("h4", "", "Estado da cena"));
   const s = st.state || {};
   STATE_FIELDS.forEach(([k, i, l]) => {
@@ -2844,6 +2886,7 @@ function renderMemExtra(){
   });
   if (sug.length || got.length) b.append(ul);
   box.append(b);
+  peopleEl(box, st);
 }
 function bindFeatures(){
   $("#b-ideas").addEventListener("click", showIdeas);
@@ -3136,7 +3179,7 @@ async function simStep(kind){
     applyTime(sim.player, 3, 0, carriedKg(sim) > CARRY_OK); if (npc) applyTime(sim.npc, 3, 0, false); advanceClock(sim.clock, 3);
     persist(); renderSimBar(); if (sheetName === "sim") renderSim(); ckMark(st, tok.key); return;
   }
-  const ks = due ? keeperSpec(st) : null;
+  const ks = due ? withNpc(keeperSpec(st), st) : null;
   const prompt = `Você é o motor de simulação de um roleplay. Leia a última troca e diga o que mudou, em JSON. Não invente nada que não esteja no texto.
 
 RELÓGIO ATUAL: ${clockText(sim.clock)}
@@ -3159,7 +3202,7 @@ Efeitos: só o que aconteceu na narração ou na ação. Exemplos: refeição co
 Operações de inventário (só para ${n}, e só se a ação ou a narração mostrar isso acontecendo): {"op":"add","name":"...","size":"P|M|G|GG","kg":número,"qty":1,"to":"maoD|maoE|maos|chao|nome do recipiente|auto","wear":"cabeca|torso|pernas|pes|costas|cintura (se for vestível)","cap":{"vol":n,"max":"P|M|G","kg":n} (se guardar coisas),"food":{"fome":n,"sede":n} (se for comida ou bebida)}; {"op":"remove","id":"...","qty":n} (comido, usado, entregue, perdido); {"op":"move","id":"...","to":"..."}; {"op":"wear","id":"..."}; {"op":"unwear","id":"...","to":"..."}. Tamanhos: P cabe no bolso (isqueiro, faca pequena); M ocupa uma mão (garrafa, peixe, camisa dobrada); G pede as duas mãos ou uma mochila grande (machado, lança, rede); GG é enorme (tronco, pessoa).`;
   try {
     if (due) { AUX.keeping = true; renderScene(); }
-    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: (due ? 1300 : 700) + (vs ? 250 : 0)});
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: (due ? 1300 + (npcOn() ? 900 : 0) : 700) + (vs ? 250 : 0)});
     const j = parseJSON(r.text);
     if (!j || typeof j !== "object" || Array.isArray(j)) return;
     if (!ckValid(tok, st)) return;
@@ -3424,6 +3467,9 @@ const CK_PARTS = {
   sug: st => st.sloreSug || [],
   vocab: st => (st.vocab || []).map(v => { const o = Object.assign({}, v); delete o.n; delete o.seen; return o; }),
   vocabN: st => { const o = {}; (st.vocab || []).forEach(v => { o[v.id] = v.n || 1; }); return o; },
+  npcs: st => st.npcs || [],
+  rumors: st => st.rumors || [],
+  diary: st => st.diary || [],
   simS: st => st.sim && st.sim.ready ? {clock: st.sim.clock, player: st.sim.player, npc: st.sim.npc, notes: st.sim.notes || []} : null,
   simI: st => st.sim && st.sim.ready ? st.sim.items || [] : null
 };
@@ -3439,6 +3485,7 @@ function ckApply(st, snap, pool){
   const vn = ckGet(pool, snap.vocabN, {}) || {};
   st.vocab = ckGet(pool, snap.vocab, []).map(v => Object.assign({}, v, {n: vn[v.id] || v.n || 1}));
   st.keepN = snap.keepN || 0; st.keepDue = !!snap.keepDue;
+  st.npcs = ckGet(pool, snap.npcs, []); st.rumors = ckGet(pool, snap.rumors, []); st.diary = ckGet(pool, snap.diary, []);
   if (st.sim) {
     const s = ckGet(pool, snap.simS, null), it = ckGet(pool, snap.simI, null);
     if (s && it) { st.sim.clock = s.clock; st.sim.player = s.player; st.sim.npc = s.npc; st.sim.notes = s.notes || []; st.sim.items = it; st.sim.ready = true; }
@@ -3788,6 +3835,615 @@ function bindVocab(){
   });
 }
 
+/* ---------- sincronizar pelo GitHub (Gist secreto, criptografado) ---------- */
+const SYNC_OK = !IN_CLAUDE && !!(window.crypto && crypto.subtle && window.fetch);
+const SY = {busy:false, timer:null, dirty:false, pulling:false, keys:new Map(), msg:"", lastPullTry:0};
+const GH = "https://api.github.com", SYNC_FILE = "mesa-rp.sync.json", SYNC_DESC = "Mesa de RP · sincronização (criptografada)";
+function syncCfg(){ try { return JSON.parse(LS.get("rp.sync") || "null"); } catch { return null; } }
+function syncSet(c){ if (c) LS.set("rp.sync", JSON.stringify(c)); else LS.del("rp.sync"); }
+const u8b64 = u8 => { let s = ""; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+const b64u8 = b => { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; };
+async function syncKey(pass, salt){
+  const id = salt + "|" + pass; if (SY.keys.has(id)) return SY.keys.get(id);
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  const k = await crypto.subtle.deriveKey({name:"PBKDF2", hash:"SHA-256", salt: b64u8(salt), iterations: 210000}, base, {name:"AES-GCM", length:256}, false, ["encrypt", "decrypt"]);
+  SY.keys.set(id, k); return k;
+}
+async function gzBytes(str){
+  if (!window.CompressionStream) return {gz:false, b: new TextEncoder().encode(str)};
+  const s = new Blob([str]).stream().pipeThrough(new CompressionStream("gzip"));
+  return {gz:true, b: new Uint8Array(await new Response(s).arrayBuffer())};
+}
+async function gunzip(b, gz){
+  if (!gz) return new TextDecoder().decode(b);
+  const s = new Blob([b]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return await new Response(s).text();
+}
+async function syncSeal(json, c){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const k = await syncKey(c.pass, c.salt); const z = await gzBytes(json);
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv}, k, z.b));
+  return JSON.stringify({app:"mesa-rp", v:1, gz:z.gz, salt:c.salt, iv:u8b64(iv), data:u8b64(ct)});
+}
+async function syncOpen(text, pass){
+  let env; try { env = JSON.parse(text); } catch { throw {code:"sync_bad"}; }
+  if (!env || env.app !== "mesa-rp" || !env.data) throw {code:"sync_bad"};
+  const k = await syncKey(pass, env.salt);
+  let plain; try { plain = new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv: b64u8(env.iv)}, k, b64u8(env.data))); } catch { throw {code:"sync_pass"}; }
+  return {obj: JSON.parse(await gunzip(plain, env.gz)), salt: env.salt};
+}
+async function gh(c, path, opts = {}){
+  let r;
+  try { r = await fetch(GH + path, Object.assign({}, opts, {headers: Object.assign({"Authorization": "Bearer " + c.token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}, opts.body ? {"Content-Type": "application/json"} : {})})); }
+  catch { throw {code:"sync_net"}; }
+  if (r.status === 401) throw {code:"sync_auth"};
+  if (r.status === 403 || r.status === 404) throw {code: r.status === 404 && path.startsWith("/gists/") ? "sync_gone" : "sync_scope"};
+  if (!r.ok) throw {code:"sync_http", status: r.status};
+  return r.json();
+}
+const SYNC_ERR = {sync_net:"Sem conexão com o GitHub agora.", sync_auth:"O GitHub recusou o token. Gere outro e conecte de novo.", sync_scope:"O token não tem permissão de Gist. Gere um token marcando “gist”.",
+  sync_gone:"O arquivo de sincronização sumiu do GitHub. Desconecte e conecte de novo.", sync_pass:"A senha de criptografia não abre os dados do GitHub. Use a mesma senha dos outros aparelhos.", sync_bad:"O arquivo no GitHub não é um backup da Mesa de RP.", sync_http:"O GitHub deu erro. Tente de novo em instantes."};
+const syncErrText = e => SYNC_ERR[e && e.code] || "Não consegui sincronizar agora.";
+async function gistFile(c, g){
+  g = g || await gh(c, "/gists/" + c.gist);
+  const f = g.files && g.files[SYNC_FILE]; if (!f) return {g, text:null};
+  let text = f.content;
+  if (f.truncated && f.raw_url) { try { const r = await fetch(f.raw_url); text = await r.text(); } catch { throw {code:"sync_net"}; } }
+  return {g, text};
+}
+function markGone(id, kind){ S.index.gone = (S.index.gone || []).filter(x => x.id !== id).concat([{id, kind: kind || "story", at: Date.now()}]).slice(-300); }
+function isGone(id, updated){ return (S.index.gone || []).some(g => g.id === id && (g.at || 0) >= (updated || 0)); }
+async function applyGone(list){
+  for (const g of list.slice(-300)) {
+    if (!g || !g.id) continue;
+    if (!(S.index.gone || []).some(x => x.id === g.id)) S.index.gone = (S.index.gone || []).concat([{id: g.id, kind: g.kind || "story", at: g.at || Date.now()}]).slice(-300);
+    if (g.kind === "char") {
+      const c = S.chars.get(g.id);
+      if (c && !c.builtin && (c.updated || 0) <= (g.at || 0)) { try { await enqueue(() => S.store.delChar(g.id)); } catch {} S.chars.delete(g.id); S.index.chars = S.index.chars.filter(x => x.id !== g.id); }
+    } else {
+      const m = S.index.stories.find(x => x.id === g.id);
+      if (m && (m.updated || 0) <= (g.at || 0)) {
+        try { await enqueue(() => S.store.delStory(m.id, m.chunks || 0)); } catch {}
+        S.index.stories = S.index.stories.filter(x => x.id !== g.id);
+        if (S.story && S.story.id === g.id) { S.story = null; S.char = null; if (sheetName) closeSheet(); showLibrary(); }
+      }
+    }
+  }
+}
+function syncAhead(obj){
+  const rs = new Map((obj.stories || []).map(x => [x && x.story && x.story.id, (x && x.story && x.story.updated) || 0]));
+  if (S.index.stories.some(m => !rs.has(m.id) || (m.updated || 0) > rs.get(m.id))) return true;
+  const rc = new Map((obj.chars || []).map(c => [c && c.id, (c && c.updated) || 0]));
+  return [...S.chars.values()].some(c => !c.builtin && (!rc.has(c.id) || (c.updated || 0) > rc.get(c.id)));
+}
+function syncDirty(){
+  if (!SYNC_OK || SY.pulling) return; const c = syncCfg(); if (!c || c.auto === false) return;
+  SY.dirty = true; clearTimeout(SY.timer); SY.timer = setTimeout(() => syncNow(false), 20000);
+}
+/* puxa o que mudou em outro aparelho e manda o que mudou aqui */
+async function syncNow(manual, o = {}){
+  const c = syncCfg(); if (!SYNC_OK || !c || SY.busy) return false;
+  SY.busy = true; clearTimeout(SY.timer); syncUI("Sincronizando…");
+  try {
+    const {g, text} = await gistFile(c);
+    let pulled = null, local = false;
+    if (text && g.updated_at !== c.seen) {
+      const {obj} = await syncOpen(text, c.pass);
+      local = syncAhead(obj);
+      SY.pulling = true;
+      try { if (dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); } pulled = await importAllObj(obj, {quiet:true}); }
+      finally { SY.pulling = false; }
+      c.lastPull = Date.now(); c.seen = g.updated_at;
+    }
+    if (!o.pullOnly && (SY.dirty || manual || !text || local)) {
+      SY.dirty = false;
+      const sealed = await syncSeal(await allJSON(), c);
+      const g2 = await gh(c, "/gists/" + c.gist, {method:"PATCH", body: JSON.stringify({files: {[SYNC_FILE]: {content: sealed}}})});
+      c.seen = g2.updated_at; c.lastPush = Date.now(); c.size = sealed.length;
+    }
+    syncSet(Object.assign(syncCfg() || {}, c, {err:""}));
+    const got = pulled && (pulled.ns || pulled.nc) ? "Chegou do outro aparelho: " + [pulled.ns ? pulled.ns + (pulled.ns === 1 ? " história" : " histórias") : "", pulled.nc ? pulled.nc + (pulled.nc === 1 ? " personagem" : " personagens") : ""].filter(Boolean).join(" e ") + "." : "";
+    if (got) { toast("☁️ " + got); if (S.view === "library") renderLibrary(); }
+    else if (manual) toast("☁️ Tudo sincronizado.");
+    return true;
+  } catch (e) {
+    const t = syncErrText(e); syncSet(Object.assign(syncCfg() || c, {err: t}));
+    if (manual) toast(t);
+    return false;
+  } finally { SY.busy = false; syncUI(""); }
+}
+async function syncConnect(token, pass){
+  const c = {token: token.trim(), pass, auto:true};
+  const me = await gh(c, "/user"); c.login = me.login || "";
+  let found = null;
+  for (let page = 1; page <= 5 && !found; page++) {
+    const list = await gh(c, "/gists?per_page=100&page=" + page);
+    found = list.find(x => x.files && x.files[SYNC_FILE]); if (list.length < 100) break;
+  }
+  if (found) {
+    c.gist = found.id;
+    const {text} = await gistFile(c);
+    if (text) { const {salt} = await syncOpen(text, pass); c.salt = salt; }
+  }
+  if (!c.salt) c.salt = u8b64(crypto.getRandomValues(new Uint8Array(16)));
+  if (!c.gist) {
+    const sealed = await syncSeal(await allJSON(), c);
+    const g = await gh(c, "/gists", {method:"POST", body: JSON.stringify({description: SYNC_DESC, public:false, files: {[SYNC_FILE]: {content: sealed}}})});
+    c.gist = g.id; c.seen = g.updated_at; c.lastPush = Date.now();
+  }
+  syncSet(c);
+  return !!found;
+}
+function syncUI(busyText){
+  const s = $("#sync-state"); if (!s) return;
+  const c = syncCfg(); if (!c) return;
+  const ago = t => { if (!t) return "nunca"; const m = Math.round((Date.now() - t) / 60000); return m < 1 ? "agora há pouco" : m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.round(m / 60) + " h" : fmtDate(t); };
+  s.textContent = busyText || (c.err ? "⚠ " + c.err : "Enviado " + ago(c.lastPush) + " · recebido " + ago(c.lastPull) + (c.size ? " · " + Math.max(1, Math.round(c.size / 1024)) + " KB" : ""));
+}
+function renderSync(){
+  const box = $("#sync-box"); if (!box) return; box.textContent = "";
+  if (!SYNC_OK) { box.append(el("p", "hint", IN_CLAUDE ? "Aqui dentro do Claude, tudo já fica guardado na sua conta e aparece em qualquer aparelho em que você abrir este app. A sincronização pelo GitHub existe no site; para levar daqui para lá, use Copiar tudo em Histórias." : "Este navegador não tem a criptografia necessária. Abra pelo site (https).")); return; }
+  const c = syncCfg();
+  const field = (label, id, type, ph) => { const w = el("div", "field"); const l = el("label", "", label); l.htmlFor = id; const i = el("input"); i.type = type; i.id = id; if (ph) i.placeholder = ph; i.autocomplete = "off"; i.spellcheck = false; w.append(l, i); return w; };
+  if (!c) {
+    box.append(el("p", "hint", "Guarda tudo (histórias, personagens, imagens, palavras) num arquivo secreto da sua conta do GitHub, criptografado com uma senha sua: nem o GitHub consegue ler. Celular, computador e outros navegadores ficam iguais, e se este navegador apagar os dados, nada se perde."));
+    const steps = el("ol", "steps");
+    const s1 = el("li"); const a = el("a", "", "Gere um token no GitHub"); a.href = "https://github.com/settings/tokens/new?scopes=gist&description=Mesa%20de%20RP"; a.target = "_blank"; a.rel = "noopener";
+    s1.append(a, document.createTextNode(" marcando só “gist” (validade: sem expiração ou a que preferir) e copie."));
+    steps.append(s1, el("li", "", "Cole o token aqui e escolha a senha de criptografia. Use a mesma senha em todos os aparelhos."));
+    box.append(steps);
+    box.append(field("Token do GitHub", "sy-token", "password", "ghp_…"), field("Senha de criptografia", "sy-p1", "password"), field("Repita a senha", "sy-p2", "password"));
+    const ac = el("div", "actions"); const b = el("button", "btn sm", "Conectar"); b.type = "button"; b.dataset.sy = "connect"; ac.append(b); box.append(ac);
+    const m = el("p", "hint"); m.id = "sy-msg"; m.hidden = true; m.style.color = "var(--danger)"; box.append(m);
+    box.append(el("p", "hint", "O token e a senha ficam só neste aparelho. Se esquecer a senha, os dados do GitHub não abrem; os deste aparelho continuam aqui."));
+    return;
+  }
+  box.append(el("p", "empty", "Conectado" + (c.login ? " como @" + c.login : "") + " · criptografado"));
+  const st = el("p", "hint"); st.id = "sync-state"; box.append(st); syncUI(SY.busy ? "Sincronizando…" : "");
+  const g = el("div", "seg"); box.append(g);
+  seg(g, [["on", "Automático"], ["off", "Só quando eu mandar"]], c.auto === false ? "off" : "on", id => { const x = syncCfg(); x.auto = id === "on"; syncSet(x); });
+  const ac = el("div", "actions");
+  const now = el("button", "btn sm", "Sincronizar agora"); now.type = "button"; now.dataset.sy = "now";
+  const off = el("button", "btn ghost sm danger", "Desconectar"); off.type = "button"; off.dataset.sy = "off";
+  ac.append(now, off); box.append(ac);
+  box.append(el("p", "hint", "No automático, o app manda as mudanças uns segundos depois de você jogar e confere o GitHub ao abrir ou voltar para o app. Se a mesma história mudou em dois aparelhos, fica a versão mais nova. Desconectar não apaga nada do GitHub."));
+}
+function bindSync(){
+  const box = $("#sync-box"); if (!box) return;
+  box.addEventListener("click", async e => {
+    const b = e.target.closest("[data-sy]"); if (!b) return; const a = b.dataset.sy;
+    const say = t => { const m = $("#sy-msg"); if (m) { m.textContent = t; m.hidden = !t; } };
+    if (a === "connect") {
+      const t = ($("#sy-token").value || "").trim(), p1 = $("#sy-p1").value || "", p2 = $("#sy-p2").value || "";
+      if (t.length < 20) { say("Cole o token completo do GitHub."); return; }
+      if (p1.length < 6) { say("A senha de criptografia precisa de pelo menos 6 caracteres."); return; }
+      if (p1 !== p2) { say("As duas senhas não são iguais."); return; }
+      b.disabled = true; b.textContent = "Conectando…"; say("");
+      try {
+        const had = await syncConnect(t, p1);
+        renderSync(); await syncNow(false);
+        toast(had ? "☁️ Conectado. Trouxe o que estava no GitHub e juntei com o deste aparelho." : "☁️ Conectado. Primeira cópia criptografada enviada ao GitHub.");
+      } catch (err) { b.disabled = false; b.textContent = "Conectar"; say(syncErrText(err)); }
+    }
+    else if (a === "now") { b.disabled = true; await syncNow(true); renderSync(); }
+    else if (a === "off") {
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
+      syncSet(null); SY.dirty = false; clearTimeout(SY.timer); renderSync(); toast("Desconectado. Os dados continuam aqui e no GitHub.");
+    }
+  });
+  document.addEventListener("visibilitychange", () => {
+    const c = syncCfg(); if (!SYNC_OK || !c || c.auto === false) return;
+    if (document.visibilityState === "hidden") { if (SY.dirty) syncNow(false); }
+    else if (Date.now() - SY.lastPullTry > 60000) { SY.lastPullTry = Date.now(); syncNow(false, {pullOnly: !SY.dirty}); }
+  });
+}
+
+/* ---------- pessoas da história (fichas de NPC), boatos e diário ---------- */
+const npcOn = () => prefs.npcs !== false;
+const NPC_F = [["aparencia", "Aparência"], ["jeito", "Jeito de falar e agir"], ["rotina", "Rotina (onde e quando costuma estar)"], ["sabe", "O que sabe (e o que não sabe)"], ["acha", "O que acha de você"], ["notas", "Notas"]];
+function npcSpec(st){
+  const n = st.setup.name, c = S.char ? S.char.name : st.charName;
+  const cur = trunc((st.npcs || []).map(p => p.name + ": " + [p.aparencia, p.jeito, p.rotina && "rotina " + p.rotina, p.sabe && "sabe " + p.sabe, p.acha && "acha de " + n + " " + p.acha].filter(Boolean).join("; ")).join("\n"), 3500) || "(nenhuma)";
+  const rum = (st.rumors || []).map(r => "- " + r.fato + " | sabem: " + (r.sabem || []).join(", ") + " | pode chegar: " + (r.pode || []).join(", ") + (r.como ? " | por: " + r.como : "")).join("\n") || "(nenhum)";
+  return {json: `,
+ "npcs": [criar ou atualizar fichas de pessoas com nome que aparecem ou são citadas (não inclua ${n}${c ? " nem " + c : ""}): {"nome":"...","aparencia":"...","jeito":"como fala e age","rotina":"onde costuma estar e quando","sabe":"o que sabe de importante e o que NÃO sabe","acha":"o que pensa de ${n}"}],
+ "boatos": [lista completa e atualizada: {"fato":"...","sabem":["quem já sabe"],"pode_chegar":["quem pode ficar sabendo"],"como":"por quem ou por onde corre","distorcao":"como pode chegar torcido"}]`,
+    rules: `Fichas atuais de NPCs:
+${cur}
+NPCs: no máximo 3 por vez, só quem apareceu ou mudou agora; cada campo até 25 palavras ("sabe" até 40); deixe "" o que não mudou; não invente nada que não esteja nas mensagens.
+Boatos atuais:
+${rum}
+Boatos: devolva a lista inteira (no máximo 6) só com fatos que podem correr de boca em boca e importam; quem viu ou ouviu em cena entra em "sabem"; quem ficou sabendo depois, em cena, passa de "pode_chegar" para "sabem"; tire os que já não importam; se não houver, [].`};
+}
+function withNpc(ks, st){ if (!ks || !npcOn()) return ks; const ns = npcSpec(st); return {json: ks.json + ns.json, rules: ks.rules + "\n" + ns.rules}; }
+function applyNpcs(st, list){
+  if (!Array.isArray(list) || !list.length) return;
+  const bad = new Set([vnorm(st.setup.name), vnorm(st.charName), ...castChars(st).map(x => vnorm(x.name))]);
+  const npcs = (st.npcs || []).slice();
+  for (const x of list.slice(0, 4)) {
+    if (!x || typeof x !== "object") continue;
+    const name = str(x.nome || x.name, 50); const k = vnorm(name); if (!k || bad.has(k)) continue;
+    const first = k.split(" ")[0];
+    let i = npcs.findIndex(q => vnorm(q.name) === k);
+    if (i < 0 && first.length > 2) i = npcs.findIndex(q => vnorm(q.name).split(" ")[0] === first);
+    if (i < 0) { if (npcs.length >= 40) continue; npcs.push({id: "p" + rid(), name}); i = npcs.length - 1; }
+    const p = Object.assign({}, npcs[i]);
+    if (name.length > p.name.length && vnorm(name).startsWith(vnorm(p.name))) p.name = name;
+    for (const [f] of NPC_F) { if (f === "notas") continue; const v = str(x[f], f === "sabe" ? 400 : 250); if (v && v !== "—" && v !== "-") p[f] = v; }
+    p.upd = Date.now(); npcs[i] = p;
+  }
+  st.npcs = npcs;
+}
+function applyRumors(st, list){
+  st.rumors = list.filter(r => r && typeof r === "object" && str(r.fato, 300)).slice(0, 6).map(r => {
+    const arr = v => (Array.isArray(v) ? v : String(v || "").split(/[,;]/)).map(x => str(String(x), 40)).filter(Boolean).slice(0, 12);
+    const old = (st.rumors || []).find(o => vnorm(o.fato) === vnorm(r.fato));
+    return {id: old ? old.id : "r" + rid(), fato: str(r.fato, 300), sabem: arr(r.sabem), pode: arr(r.pode_chegar || r.pode), como: str(r.como, 120), distorcao: str(r.distorcao, 120)};
+  });
+}
+function npcBlock(st){
+  const list = st.npcs || []; if (!list.length) return "";
+  const n = st.setup.name;
+  const hotText = st.messages.slice(-6).map(m => m.text).join("\n") + "\n" + ((st.state && st.state.presentes) || "") + "\n" + (st.rumors || []).map(r => (r.sabem || []).concat(r.pode || []).join(" ")).join(" ");
+  const hot = list.filter(p => vhas(hotText, p.name) || vhas(hotText, p.name.split(" ")[0])).slice(0, 8);
+  const rest = list.filter(p => !hot.includes(p));
+  const line = p => "- " + p.name + ": " + [p.aparencia, p.jeito && "jeito: " + p.jeito, p.rotina && "rotina: " + p.rotina, p.sabe && "sabe: " + p.sabe, p.acha && "acha de " + n + ": " + p.acha, p.notas].filter(Boolean).join("; ");
+  const out = ["PESSOAS DA HISTÓRIA (fichas de continuidade: mantenha aparência, jeito de falar, rotina e o que cada um sabe)"].concat(hot.map(line));
+  if (rest.length) out.push("Outras pessoas já conhecidas: " + rest.map(p => p.name).join(", ") + ".");
+  out.push("Rotinas valem: quem não estaria ali àquela hora não aparece sem motivo; se aparecer, a cena mostra por quê.");
+  return out.join("\n");
+}
+function rumorBlock(st){
+  const r = st.rumors || []; if (!r.length) return "";
+  return "BOATOS E NOTÍCIAS QUE PODEM CORRER (só chegam a alguém com tempo e por um caminho plausível, muitas vezes incompletos ou distorcidos; quem não está em “sabem” ainda não sabe)\n" +
+    r.map(x => "- " + x.fato + " · sabem: " + ((x.sabem || []).join(", ") || "—") + ((x.pode || []).length ? " · pode chegar a: " + x.pode.join(", ") : "") + (x.como ? " · por: " + x.como : "") + (x.distorcao ? " · pode chegar como: " + x.distorcao : "")).join("\n");
+}
+function peopleEl(box, st){
+  const w = el("div"); w.append(el("h4", "", "Pessoas da história"));
+  const list = st.npcs || [];
+  if (!list.length) w.append(el("p", "hint", npcOn() ? "Quando alguém com nome aparece, o app abre uma ficha: aparência, jeito de falar, rotina, o que sabe e o que acha de você. O narrador consulta para ninguém mudar de personalidade nem saber o que não viu." : "As fichas automáticas estão desligadas em Ajustes. Você ainda pode criar fichas à mão."));
+  const ul = el("ul", "slist");
+  list.forEach(p => {
+    const li = el("li"); const d = el("details", "pdet"); const sm = el("summary"); sm.append(el("b", "", p.name));
+    const sub2 = [p.rotina, p.acha].filter(Boolean).join(" · "); if (sub2) sm.append(el("small", "", trunc(sub2, 110)));
+    d.append(sm);
+    const f = el("div", "pform");
+    NPC_F.forEach(([k, l]) => f.append(fieldEl(k === "acha" ? "O que acha de " + st.setup.name : l, "np-" + k + "-" + p.id, "textarea", p[k] || "", {rows: k === "sabe" ? 3 : 2, max: 500})));
+    const ac = el("div", "acts2");
+    const sv = el("button", "btn sm", "Salvar"); sv.type = "button"; sv.dataset.px = "np-save"; sv.dataset.id = p.id;
+    const rm = el("button", "btn ghost sm danger", "Remover"); rm.type = "button"; rm.dataset.px = "np-del"; rm.dataset.id = p.id;
+    ac.append(sv, rm); f.append(ac); d.append(f); li.append(d); ul.append(li);
+  });
+  if (list.length) w.append(ul);
+  const add = el("div", "send-row"); add.style.marginTop = "10px";
+  const ni = el("input"); ni.type = "text"; ni.id = "np-new"; ni.placeholder = "Nome de uma pessoa"; ni.maxLength = 50; ni.className = "pin";
+  const nb = el("button", "btn ghost sm", "Adicionar"); nb.type = "button"; nb.dataset.px = "np-add";
+  add.append(ni, nb); w.append(add);
+  box.append(w);
+  const r = el("div"); r.append(el("h4", "", "Boatos"));
+  const rl = st.rumors || [];
+  if (!rl.length) r.append(el("p", "hint", "Fatos que podem correr de boca em boca aparecem aqui, com quem já sabe e quem pode ficar sabendo. O narrador só deixa a notícia chegar com tempo e por um caminho plausível, às vezes torcida."));
+  else {
+    const ul2 = el("ul", "slist");
+    rl.forEach(x => {
+      const li = el("li"); li.append(el("p", "", x.fato)); li.lastChild.style.margin = "0";
+      li.append(el("small", "", "Sabem: " + ((x.sabem || []).join(", ") || "—") + ((x.pode || []).length ? " · pode chegar a: " + x.pode.join(", ") : "") + (x.como ? " · por " + x.como : "")));
+      const ac = el("div", "acts2"); const b = el("button", "btn ghost sm", "Esquecer"); b.type = "button"; b.dataset.px = "rm-del"; b.dataset.id = x.id; ac.append(b); li.append(ac); ul2.append(li);
+    });
+    r.append(ul2);
+  }
+  box.append(r);
+}
+function bindPeople(){
+  $("#mem-extra").addEventListener("click", e => {
+    const b = e.target.closest("[data-px]"); if (!b || !S.story) return;
+    const st = S.story, a = b.dataset.px, id = b.dataset.id;
+    if (a === "np-save") {
+      const patch = {}; NPC_F.forEach(([k]) => { patch[k] = (($("#np-" + k + "-" + id) || {}).value || "").trim(); });
+      st.npcs = (st.npcs || []).map(p => p.id === id ? Object.assign({}, p, patch, {upd: Date.now()}) : p);
+      ckEditAll("npcs", a2 => a2.map(p => p.id === id ? Object.assign({}, p, patch) : p));
+      persist(); toast("Ficha salva.");
+    }
+    else if (a === "np-del") {
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
+      st.npcs = (st.npcs || []).filter(p => p.id !== id); ckEditAll("npcs", a2 => a2.filter(p => p.id !== id)); persist(); renderMemExtra();
+    }
+    else if (a === "np-add") {
+      const name = ($("#np-new").value || "").trim(); if (!name) { toast("Escreva o nome da pessoa."); return; }
+      if ((st.npcs || []).some(p => vnorm(p.name) === vnorm(name))) { toast("Já existe uma ficha com esse nome."); return; }
+      const p = {id: "p" + rid(), name: name.slice(0, 50), upd: Date.now()};
+      st.npcs = (st.npcs || []).concat([p]); ckEditAll("npcs", a2 => a2.some(q => q.id === p.id) ? a2 : a2.concat([p])); persist(); renderMemExtra();
+    }
+    else if (a === "rm-del") { st.rumors = (st.rumors || []).filter(x => x.id !== id); ckEditAll("rumors", a2 => a2.filter(x => x.id !== id)); persist(); renderMemExtra(); }
+    else if (a === "diary") openSheet("diary");
+  });
+}
+
+/* diário da história */
+const DIA = {busy:false, every:24};
+const diaryLast = st => (st.diary || []).reduce((a, c) => Math.max(a, c.to || 0), 0);
+function diaryDue(st){ return prefs.diary !== false && hasAI() && ((st.archived || 0) + st.messages.length) - diaryLast(st) >= DIA.every; }
+async function writeChapter(force){
+  const st = S.story; if (!st || !hasAI() || DIA.busy) return false;
+  const total = (st.archived || 0) + st.messages.length, last = diaryLast(st);
+  if (total - last < (force ? 4 : DIA.every)) { if (force) toast("Ainda há pouca coisa nova para um capítulo."); return false; }
+  const tok = ckTok(st); DIA.busy = true; if (sheetName === "diary") renderDiary();
+  try {
+    const all = await fullMessages();
+    const part = all.slice(last, total).filter(m => m.kind !== "cmd");
+    const c = S.char ? S.char.name : st.charName, n = st.setup.name, prev = (st.diary || []).slice(-1)[0], num = (st.diary || []).length + 1;
+    const log = part.map(m => (m.role === "assistant" ? c : n) + ": " + m.text).join("\n\n");
+    const prompt = `Você é o cronista de um roleplay entre ${n} (jogador) e ${c}. Escreva o capítulo ${num} do diário desta história, contando o que aconteceu nas mensagens abaixo.
+${prev ? "Capítulo anterior: " + prev.title + " — " + trunc(prev.text, 600) + "\n" : ""}
+MENSAGENS:
+${trunc(log, 22000)}
+
+Regras: título curto e evocativo (até 6 palavras); texto em prosa, terceira pessoa, no passado, de 120 a 220 palavras, só com o que de fato aconteceu: momentos marcantes, viradas, o clima e como a relação mudou; sem listas; no idioma das mensagens.
+Responda SOMENTE com JSON: {"titulo":"...","texto":"..."}`;
+    const r = await ask(prompt, {cache:false, modelTier:"default", maxTokens:900});
+    const j = parseJSON(r.text);
+    if (!ckValid(tok, st)) return false;
+    const title = str(j && j.titulo, 80) || "Capítulo " + num, text = str(j && j.texto, 3000);
+    if (!text) throw 0;
+    st.diary = (st.diary || []).concat([{id: "c" + rid(), n: num, title, text, from: last, to: total, at: Date.now()}]);
+    persist(); ckMark(st, tok.key);
+    toast("📜 Novo capítulo no diário: " + title);
+    return true;
+  } catch { if (force) toast("Não consegui escrever o capítulo agora."); return false; }
+  finally { DIA.busy = false; if (sheetName === "diary") renderDiary(); }
+}
+function diaryMd(st){
+  const c = S.char ? S.char.name : st.charName;
+  return ["# " + st.title, "", "_" + c + " · diário da história · " + fmtDate(Date.now()) + "_", ""].concat(...(st.diary || []).map(ch => ["## Capítulo " + ch.n + " · " + ch.title, "", ch.text, ""])).join("\n");
+}
+function renderDiary(){
+  const box = $("#diary-box"); if (!box) return; box.textContent = "";
+  const st = S.story; if (!st) return;
+  const list = st.diary || [];
+  const top = el("div");
+  top.append(el("p", "hint", (prefs.diary !== false ? "A cada " + DIA.every + " mensagens, o app escreve um capítulo com título e resumo do que aconteceu (uma consulta). " : "O diário automático está desligado em Ajustes. ") + "Voltar e Ramificar levam o diário junto, como o resto do estado."));
+  const ac = el("div", "actions"); ac.style.marginTop = "10px";
+  const w = el("button", "btn sm", DIA.busy ? "Escrevendo…" : "Escrever capítulo agora"); w.type = "button"; w.dataset.dx = "write"; w.disabled = DIA.busy || !hasAI();
+  const dl = el("button", "btn ghost sm", "Baixar como livro (.md)"); dl.type = "button"; dl.dataset.dx = "dl"; dl.disabled = !list.length;
+  ac.append(w, dl);
+  if (list.length) { const rm = el("button", "btn ghost sm danger", "Apagar último capítulo"); rm.type = "button"; rm.dataset.dx = "pop"; ac.append(rm); }
+  top.append(ac); box.append(top);
+  if (!list.length) { box.append(el("p", "empty", "Nenhum capítulo ainda.")); return; }
+  list.forEach(ch => { const a = el("article", "chap"); a.append(el("small", "", "Capítulo " + ch.n), el("h3", "", ch.title), el("p", "", ch.text)); box.append(a); });
+}
+function bindDiary(){
+  $("#diary-box").addEventListener("click", async e => {
+    const b = e.target.closest("[data-dx]"); if (!b || !S.story) return; const st = S.story;
+    if (b.dataset.dx === "write") writeChapter(true);
+    else if (b.dataset.dx === "dl") saveFile("diario-" + slug(st.title) + ".md", diaryMd(st));
+    else if (b.dataset.dx === "pop") {
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
+      st.diary = (st.diary || []).slice(0, -1); persist(); ckMark(st); renderDiary();
+    }
+  });
+  $("#b-diary").addEventListener("click", () => openSheet("diary"));
+}
+
+/* ---------- rosto e voz: expressões por humor e vozes por personagem ---------- */
+const MOODS = [
+  {k:"feliz", ic:"😊", l:"Feliz", re:/sorri|sorriso|\bri\b|riu|rindo|gargalh|risad|alegr|feliz|content|smil|laugh|grin/gi, en:"genuinely smiling, eyes crinkled with joy"},
+  {k:"bravo", ic:"😠", l:"Bravo", re:/raiva|furios|irrit|rosn|grit|berr|cerra|franze|fecha a cara|range os dentes|angry|glare|snarl/gi, en:"angry, furrowed brows, tense jaw"},
+  {k:"triste", ic:"😢", l:"Triste", re:/lágrima|lagrima|chor|trist|soluç|abatid|cabisbaix|luto|\bsad\b|tears|\bcr(?:y|ies|ied)\b/gi, en:"sad, downcast eyes, eyes slightly teary"},
+  {k:"desconfiado", ic:"🤨", l:"Desconfiado", re:/desconfi|estreita os olhos|olhos estreitos|semicerr|suspeit|cautelos|wary|suspicious|narrow/gi, en:"suspicious, narrowed eyes, head slightly tilted"},
+  {k:"surpreso", ic:"😮", l:"Surpreso", re:/arregal|surpres|espant|susto|boquiab|assustad|surpris|startl|gasp/gi, en:"surprised, wide eyes, lips parted"},
+  {k:"carinhoso", ic:"🥰", l:"Carinhoso", re:/carinh|ternur|abraç|afag|beij|gentil|doçura|tender|gentle|\bhug/gi, en:"warm and tender look, soft smile"}
+];
+const LOOKX = {id:null, mood:null};
+function lookOf(id){ return ((S.index && S.index.looks) || {})[id] || {}; }
+function setLook(id, patch){
+  S.index.looks = Object.assign({}, S.index.looks || {}); S.index.looks[id] = Object.assign({}, lookOf(id), patch, {upd: Date.now()});
+  enqueue(() => S.store.setIndex(S.index)).catch(() => {});
+}
+function moodOf(text){
+  const paras = String(text || "").split(/\n{2,}/); let best = null, bs = 0;
+  for (const m of MOODS) {
+    let s = 0; paras.forEach((p, i) => { s += (p.match(m.re) || []).length * (i === paras.length - 1 ? 2 : 1); });
+    if (s > bs) { bs = s; best = m.k; }
+  }
+  return best;
+}
+function moodAvatar(ch, m, extra){
+  const s = avatarEl(ch, extra); if (!ch || !ch.id || !m || m.role !== "assistant") return s;
+  const mood = moodOf(m.text), id = mood && (lookOf(ch.id).expr || {})[mood]; if (!id) return s;
+  const set = d => { if (!d) return; s.style.backgroundImage = 'url("' + d + '")'; s.classList.remove("ini", "zoom"); s.textContent = ""; };
+  if (IMGS.has(id)) set(IMGS.get(id)); else imgData(id).then(set);
+  s.title = MOODS.find(x => x.k === mood).l; return s;
+}
+function lastTauMsg(){ const st = S.story; if (!st) return null; const i = lastAssistantIdx(); return i >= 0 ? st.messages[i] : null; }
+function exprPrompt(ch, m){
+  const who = trunc(String(ch.description || "").replace(/\{\{char\}\}/gi, ch.name).replace(/\{\{user\}\}/gi, "the other person").replace(/\s+/g, " "), 700);
+  return `Bust portrait of ${ch.name}. Same face, age, skin tone, hair, outfit, framing, lighting and art style as the reference portrait (use the main portrait as the image reference). Expression: ${m.en}. Plain neutral background, looking at the viewer, no text, no watermark.\nCharacter notes (Portuguese): ${who}`;
+}
+
+/* vozes */
+const TTS_LANG = {pt:"pt-BR", en:"en-US", es:"es-ES", fr:"fr-FR", de:"de-DE", it:"it-IT"};
+const LANG_HINTS = {
+  fr: /\b(je|tu|vous|nous|c'est|est|suis|êtes|pas|ne|le|la|les|des|une|et|qui|mon|ma|ton|ça|oui|non|merci|bonjour|avec|pour|dans|au|aux|mais|très|bien|où|il|elle)\b/gi,
+  en: /\b(the|you|is|are|and|what|my|your|not|yes|this|that|with|for|it|of|to|i'm|don't|will|have)\b/gi,
+  es: /\b(usted|qué|está|estoy|sí|pero|muy|los|las|una|por|para|con|y|el|es|mi|tu|bueno|gracias|señor|hola|yo)\b/gi,
+  pt: /\b(você|não|sim|está|estou|uma|para|com|e|o|os|é|meu|seu|mas|muito|isso|eu|obrigad[oa]|tá|né|vou|aqui)\b/gi
+};
+function guessLang(t, base){
+  const sc = {}; for (const [k, re] of Object.entries(LANG_HINTS)) sc[k] = (t.match(re) || []).length;
+  if (/[èëîïôûœù]|\bà\b/i.test(t)) sc.fr += 2; if (/[ãõ]/i.test(t)) sc.pt += 2; if (/[ñ¿¡]/.test(t)) sc.es += 2;
+  let best = base, bs = sc[base] || 0;
+  for (const k of Object.keys(sc)) if (sc[k] > bs) { bs = sc[k]; best = k; }
+  return best;
+}
+function speechParts(text, base){
+  const out = [], t = String(text).replace(/\(\([\s\S]*?\)\)/g, " ");
+  const push = (s, kind) => { s = s.replace(/[*_]/g, "").replace(/\[([^\]]*)\]/g, "$1").replace(/\s+/g, " ").trim(); if (s) out.push({s, kind, lang: kind === "fala" ? guessLang(s, base) : base}); };
+  const re = /\*([^*]+)\*|["“]([^"”]+)["”]/g; let last = 0, m;
+  while ((m = re.exec(t))) { if (m.index > last) push(t.slice(last, m.index), "nar"); if (m[1] != null) push(m[1], "nar"); else push(m[2], "fala"); last = re.lastIndex; }
+  if (last < t.length) push(t.slice(last), "nar");
+  return out;
+}
+function voiceFor(code){
+  const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || []; const want = (TTS_LANG[code] || code).toLowerCase();
+  const ok = v => v.lang && v.lang.replace("_", "-").toLowerCase();
+  return vs.find(v => ok(v) === want && /google|natural|neural/i.test(v.name)) || vs.find(v => ok(v) === want) || vs.find(v => ok(v) && ok(v).startsWith(want.slice(0, 2)));
+}
+const VOICE = {on:null};
+function speak(i){
+  const ss = window.speechSynthesis; if (!ss) return;
+  if (VOICE.on === i) { ss.cancel(); VOICE.on = null; renderLog(); return; }
+  ss.cancel();
+  const m = S.story && S.story.messages[i]; if (!m) return;
+  const base = prefs.lang || "pt", L = (S.char && lookOf(S.char.id).voice) || {};
+  const vs = ss.getVoices() || []; const byURI = u => u ? vs.find(v => v.voiceURI === u) : null;
+  const parts = speechParts(m.text, base); if (!parts.length) return;
+  VOICE.on = i; let left = parts.length;
+  const done = () => { if (--left <= 0 && VOICE.on === i) { VOICE.on = null; if (S.view === "chat") renderLog(); } };
+  parts.forEach(p => {
+    const u = new SpeechSynthesisUtterance(p.s); let v = null;
+    if (p.kind === "fala") { v = p.lang !== base ? voiceFor(p.lang) : null; if (!v) v = byURI(L.fal); u.rate = Number(L.rate) || 1; u.pitch = Number(L.pitch) || 1; }
+    else v = byURI(L.nar);
+    if (!v) v = voiceFor(p.kind === "fala" ? p.lang : base);
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = TTS_LANG[p.lang] || "pt-BR";
+    u.onend = u.onerror = done;
+    try { ss.speak(u); } catch { done(); }
+  });
+  renderLog();
+}
+
+/* painel Rosto e voz */
+function renderLook(){
+  const box = $("#look-box"); if (!box) return; box.textContent = "";
+  const ch = S.chars.get(LOOKX.id); if (!ch) { box.append(el("p", "empty", "Personagem não encontrado.")); return; }
+  const L = lookOf(ch.id), ex = L.expr || {};
+  const a = el("div"); a.append(el("h4", "", "Expressões de " + ch.name));
+  a.append(el("p", "hint", "Na conversa, o retrato muda sozinho conforme o tom de cada resposta (sorriso, raiva, lágrimas…). Envie uma imagem para cada humor; o que ficar vazio usa o retrato normal. Para gerar as imagens, copie o prompt e use o retrato principal como referência no gerador, para o rosto ficar igual."));
+  const grid = el("div", "xgrid");
+  MOODS.forEach(m => {
+    const c = el("div", "xcell"); const th = el("div", "xth");
+    if (ex[m.k]) imgData(ex[m.k]).then(d => { if (d) { th.style.backgroundImage = 'url("' + d + '")'; th.textContent = ""; } });
+    th.textContent = m.ic; c.append(th, el("b", "", m.l));
+    const ac = el("div", "acts2");
+    const mk = (t, act, cls) => { const b = el("button", cls || "btn ghost sm", t); b.type = "button"; b.dataset.lx = act; b.dataset.k = m.k; ac.append(b); };
+    mk(ex[m.k] ? "Trocar" : "Enviar", "up", ex[m.k] ? "btn ghost sm" : "btn sm"); if (ex[m.k]) mk("Tirar", "rm"); mk("Prompt", "pr");
+    c.append(ac); grid.append(c);
+  });
+  a.append(grid);
+  const aa = el("div", "actions"); aa.style.marginTop = "10px"; const all = el("button", "btn ghost sm", "Copiar todos os prompts"); all.type = "button"; all.dataset.lx = "all"; aa.append(all); a.append(aa);
+  box.append(a);
+  const v = el("div"); v.append(el("h4", "", "Voz no “Ouvir”"));
+  const voices = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+  if (!window.speechSynthesis) { v.append(el("p", "hint", "Este navegador não lê em voz alta.")); box.append(v); return; }
+  const opts = [["", "Automática"]].concat(voices.slice().sort((x, y) => (y.lang || "").startsWith("pt") - (x.lang || "").startsWith("pt") || (x.lang || "").localeCompare(y.lang || "")).map(x => [x.voiceURI, x.name + " (" + x.lang + ")"]));
+  const r = el("div", "row");
+  r.append(fieldEl("Voz da narração", "lv-nar", "select", L.voice ? L.voice.nar || "" : "", {options: opts}), fieldEl("Voz das falas de " + ch.name, "lv-fal", "select", L.voice ? L.voice.fal || "" : "", {options: opts}));
+  v.append(r);
+  const sl = (label, id, min, max, val) => { const w = el("div", "field"); const lb = el("label", "", label); lb.htmlFor = id; const i = el("input"); i.type = "range"; i.id = id; i.min = min; i.max = max; i.step = "0.05"; i.value = val; i.className = "sadj"; w.append(lb, i); return w; };
+  const r2 = el("div", "row"); r2.append(sl("Velocidade das falas", "lv-rate", 0.6, 1.5, (L.voice && L.voice.rate) || 1), sl("Tom das falas (grave ↔ agudo)", "lv-pitch", 0.5, 1.6, (L.voice && L.voice.pitch) || 1)); v.append(r2);
+  const ac = el("div", "actions"); const t = el("button", "btn ghost sm", "Testar voz"); t.type = "button"; t.dataset.lx = "test"; ac.append(t); v.append(ac);
+  v.append(el("p", "hint", voices.length ? "Falas em outro idioma (francês, inglês, espanhol…) são lidas com uma voz daquele idioma quando o aparelho tem uma, então o francês do Ousmane sai com sotaque de verdade. Mais vozes: nas configurações de texto para fala do celular." : "As vozes deste aparelho ainda estão carregando. Feche e abra este painel de novo."));
+  box.append(v);
+}
+function bindLook(){
+  const box = $("#look-box");
+  const saveVoice = () => { const id = LOOKX.id; if (!id) return; setLook(id, {voice: {nar: $("#lv-nar").value, fal: $("#lv-fal").value, rate: Number($("#lv-rate").value), pitch: Number($("#lv-pitch").value)}}); };
+  box.addEventListener("change", e => { if (/^lv-/.test(e.target.id)) saveVoice(); });
+  box.addEventListener("click", async e => {
+    const b = e.target.closest("[data-lx]"); if (!b) return; const ch = S.chars.get(LOOKX.id); if (!ch) return;
+    const a = b.dataset.lx, m = MOODS.find(x => x.k === b.dataset.k);
+    if (a === "up" && m) { LOOKX.mood = m.k; pickFile($("#f-expr"), "image/*"); }
+    else if (a === "rm" && m) { const ex = Object.assign({}, lookOf(ch.id).expr || {}); delete ex[m.k]; setLook(ch.id, {expr: ex}); renderLook(); softRenderLog(); }
+    else if (a === "pr" && m) copyText(exprPrompt(ch, m));
+    else if (a === "all") copyText(MOODS.map(x => x.l.toUpperCase() + "\n" + exprPrompt(ch, x)).join("\n\n"));
+    else if (a === "test") {
+      saveVoice(); const L = lookOf(ch.id).voice || {}; const ss = window.speechSynthesis; ss.cancel();
+      const vs = ss.getVoices(); const pick = u => vs.find(v => v.voiceURI === u);
+      const n1 = new SpeechSynthesisUtterance("A noite cai devagar sobre a cena."); const vn = pick(L.nar) || voiceFor(prefs.lang || "pt"); if (vn) { n1.voice = vn; n1.lang = vn.lang; }
+      const n2 = new SpeechSynthesisUtterance("Eu sou " + ch.name + ". Chegue mais perto."); const vf = pick(L.fal) || voiceFor(prefs.lang || "pt"); if (vf) { n2.voice = vf; n2.lang = vf.lang; } n2.rate = L.rate || 1; n2.pitch = L.pitch || 1;
+      ss.speak(n1); ss.speak(n2);
+    }
+  });
+  $("#f-expr").addEventListener("change", async e => {
+    const f = e.target.files[0]; e.target.value = ""; const ch = S.chars.get(LOOKX.id); if (!f || !ch || !LOOKX.mood) return;
+    try {
+      const data = await fileToJpeg(f, 480, 0.8); const id = "x" + rid();
+      await enqueue(() => S.store.setImg(id, data)); IMGS.set(id, data);
+      setLook(ch.id, {expr: Object.assign({}, lookOf(ch.id).expr || {}, {[LOOKX.mood]: id})});
+      renderLook(); softRenderLog(); if (S.view === "chat") updateHeader(); toast("Expressão salva.");
+    } catch { toast("Não consegui usar essa imagem."); }
+  });
+  if (window.speechSynthesis) speechSynthesis.addEventListener && speechSynthesis.addEventListener("voiceschanged", () => { if (sheetName === "look") renderLook(); });
+  $("#look-entry").addEventListener("click", e => { if (e.target.closest("[data-act=look]") && S.char) { LOOKX.id = S.char.id; openSheet("look"); } });
+}
+function renderLookEntry(){
+  const box = $("#look-entry"); if (!box) return; box.textContent = "";
+  if (S.char && S.view === "chat") { const b = el("button", "btn ghost sm", "Expressões e voz de " + S.char.name); b.type = "button"; b.dataset.act = "look"; box.append(b); }
+  else box.append(el("p", "hint", "No cartão de cada personagem, na biblioteca, toque em “Rosto e voz”: retratos por humor que trocam sozinhos e a voz do “Ouvir”."));
+}
+
+/* ---------- testar o personagem antes de jogar ---------- */
+const TRY = {msgs:[], busy:false, review:null, rbusy:false};
+function tryEl(){
+  const s = el("div", "sect"); s.id = "try-sect"; s.append(el("h3", "", "Testar antes de jogar"));
+  s.append(el("p", "note", "Converse um pouco com o personagem sem salvar nada, ou peça para a IA apontar o que está vago ou contraditório na ficha."));
+  const ra = el("div", "actions");
+  const rv = el("button", "btn ghost sm", TRY.rbusy ? "Revisando…" : "Revisar ficha com a IA"); rv.type = "button"; rv.dataset.ty = "review"; rv.disabled = TRY.rbusy || !hasAI();
+  ra.append(rv); s.append(ra);
+  if (TRY.review && TRY.review.length) {
+    const ul = el("ul", "slist");
+    TRY.review.forEach(x => { const li = el("li"); li.append(el("b", "", str(x.onde, 60) || "Ficha"), el("p", "", str(x.problema, 400))); li.lastChild.style.margin = "0"; if (x.sugestao) li.append(el("small", "", "Sugestão: " + str(x.sugestao, 500))); ul.append(li); });
+    s.append(ul);
+  }
+  const box = el("div", "trychat"); box.id = "try-log";
+  if (!TRY.msgs.length) box.append(el("p", "hint", "A primeira abertura entra como começo da cena. Escreva como o jogador e veja se o personagem soa do jeito que você quer."));
+  TRY.msgs.forEach(m => { const d = el("div", "tmsg " + (m.role === "assistant" ? "tau" : "you")); d.innerHTML = fmt(m.text); box.append(d); });
+  if (TRY.busy) box.append(el("p", "wait", "escrevendo…"));
+  s.append(box);
+  const row = el("div", "send-row"); const ta = el("textarea"); ta.id = "try-in"; ta.rows = 2; ta.className = "pin"; ta.placeholder = "Sua ação ou fala de teste";
+  const go = el("button", "btn sm", "Enviar"); go.type = "button"; go.dataset.ty = "send"; go.disabled = TRY.busy || !hasAI();
+  row.append(ta, go); s.append(row);
+  if (TRY.msgs.length) { const a2 = el("div", "actions"); const rs = el("button", "txt", "Recomeçar o teste"); rs.type = "button"; rs.dataset.ty = "reset"; a2.append(rs); s.append(a2); }
+  if (!hasAI()) s.append(el("p", "hint", IN_CLAUDE ? "O Claude precisa estar disponível para testar." : "Escolha um modelo em Modelo para testar."));
+  return s;
+}
+function tryRender(){ const o = $("#try-sect"); if (o) { const keep = ($("#try-in") || {}).value || ""; o.replaceWith(tryEl()); const n = $("#try-in"); if (n) n.value = keep; const lg = $("#try-log"); if (lg) lg.scrollTop = lg.scrollHeight; } }
+async function trySend(){
+  const ta = $("#try-in"); const t = ((ta && ta.value) || "").trim(); if (!t || TRY.busy || !hasAI() || !D) return;
+  collectDraft(); const ch = normChar(clean(D)); if (!ch.name) ch.name = "Personagem";
+  const pn = (ch.persona && ch.persona.name) || "Alex";
+  if (!TRY.msgs.length && ch.openings[0] && ch.openings[0].text) TRY.msgs.push({role:"assistant", text: sub(ch.openings[0].text, pn, ch.name)});
+  TRY.msgs.push({role:"user", text: t}); ta.value = ""; TRY.busy = true; tryRender();
+  const st = {id:"try", charName: ch.name, setup: Object.assign({}, GENERIC_PERSONA, ch.persona), messages: TRY.msgs.map((m, k) => ({id:"t" + k, role: m.role, text: m.text})), memory:"", notes:"", slore:[], cast:[], archived:0};
+  try {
+    const built = buildTurns(st, ch, st.messages.length);
+    const r = await ask(built.turns, {cache:false, modelTier: prefs.mode, maxTokens: 900});
+    TRY.msgs.push({role:"assistant", text: r.text.trim()});
+  } catch (e) { TRY.msgs.pop(); toast("O teste não respondeu: " + errText(e)); }
+  finally { TRY.busy = false; tryRender(); }
+}
+async function tryReview(){
+  if (TRY.rbusy || !hasAI() || !D) return; collectDraft();
+  TRY.rbusy = true; tryRender();
+  const prompt = `Você revisa fichas de personagens de roleplay para que uma IA consiga interpretá-los bem. Leia a ficha e aponte de 3 a 6 problemas concretos: partes vagas demais, contradições entre campos, trechos que levam a IA a escrever pelo jogador ou a resolver tudo rápido, aberturas que decidem pelo jogador, lore duplicada ou que contradiz a descrição, falta de motivação ou de voz própria. Para cada um, diga onde está e uma correção curta e prática. Se a ficha estiver boa, aponte só o que ainda melhoraria. Escreva em português.
+
+FICHA (JSON):
+${trunc(sheetText(normChar(clean(D))), 24000)}
+
+Responda SOMENTE com um array JSON: [{"onde":"campo","problema":"até 30 palavras","sugestao":"até 40 palavras"}]`;
+  try { const r = await ask(prompt, {cache:false, modelTier:"default", maxTokens:1200}); TRY.review = asList(parseJSON(r.text), "x").filter(x => x && x.problema).slice(0, 6); if (!TRY.review.length) toast("A IA não achou problemas claros."); }
+  catch { toast("Não consegui revisar agora."); }
+  finally { TRY.rbusy = false; tryRender(); }
+}
+function bindTry(){
+  $("#ed-body").addEventListener("click", e => {
+    const b = e.target.closest("[data-ty]"); if (!b) return;
+    if (b.dataset.ty === "send") trySend();
+    else if (b.dataset.ty === "review") tryReview();
+    else if (b.dataset.ty === "reset") { TRY.msgs = []; tryRender(); }
+  });
+  $("#ed-body").addEventListener("keydown", e => { if (e.target.id === "try-in" && e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); trySend(); } });
+}
+
 /* ---------- modelos e API (cópia fora do Claude) ---------- */
 const FONTS_URL = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=Spline+Sans+Mono:wght@400..600&display=swap";
 const PRESETS = [
@@ -4128,6 +4784,7 @@ async function boot(){
   catch { S.store = mkLocalStore(); S.localNote = true; try { S.index = await loadIx(); } catch { S.index = {lastId:null, stories:[], chars:[]}; } }
   await loadChars();
   showLibrary(); refreshAI(); detectImages();
+  if (SYNC_OK && syncCfg() && syncCfg().auto !== false) setTimeout(() => { SY.lastPullTry = Date.now(); syncNow(false); }, 1200);
   if (!IN_CLAUDE && location.hash === "#importar") { try { history.replaceState(null, "", location.pathname + location.search); } catch {} openSheet("stories"); impMsg("Toque em “Colar e importar” para trazer o que você copiou na versão do Claude."); }
   if (!IN_CLAUDE && !LS_OK) toast("Este navegador não está guardando dados desta página: o que você fizer some ao fechar. Veja as dicas em Modelo.");
 }
