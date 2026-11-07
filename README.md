@@ -5,3 +5,7 @@ App de roleplay plug-and-play: personagens, lorebook, memória automática e res
 Abra em https://lshamann.github.io/mesa-de-rp/ e instale na tela inicial pelo menu do navegador.
 
 Histórias, personagens e chaves de API ficam só no navegador de quem usa; nada disso vai para este repositório.
+
+## Para continuar o desenvolvimento
+
+O código-fonte está em `fonte/` (`sh fonte/build.sh` gera o site e as outras versões). Ideias, pendências e pedidos ficam em [IDEIAS.md](IDEIAS.md): é por ali que qualquer conversa nova continua de onde parou.
