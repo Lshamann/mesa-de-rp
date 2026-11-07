@@ -211,6 +211,21 @@ html.locked #app>:not(#lock),html.veil #app>:not(#lock){visibility:hidden}
 .scene{flex:none;display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--muted);font:500 12px/1.4 var(--f-mono);text-align:left;padding-block:7px}
 .scene .s{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .scene .n{flex:none;color:var(--ochre)}
+.vw{text-decoration:underline dotted;text-decoration-color:var(--ochre);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:help}
+.vlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.vlist li{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface);display:flex;flex-direction:column;gap:4px;min-width:0}
+.vlist .vh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;min-width:0}
+.vlist .vw-w{font:700 17px/1.3 var(--f-display);color:var(--fg);overflow-wrap:anywhere;min-width:0}
+.vlist .vm{margin:0;font:400 15px/1.45 var(--f-body);color:var(--nar)}
+.vlist small{font:400 12px/1.4 var(--f-mono);color:var(--faint)}
+.vlist .acts2{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.vlv{flex:none;font:600 10.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:4px 7px}
+.vlv.l0{color:var(--ochre)}.vlv.l1{color:var(--accent)}.vlv.l2{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+.vcard{border:1px solid var(--accent);border-radius:14px;background:var(--surface);padding:26px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.vcard b{font:700 30px/1.2 var(--f-display);color:var(--fg);overflow-wrap:anywhere;max-width:100%}
+.vcard .vm{margin:0;font:400 18px/1.45 var(--f-body);color:var(--nar)}
+.vcard small{font:400 12px/1.4 var(--f-mono);color:var(--faint)}
+.vcard .hint{margin:0}
 .ideas{display:flex;flex-direction:column;gap:6px;align-items:stretch}
 .simbar{flex:none;display:flex;align-items:center;gap:8px;width:100%;border:0;border-bottom:1px solid var(--line);background:var(--bg);color:var(--muted);font:500 11px/1.2 var(--f-mono);padding-block:6px;text-align:left;overflow:hidden}
 .simbar .clk{flex:none;color:var(--fg)}
@@ -355,6 +370,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <button class="chip" type="button" id="b-img" title="Mostrar uma imagem na cena" hidden>📷 Imagem</button>
           <button class="chip" type="button" id="b-ideas" title="Três sugestões do que fazer agora">💡 Ideias</button>
           <button class="chip" type="button" id="b-tr" aria-expanded="false" aria-controls="trmenu" title="Traduz as falas que você escreveu entre aspas">🌐 Traduzir ▾</button>
+          <button class="chip" type="button" id="b-vocab" title="Palavras de outros idiomas que os personagens aprenderam nesta história" hidden>📖 Palavras</button>
           <button class="chip" type="button" id="b-polish" title="Deixa sua ação mais viva e bem formatada, sem mudar o que você decidiu">✨ Melhorar</button>
           <button class="chip" type="button" id="b-cont" title="Deixa a cena seguir sem uma ação sua">Continuar</button>
           <span class="pop"><button class="chip" type="button" id="b-time" aria-expanded="false" aria-controls="timemenu">Avançar tempo ▾</button></span>
@@ -389,7 +405,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
             <button class="btn ghost sm" type="button" id="b-copy-json">Copiar backup</button>
             <button class="btn ghost sm" type="button" id="b-copy">Copiar texto</button>
           </div>
-          <p class="hint">O backup guarda a história inteira, as mensagens antigas e o personagem. “Copiar backup” serve quando o download não funciona: cole o texto em outro aparelho.</p>
+          <p class="hint">O backup guarda a história inteira, as mensagens antigas, o personagem, as palavras aprendidas e os pontos de volta do estado. “Copiar backup” serve quando o download não funciona: cole o texto em outro aparelho.</p>
         </div>
         <div>
           <h4>Tudo de uma vez</h4>
@@ -397,7 +413,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
             <button class="btn ghost sm" type="button" id="b-all-json">Baixar tudo (.json)</button>
             <button class="btn ghost sm" type="button" id="b-all-copy">Copiar tudo</button>
           </div>
-          <p class="hint">Junta todas as histórias (com memória, estado da cena e ficha da simulação) e todos os seus personagens e o seu “Você” num arquivo só. Chaves de API ficam de fora. Serve para levar tudo entre a versão do Claude e a versão com API, ou para outro aparelho: lá, use Restaurar. Importar de novo não duplica nada; só traz o que for mais novo.</p>
+          <p class="hint">Junta todas as histórias (com memória, estado da cena, ficha da simulação, palavras aprendidas e pontos de volta) e todos os seus personagens e o seu “Você” num arquivo só. Chaves de API ficam de fora. Serve para levar tudo entre a versão do Claude e a versão com API, ou para outro aparelho: lá, use Restaurar. Importar de novo não duplica nada; só traz o que for mais novo.</p>
         </div>
         <div>
           <h4>Restaurar</h4>
@@ -418,6 +434,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         </div>
         <div id="mem-extra" style="display:flex;flex-direction:column;gap:22px"></div>
       </div>
+      <div class="content" id="sh-vocab" hidden><div id="vocab-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
@@ -429,7 +446,8 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <div><h4>Nota de cena</h4><textarea class="big" id="notes" style="min-height:96px" placeholder="Ex.: mais tensão, ritmo lento, mais humor seco. Vale só para esta história."></textarea></div>
         <div><h4>Lore ativada</h4><div class="seg" id="seg-lore"></div><p class="hint">Mostra, abaixo de cada resposta, quais entradas do lorebook entraram na consulta.</p></div>
         <div><h4>Simulação em histórias novas</h4><div class="seg" id="seg-sim"></div><p class="hint">Status (fome, sede, energia, higiene, necessidades), relógio e inventário realista. Dá para ligar ou desligar em cada história, na Ficha.</p></div>
-        <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens e relação a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra.</p></div>
+        <div><h4>Estado da cena automático</h4><div class="seg" id="seg-keeper"></div><p class="hint">Anota lugar, hora, corpo, itens, relação e quem sabe o quê a cada 3 respostas e sugere lore nova. Usa uma consulta curta extra. Voltar, Regerar, trocar de versão e Ramificar levam esse estado junto.</p></div>
+        <div><h4>Dicionário de palavras</h4><div class="seg" id="seg-vocab"></div><p class="hint">Guarda as palavras de outros idiomas que os personagens aprendem de verdade em cena (alguém ensina ou explica) e faz o narrador respeitar o que cada um entende. Vai junto das consultas da simulação e do estado da cena; sem elas, só consulta quando a cena tem cara de aula.</p></div>
         <div><h4>Tradução</h4><div class="seg" id="seg-treng"></div><p class="hint" id="treng-hint">Quem traduz as falas das respostas quando você toca em Traduzir.</p></div>
         <div><h4>Tradutor offline</h4><div id="bmt-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
         <div><h4>Uso</h4><p class="hint" id="usage" style="margin:0"></p></div>
@@ -497,7 +515,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:true};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:true, vocab:true};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -518,9 +536,11 @@ function mkLocalStore(){
     async setIndex(v){ s("rp.index", v); },
     async getStory(id){ return g("rp.story." + id); },
     async setStory(st){ s("rp.story." + st.id, st); },
+    async getCk(id){ return g("rp.ck." + id); },
+    async setCk(id, v){ s("rp.ck." + id, v); },
     async getArchive(id, n){ const a = g("rp.arch." + id + "." + n); return a ? a.messages : []; },
     async setArchive(id, n, m){ s("rp.arch." + id + "." + n, {n, messages:m}); },
-    async delStory(id, count){ for (let n = 1; n <= count; n++) LS.del("rp.arch." + id + "." + n); LS.del("rp.story." + id); },
+    async delStory(id, count){ for (let n = 1; n <= count; n++) LS.del("rp.arch." + id + "." + n); LS.del("rp.story." + id); LS.del("rp.ck." + id); },
     async getChar(id){ return g("rp.char." + id); },
     async getImg(id){ const v = g("rp.img." + id); return v ? v.data : null; },
     async setImg(id, data){ s("rp.img." + id, {data}); },
@@ -533,15 +553,18 @@ function mkDbStore(db, uid){
   const stories = base.collection("stories");
   const chars = base.collection("chars");
   const arch = (id, n) => stories.doc(id).collection("archive").doc("c" + n);
+  const ckd = id => stories.doc(id).collection("meta").doc("ck");
   return {
     kind:"db",
     async getIndex(){ const s = await base.get(); return s.exists ? clean(s.data()) : null; },
     async setIndex(v){ await base.set(clean(v)); },
     async getStory(id){ const s = await stories.doc(id).get(); return s.exists ? clean(s.data()) : null; },
     async setStory(st){ await stories.doc(st.id).set(clean(st)); },
+    async getCk(id){ const s = await ckd(id).get(); return s.exists ? clean(s.data()) : null; },
+    async setCk(id, v){ await ckd(id).set(clean(v)); },
     async getArchive(id, n){ const s = await arch(id, n).get(); return s.exists ? clean(s.data().messages) : []; },
     async setArchive(id, n, m){ await arch(id, n).set({n, messages: clean(m)}); },
-    async delStory(id, count){ for (let n = 1; n <= count; n++) await arch(id, n).delete(); await stories.doc(id).delete(); },
+    async delStory(id, count){ try { await ckd(id).delete(); } catch {} for (let n = 1; n <= count; n++) await arch(id, n).delete(); await stories.doc(id).delete(); },
     async getChar(id){ const s = await chars.doc(id).get(); return s.exists ? clean(s.data()) : null; },
     async getImg(id){ const s = await base.collection("imgs").doc(id).get(); return s.exists ? s.data().data : null; },
     async setImg(id, data){ await base.collection("imgs").doc(id).set({data}); },
@@ -555,6 +578,13 @@ function enqueue(fn){ const p = saving.then(fn); saving = p.catch(() => {}); ret
 function persist(now){
   dirty = true; clearTimeout(saveTimer);
   saveTimer = setTimeout(() => { enqueue(() => flush()); }, now ? 0 : 500);
+}
+function freeCkSpace(keepId){
+  let n = 0; const mine = "rp.ck." + keepId;
+  try { for (const k of Object.keys(localStorage)) if (k.startsWith("rp.ck.") && k !== mine) { localStorage.removeItem(k); n++; } } catch {}
+  for (const k of [...MEMLS.keys()]) if (k.startsWith("rp.ck.") && k !== mine) { MEMLS.delete(k); n++; }
+  if (!n && LS.get(mine)) { LS.del(mine); CK.map = {}; CK.pool = {}; n++; }
+  return n > 0;
 }
 async function fallbackToLocal(){
   S.store = mkLocalStore(); S.localNote = true;
@@ -572,8 +602,10 @@ async function flush(retried){
     if (i >= 0) ix.stories[i] = meta; else ix.stories.push(meta);
     ix.lastId = st.id;
     await S.store.setIndex(ix);
+    try { await ckSave(st); } catch {}
   } catch (e) {
     if (S.store.kind === "db" && !retried) { await fallbackToLocal(); dirty = true; return flush(true); }
+    if (S.store.kind === "local" && !retried && e && e.code === "local_full" && freeCkSpace(st.id)) { dirty = true; return flush(true); }
     toast("Não consegui salvar esta história. Baixe um backup em Histórias.");
   }
 }
@@ -677,7 +709,7 @@ function header(st, ch, loreHead){
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, mem, stateBlock(st), simBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, mem, stateBlock(st), simBlock(st), vocabBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -878,7 +910,8 @@ function newStory(ch, setup){
 }
 function openStory(st){
   S.story = st; S.char = S.chars.get(st.charId) || null; S.index.lastId = st.id; S.old = null; S.error = null; S.editing = null;
-  showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene(); SIMX.open = null; renderSimBar();
+  ckLoad(st); VOC.rev = null;
+  showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene(); SIMX.open = null; renderSimBar(); updateVocabChip();
   if (simOn(st) && !st.sim.ready && hasAI() && st.messages.some(m => m.role === "assistant")) simInit();
   if (st.messages.length <= 1) $("#log").scrollTop = 0; else toBottom();
   if (!S.char) showBanner("O personagem desta história foi excluído. Você pode ler e exportar, mas não continuar."); else showBanner(hasAI() ? "" : noAIText());
@@ -904,7 +937,7 @@ function msgNode(m, i){
     return art;
   }
   if (m.imgId) art.append(imgEl(m.imgId));
-  const body = el("div", "body"); body.innerHTML = m.imgId && m.text === "[imagem]" ? "" : fmt(m.text); art.append(body);
+  const body = el("div", "body"); body.innerHTML = m.imgId && m.text === "[imagem]" ? "" : fmt(m.text); markVocab(body, st); art.append(body);
   if (m.cut) art.append(el("div", "cutnote", "Resposta interrompida. Use Continuar ou Regerar."));
   if (!S.busy) {
     const a = el("div", "acts");
@@ -1010,11 +1043,21 @@ async function generate(kind){
   if (S.busy || !hasAI() || !S.story || !S.char) return;
   const st = S.story;
   S.error = null; S.lastGen = kind;
-  let upto = st.messages.length, liveAt = null;
+  let upto = st.messages.length, liveAt = null, oldKey = null, hadOld = true;
   if (kind === "regen") { liveAt = lastAssistantIdx(); if (liveAt < 1) return; upto = liveAt; }
   else if (!lastIsUser()) return;
-  const built = buildTurns(st, S.char, upto);
   setBusy(true);
+  const key0 = ckCurrentKey(st);
+  if (kind === "regen") {
+    await CK.ready;
+    if (CK.sid === st.id) {
+      oldKey = ckKey(st.messages[liveAt]); hadOld = !!CK.map[oldKey];
+      if (!hadOld) ckMark(st, oldKey);
+      const pre = ckFind(st, liveAt, false);
+      if (pre) { ckApply(st, pre); refreshDerived(); }
+    }
+  }
+  const built = buildTurns(st, S.char, upto);
   const ctl = new AbortController(); S.ctl = ctl;
   const live = makeLive(); S.live = live;
   renderLog({liveAt}); toBottom();
@@ -1042,7 +1085,12 @@ async function generate(kind){
   renderLog(); persist();
   if (!failed) await compact(false);
   setBusy(false); renderLog();
-  if (!failed) { afterReply(); simAfterReply(kind); }
+  const changed = ckCurrentKey(st) !== key0;
+  if (oldKey && CK.sid === st.id) {
+    if (!changed && CK.map[oldKey]) { ckApply(st, CK.map[oldKey]); refreshDerived(); persist(); }
+    else if (changed && !hadOld) delete CK.map[oldKey];
+  }
+  if (!failed && changed) { afterReply(); simAfterReply(kind); ckMark(st); }
 }
 async function send(text, label){
   if (S.busy || !hasAI() || !S.char) return;
@@ -1577,23 +1625,26 @@ async function importBackupObj(j){
   st.id = rid(); let n = 0;
   for (const ch of chunkBySize(arc, 150000)) { n += 1; await S.store.setArchive(st.id, n, ch); }
   st.archiveChunks = n; st.archived = arc.length;
+  if (j.ck && typeof j.ck.data === "string") { try { await S.store.setCk(st.id, {v:2, data: j.ck.data}); } catch {} }
   closeSheet(); openStory(st); toast("Backup importado.");
 }
 async function backupJSON(){
   const st = S.story; const msgs = await fullMessages(); const arc = msgs.slice(0, msgs.length - st.messages.length);
   const payload = {format:"mesa-rp-v1", story:st, archive:arc}; if (S.char && !S.char.builtin) payload.character = S.char;
+  try { const ck = await ckExport(st); if (ck && typeof ck.data === "string") payload.ck = ck; } catch {}
   return JSON.stringify(payload);
 }
 
 /* ---------- painéis ---------- */
 let sheetName = null, lastFocus = null;
-const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha"};
+const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha", vocab:"Palavras"};
 async function openSheet(name){
   if (name === "memory" && !S.story) { toast("Abra uma história para usar a memória."); return; }
   if (name === "sim" && !S.story) { toast("Abra uma história para ver a ficha."); return; }
+  if (name === "vocab" && !S.story) { toast("Abra uma história para ver as palavras."); return; }
   if (name === "stories" && dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
   lastFocus = document.activeElement; sheetName = name;
-  ["stories", "memory", "settings", "models", "sim"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
+  ["stories", "memory", "settings", "models", "sim", "vocab"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
   $("#sheet-title").textContent = SHEET_TITLES[name];
   $("#sheet").hidden = false;
   if (name === "stories") renderStories();
@@ -1601,6 +1652,7 @@ async function openSheet(name){
   if (name === "models") renderModels();
   if (name === "memory") renderMemExtra();
   if (name === "sim") renderSim();
+  if (name === "vocab") renderVocab();
   if (name === "settings") { renderSettings(); $("#notes").value = S.story ? S.story.notes || "" : ""; $("#notes").disabled = !S.story; }
   $("#b-close").focus();
 }
@@ -1626,6 +1678,7 @@ function renderSettings(){
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
   seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim !== false ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
+  seg($("#seg-vocab"), [["on", "Ligado"], ["off", "Desligado"]], prefs.vocab !== false ? "on" : "off", id => { prefs.vocab = id === "on"; savePrefs(); updateVocabChip(); });
   if (BMT_OK) seg($("#seg-treng"), [["ia", "IA (melhor)"], ["off", "Offline (Bergamot)"]], prefs.trEngine === "off" ? "off" : "ia", id => { prefs.trEngine = id; savePrefs(); });
   $("#seg-treng").parentElement.hidden = !BMT_OK; renderBmt();
   renderLockSettings(); renderMe(); const ut = $("#usage"); if (ut) ut.textContent = usageText();
@@ -1683,12 +1736,14 @@ async function transcript(){
 }
 async function allJSON(){
   if (dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
+  if (CK.dirty && S.story) { const cur = S.story; await enqueue(() => ckSave(cur)); }
   const stories = [];
   for (const meta of S.index.stories) {
     try {
       const st = await S.store.getStory(meta.id); if (!st) continue;
       let arc = []; for (let n = 1; n <= (st.archiveChunks || 0); n++) { try { arc = arc.concat(await S.store.getArchive(st.id, n)); } catch {} }
-      stories.push({story: st, archive: arc});
+      let ck = null; try { ck = await S.store.getCk(st.id); } catch {}
+      stories.push(ck && typeof ck.data === "string" ? {story: st, archive: arc, ck} : {story: st, archive: arc});
     } catch {}
   }
   const chars = [...S.chars.values()].filter(c => !c.builtin);
@@ -1724,9 +1779,10 @@ async function importAllObj(j){
       st.archiveChunks = n; st.archived = arc.length; st.memory = st.memory || ""; st.notes = st.notes || ""; st.title = st.title || "História importada";
       st.updated = st.updated || Date.now(); st.charName = st.charName || (S.chars.get(st.charId) || {}).name || "";
       await enqueue(() => S.store.setStory(st));
+      if (it.ck && typeof it.ck.data === "string") { const ckv = {v:2, data: it.ck.data}; try { await enqueue(() => S.store.setCk(st.id, ckv)); } catch {} }
       const m = {id: st.id, title: st.title, updated: st.updated, count: st.archived + st.messages.length, chunks: n, charId: st.charId, charName: st.charName};
       const i = S.index.stories.findIndex(x => x.id === st.id); if (i >= 0) S.index.stories[i] = m; else S.index.stories.push(m);
-      if (S.story && S.story.id === st.id) { S.story = st; dirty = false; S.old = null; if (S.view === "chat") renderLog(); }
+      if (S.story && S.story.id === st.id) { S.story = st; dirty = false; S.old = null; CK.dirty = false; ckLoad(st); if (S.view === "chat") { renderLog(); refreshDerived(); } }
       ns++;
     } catch { fail++; }
   }
@@ -1773,7 +1829,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
-  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt(); bindLock();
+  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt(); bindLock(); bindVocab();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
@@ -1897,25 +1953,32 @@ function bind(){
   $("#b-time").addEventListener("click", () => { tm.hidden = !tm.hidden; $("#b-time").setAttribute("aria-expanded", String(!tm.hidden)); });
   document.addEventListener("click", e => { if (!tm.hidden && !e.target.closest(".pop")) { tm.hidden = true; $("#b-time").setAttribute("aria-expanded", "false"); } });
   $("#msgs").addEventListener("click", async e => {
+    const vwEl = e.target.closest(".vw"); if (vwEl && !e.target.closest("[data-act]")) { vocabTap(vwEl.textContent); return; }
     const b = e.target.closest("[data-act]"); if (!b || !S.story) return;
     const act = b.dataset.act, i = Number(b.dataset.i), st = S.story;
     if (act === "edit") { S.editing = i; renderLog(); const t = $("#editor"); if (t) { t.focus(); t.style.height = Math.min(t.scrollHeight + 4, 360) + "px"; } }
     else if (act === "cancel-edit") { S.editing = null; renderLog(); }
     else if (act === "save-edit") {
-      const v = $("#editor").value.trim(); if (v) { const m = st.messages[i]; m.text = v; if (m.alts) m.alts[m.ai] = v; persist(); }
+      const v = $("#editor").value.trim(); let redo = false;
+      if (v) { const m = st.messages[i]; redo = v !== m.text && m.role === "assistant" && i === lastAssistantIdx(); m.text = v; if (m.alts) m.alts[m.ai] = v; persist(); }
       S.editing = null; renderLog();
+      if (redo) afterEdit(i);
     }
-    else if (act === "swipe") { const m = st.messages[i]; m.ai = Math.max(0, Math.min(m.alts.length - 1, m.ai + Number(b.dataset.d))); m.text = m.alts[m.ai]; persist(); renderLog(); }
+    else if (act === "swipe") { const m = st.messages[i]; m.ai = Math.max(0, Math.min(m.alts.length - 1, m.ai + Number(b.dataset.d))); m.text = m.alts[m.ai]; persist(); renderLog(); afterSwipe(i); }
     else if (act === "regen") generate("regen");
     else if (act === "speak") speak(i, b);
     else if (act === "undo") {
-      const idx = lastAssistantIdx(); if (idx < 1) return;
-      simUndoLast();
+      await CK.ready;
+      const idx = lastAssistantIdx(); if (idx < 1 || S.story !== st) return;
+      const pre = CK.sid === st.id ? ckFind(st, idx, false) : null;
+      const had = !!(st.state || (st.sim && st.sim.ready) || vocabOf(st).length);
+      if (pre) ckApply(st, pre); else { CK.epoch++; simUndoLast(); }
       const prev = st.messages[idx - 1];
       st.messages.splice(prev && prev.role === "user" ? idx - 1 : idx);
       S.error = null;
       if (prev && prev.role === "user" && prev.kind !== "cmd") { ta.value = prev.text; autosize(); ta.focus(); }
-      persist(); renderLog();
+      persist(); renderLog(); refreshDerived();
+      if (!pre && had) toast("Resposta desfeita. Esta história ainda não tinha ponto de volta para o estado da cena aqui; se algo ficou errado, use Memória → Recalcular do zero.");
     }
     else if (act === "retry") { S.error = null; generate(S.lastGen); }
     else if (act === "planb") {
@@ -2019,7 +2082,7 @@ function swipeMsg(i, d){
   const alts = m.alts || [m.text];
   if (d > 0 && (m.ai || 0) >= alts.length - 1) { if (i === lastAssistantIdx() && i > 0 && S.char && hasAI()) generate("regen"); return; }
   if (d < 0 && (m.ai || 0) <= 0) return;
-  m.alts = alts; m.ai = (m.ai || 0) + d; m.text = m.alts[m.ai]; persist(); renderLog();
+  m.alts = alts; m.ai = (m.ai || 0) + d; m.text = m.alts[m.ai]; persist(); renderLog(); afterSwipe(i);
 }
 const VOICE = {on:null};
 function speak(i, btn){
@@ -2047,10 +2110,23 @@ async function branchFrom(i){
   let n = 0;
   try { for (let k = 1; k <= (st.archiveChunks || 0); k++) { const arc = await S.store.getArchive(st.id, k); n += 1; const kk = n; await enqueue(() => S.store.setArchive(nst.id, kk, arc)); } }
   catch { toast("Não consegui copiar as mensagens antigas para o ramo."); return; }
-  nst.archiveChunks = n; nst.keepN = 0;
-  if (nst.sim) { nst.sim.snap = null; nst.sim.notes = []; }
+  nst.archiveChunks = n;
+  await CK.ready;
+  const snap = CK.sid === st.id ? ckFind(st, i, true) : null;
+  if (snap) ckApply(nst, snap, CK.pool);
+  else {
+    const later = new Set(st.messages.slice(i + 1).map(m => m.id));
+    nst.state = undefined; nst.sloreSug = []; nst.keepN = 0; nst.keepDue = false;
+    nst.vocab = vocabOf(nst).filter(v => v.manual || !later.has(v.at));
+    if (nst.sim) { nst.sim.ready = false; nst.sim.items = []; nst.sim.notes = []; nst.sim.snap = null; }
+  }
+  if (CK.sid === st.id) {
+    const ck = {pool: Object.assign({}, CK.pool), map: clean(CK.map)}; ckPrune(ck, nst.messages, n > 0);
+    const data = ckData(ck); try { await enqueue(() => S.store.setCk(nst.id, data)); } catch {}
+  }
   openStory(nst); persist(true);
-  toast("Ramo criado a partir dessa mensagem. A história original continua em Histórias.");
+  if (!snap && hasAI() && S.char && nst.messages.some(m => m.role === "assistant")) keeper(false, {fresh:true});
+  toast("Ramo criado a partir dessa mensagem, com o estado da cena daquele ponto. A história original continua em Histórias.");
 }
 
 /* ---------- imagens ---------- */
@@ -2668,28 +2744,33 @@ function renderScene(){
 }
 function allLoreNames(st){
   const ch = S.char || {lore:[]};
-  return [...(ch.lore || []), ...(st.slore || []), ...(st.sloreSug || [])].map(e => (e.name || "").toLowerCase().trim()).filter(Boolean);
+  return [...(ch.lore || []), ...(st.slore || []), ...(st.sloreSug || [])].map(e => (e.name || "").toLowerCase().trim()).concat((st.sloreSkip || []).map(x => String(x).toLowerCase().trim())).filter(Boolean);
 }
-async function keeper(force){
+async function keeper(force, o = {}){
   const st = S.story; if (!st || !S.char || !hasAI() || AUX.keeping) return false;
   if (!st.messages.some(m => m.role === "assistant")) return false;
-  const n = st.setup.name, c = S.char.name;
-  const prompt = `Você é o anotador de continuidade de um roleplay entre ${n} (jogador) e ${c} (${S.char.role === "narrator" ? "narrador que interpreta o mundo e todos os NPCs" : "personagem interpretado pelo narrador, junto com o mundo"}). Atualize o ESTADO DA CENA a partir do estado atual e das mensagens recentes, e aponte fatos novos que merecem virar lore.
+  const n = st.setup.name, c = S.char.name, fresh = !!o.fresh;
+  const tok = ckTok(st), vs = vocabOn() ? vocabSpec(st) : null;
+  const prompt = `Você é o anotador de continuidade de um roleplay entre ${n} (jogador) e ${c} (${S.char.role === "narrator" ? "narrador que interpreta o mundo e todos os NPCs" : "personagem interpretado pelo narrador, junto com o mundo"}). ${fresh ? "Monte o ESTADO DA CENA do zero, só a partir da memória e das mensagens abaixo (anotações antigas foram descartadas porque podiam ter coisas de um caminho que o jogador desfez)" : "Atualize o ESTADO DA CENA a partir do estado atual e das mensagens recentes"}, e aponte fatos novos que merecem virar lore.
 
-ESTADO ATUAL (JSON): ${JSON.stringify(st.state || {})}
-LORE JÁ EXISTENTE (nomes): ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}
-${st.memory ? "MEMÓRIA DA HISTÓRIA:\n" + trunc(st.memory, 2500) + "\n" : ""}
+${fresh ? "" : "ESTADO ATUAL (JSON): " + JSON.stringify(st.state || {}) + "\n"}LORE JÁ EXISTENTE (nomes): ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}
+${st.memory ? "MEMÓRIA DA HISTÓRIA:\n" + trunc(st.memory, fresh ? 5000 : 2500) + "\n" : ""}
 MENSAGENS RECENTES:
-${recentLog(st, 8, 10000)}
+${fresh ? recentLog(st, 40, 24000) : recentLog(st, 8, 10000)}
 
 Responda SOMENTE com um objeto JSON neste formato:
-{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]}
-Cada campo do estado com no máximo 20 palavras (\"saber\" até 50, uma linha por fato); use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes, palavras aprendidas) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.`;
+{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]${vs ? vs.json : ""}}
+Cada campo do estado com no máximo 20 palavras (\"saber\" até 50, uma linha por fato); use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes${vocabOn() ? "" : ", palavras aprendidas"}) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.${vs ? "\n" + vs.rules : ""}`;
   AUX.keeping = true; renderScene();
   try {
-    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:900});
-    applyKeeperJSON(st, parseJSON(r.text));
-    if (S.story === st) { persist(); if (sheetName === "memory") renderMemExtra(); }
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: (fresh ? 1400 : 900) + (vs ? 250 : 0)});
+    const j = parseJSON(r.text);
+    if (!ckValid(tok, st)) return false;
+    if (fresh) st.sloreSug = [];
+    applyKeeperJSON(st, j, fresh);
+    if (vs) { const li = lastAssistantIdx(); applyVocab(st, j && j.vocab, li >= 0 ? st.messages[li].id : null, st.messages.slice(fresh ? -40 : -8).map(m => m.text).join("\n")); }
+    persist(); ckMark(st, tok.key);
+    if (sheetName === "memory") renderMemExtra();
     if (force) toast("Estado da cena atualizado.");
     return true;
   } catch (err) {
@@ -2697,11 +2778,11 @@ Cada campo do estado com no máximo 20 palavras (\"saber\" até 50, uma linha po
     return false;
   } finally { AUX.keeping = false; renderScene(); }
 }
-function applyKeeperJSON(st, j){
+function applyKeeperJSON(st, j, fresh){
   const e = j && typeof j === "object" && !Array.isArray(j) ? (j.estado || j.state || {}) : {};
   const next = {};
   STATE_FIELDS.forEach(([k]) => { next[k] = str(e[k], k === "saber" ? 900 : 300); });
-  if (STATE_FIELDS.some(([k]) => filled(next[k]))) st.state = next;
+  if (fresh || STATE_FIELDS.some(([k]) => filled(next[k]))) st.state = next;
   const have = new Set(allLoreNames(st));
   const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
   st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
@@ -2713,14 +2794,17 @@ function keeperSpec(st){
   return {json: `,
  "estado": {"lugar":"onde a cena está agora","hora":"momento do dia ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, roupas relevantes","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "relações de " + n + " com os NPCs importantes" : "relação e confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},
  "lore": [no máximo 2 fatos NOVOS e duradouros: {"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras"}]`,
-    rules: `Estado: cada campo com no máximo 20 palavras (\"saber\" até 50, uma linha por fato, mantendo os fatos antigos que continuam valendo), considerando a memória e o estado anterior (${JSON.stringify(st.state || {})}); use "—" quando não houver informação. Lore: só pessoas com nome, lugares, combinados, objetos importantes ou palavras aprendidas que apareceram agora e não estão em: ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}; se não houver, []. Escreva no idioma das mensagens.`};
+    rules: `Estado: cada campo com no máximo 20 palavras (\"saber\" até 50, uma linha por fato, mantendo os fatos antigos que continuam valendo), considerando a memória e o estado anterior (${JSON.stringify(st.state || {})}); use "—" quando não houver informação. Lore: só pessoas com nome, lugares, combinados${vocabOn() ? " ou objetos importantes" : ", objetos importantes ou palavras aprendidas"} que apareceram agora e não estão em: ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}; se não houver, []. Escreva no idioma das mensagens.`};
 }
 function afterReply(){
   const st = S.story; if (!st) return;
+  vocabCount(st);
   st.keepN = (st.keepN || 0) + 1;
-  if (prefs.keeper !== false && (st.keepN >= 3 || !st.state)) {
-    if (simOn(st) && st.sim.ready) st.keepDue = true; else keeper(false);
-  }
+  const simReady = simOn(st) && st.sim.ready;
+  const vh = vocabOn() && !simReady && vocabHint(st);
+  if (prefs.keeper !== false && (st.keepN >= 3 || !st.state || vh)) {
+    if (simReady) st.keepDue = true; else keeper(false);
+  } else if (vh) vocabStep();
 }
 function renderMemExtra(){
   const box = $("#mem-extra"); if (!box || !S.story) return;
@@ -2736,8 +2820,9 @@ function renderMemExtra(){
   const ac = el("div", "actions");
   const sv = el("button", "btn sm", "Salvar estado"); sv.type = "button"; sv.dataset.mx = "st-save";
   const up = el("button", "btn ghost sm", AUX.keeping ? "Anotando…" : "Atualizar agora"); up.type = "button"; up.dataset.mx = "st-up"; up.disabled = AUX.keeping || !hasAI();
-  ac.append(sv, up); a.append(ac);
-  a.append(el("p", "hint", prefs.keeper !== false ? "O app atualiza estas anotações sozinho a cada 3 respostas (uma consulta curta extra) e o narrador as lê antes de responder. Corrija à mão o que estiver errado." : "A atualização automática está desligada em Ajustes. Você pode atualizar à mão aqui."));
+  const rz = el("button", "btn ghost sm", "Recalcular do zero"); rz.type = "button"; rz.dataset.mx = "st-redo"; rz.disabled = AUX.keeping || !hasAI(); rz.title = "Refaz o estado só com a memória e as mensagens que ficaram";
+  ac.append(sv, up, rz); a.append(ac);
+  a.append(el("p", "hint", (prefs.keeper !== false ? "O app atualiza estas anotações sozinho a cada 3 respostas (uma consulta curta extra) e o narrador as lê antes de responder. Corrija à mão o que estiver errado." : "A atualização automática está desligada em Ajustes. Você pode atualizar à mão aqui.") + " Voltar, Regerar, trocar de versão e Ramificar levam o estado junto: ele volta a ser o daquele ponto da história. Recalcular do zero refaz tudo só com a memória e as mensagens que ficaram (útil se o estado guardou algo de um caminho que você desfez); a ficha da simulação tem o próprio botão de remontar."));
   box.append(a);
   box.append(castEl(st));
   const b = el("div"); b.append(el("h4", "", "Lore aprendida nesta história"));
@@ -2784,10 +2869,19 @@ function bindFeatures(){
   $("#mem-extra").addEventListener("click", async e => {
     const b = e.target.closest("[data-mx]"); if (!b || !S.story) return;
     const st = S.story, act = b.dataset.mx, i = Number(b.dataset.i);
-    if (act === "st-save") { const s = {}; STATE_FIELDS.forEach(([k]) => { s[k] = ($("#st-" + k).value || "").trim(); }); st.state = s; persist(); renderScene(); toast("Estado salvo."); }
+    if (act === "st-save") { const s = {}; STATE_FIELDS.forEach(([k]) => { s[k] = ($("#st-" + k).value || "").trim(); }); st.state = s; CK.epoch++; ckMark(st); renderScene(); toast("Estado salvo."); }
+    else if (act === "st-redo") {
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar: refazer do zero"; return; }
+      b.disabled = true; b.textContent = "Refazendo…";
+      await CK.ready; CK.epoch++;
+      const ok = await keeper(false, {fresh:true});
+      if (ok && S.story === st) { ckEditAll("state", () => st.state || null); ckEditAll("sug", () => []); ckMark(st); toast("Pronto: estado da cena refeito só com o que ficou na história."); }
+      else toast("Não consegui refazer agora. Tente de novo em instantes.");
+      renderMemExtra(); renderScene();
+    }
     else if (act === "st-up") { b.disabled = true; b.textContent = "Anotando…"; await keeper(true); renderMemExtra(); }
-    else if (act === "lo-add") { const x = (st.sloreSug || []).splice(i, 1)[0]; if (x) { st.slore = (st.slore || []).concat([x]); persist(); renderScene(); renderMemExtra(); toast("Entrou na lore desta história."); } }
-    else if (act === "lo-skip") { (st.sloreSug || []).splice(i, 1); persist(); renderScene(); renderMemExtra(); }
+    else if (act === "lo-add") { const x = (st.sloreSug || []).splice(i, 1)[0]; if (x) { st.slore = (st.slore || []).concat([x]); const nm = (x.name || "").toLowerCase().trim(); ckEditAll("sug", a => a.filter(e => (e.name || "").toLowerCase().trim() !== nm)); ckEditAll("slore", a => a.some(e => e.id === x.id) ? a : a.concat([x])); persist(); renderScene(); renderMemExtra(); toast("Entrou na lore desta história."); } }
+    else if (act === "lo-skip") { const x = (st.sloreSug || []).splice(i, 1)[0]; if (x) { const nm = (x.name || "").toLowerCase().trim(); st.sloreSkip = (st.sloreSkip || []).filter(y => y !== nm).concat([nm]).slice(-60); ckEditAll("sug", a => a.filter(e => (e.name || "").toLowerCase().trim() !== nm)); } persist(); renderScene(); renderMemExtra(); }
     else if (act === "cast-add") {
       const id = ($("#cast-pick") || {}).value; const ch = S.chars.get(id); if (!ch) return;
       st.cast = (st.cast || []).filter(x => x !== id).concat([id]); persist(); renderMemExtra();
@@ -2795,7 +2889,7 @@ function bindFeatures(){
       else toast(ch.name + " agora faz parte desta história.");
     }
     else if (act === "cast-del") { st.cast = (st.cast || []).filter(x => x !== b.dataset.id); persist(); renderMemExtra(); toast("Saiu do elenco. O narrador não interpreta mais esse personagem aqui."); }
-    else if (act === "lo-del") { (st.slore || []).splice(i, 1); persist(); renderMemExtra(); }
+    else if (act === "lo-del") { const x = (st.slore || []).splice(i, 1)[0]; if (x) ckEditAll("slore", a => a.filter(e => e.id !== x.id)); persist(); renderMemExtra(); }
   });
   const me = $("#me-box");
   me.addEventListener("change", () => {
@@ -3030,15 +3124,17 @@ async function simStep(kind){
   const li = lastAssistantIdx(); if (li < 0) return;
   const reply = st.messages[li];
   if ((kind === "regen") && sim.snap && sim.snap.msgId === reply.id) { Object.assign(sim, JSON.parse(sim.snap.before)); }
+  const tok = ckTok(st);
   const before = JSON.stringify({clock: sim.clock, player: sim.player, npc: sim.npc, items: sim.items});
   const n = st.setup.name, c = S.char.name, npc = hasNpc(st);
   const prevUser = st.messages.slice(0, li).reverse().find(m => m.role === "user");
   const due = !!st.keepDue && prefs.keeper !== false;
   const both = (prevUser ? prevUser.text : "") + " " + reply.text;
-  if (!due && kind !== "regen" && (prevUser ? prevUser.text.length : 0) < 160 && reply.text.length < 900 && !SIM_WORDS.test(both)) {
+  const vs = vocabOn() ? vocabSpec(st) : null;
+  if (!due && kind !== "regen" && !(vs && VOCAB_HINT.test(both)) && (prevUser ? prevUser.text.length : 0) < 160 && reply.text.length < 900 && !SIM_WORDS.test(both)) {
     sim.snap = {msgId: reply.id, before};
     applyTime(sim.player, 3, 0, carriedKg(sim) > CARRY_OK); if (npc) applyTime(sim.npc, 3, 0, false); advanceClock(sim.clock, 3);
-    persist(); renderSimBar(); if (sheetName === "sim") renderSim(); return;
+    persist(); renderSimBar(); if (sheetName === "sim") renderSim(); ckMark(st, tok.key); return;
   }
   const ks = due ? keeperSpec(st) : null;
   const prompt = `Você é o motor de simulação de um roleplay. Leia a última troca e diga o que mudou, em JSON. Não invente nada que não esteja no texto.
@@ -3058,15 +3154,15 @@ Responda SOMENTE com um objeto JSON:
 {"minutos": tempo que passou na história durante esta narração (número; uma conversa curta = 2 a 10; "passam-se algumas horas" = 180; "um dia" = 1440),
  "sono": {"${n}": minutos dormindo dentro desse tempo${npc ? `, "${c}": minutos dormindo` : ""}},
  "efeitos": {"${n}": {"fome": +/-pontos, "sede": ..., "energia": ..., "higiene": ..., "bexiga": ..., "saude": ...}${npc ? `, "${c}": {...}` : ""}},
- "inventario": [operações no inventário de ${n}]${ks ? ks.json : ""}}${ks ? "\n" + ks.rules : ""}
+ "inventario": [operações no inventário de ${n}]${ks ? ks.json : ""}${vs ? vs.json : ""}}${ks ? "\n" + ks.rules : ""}${vs ? "\n" + vs.rules : ""}
 Efeitos: só o que aconteceu na narração ou na ação. Exemplos: refeição completa fome +40 a +60; lanche +15; beber água sede +30 a +60; banho higiene +60; ir ao banheiro bexiga = +100; ferimento leve saude -10, grave -40; esforço pesado energia -10. Não inclua o desgaste normal do tempo (o app calcula sozinho). Omita campos sem mudança.
 Operações de inventário (só para ${n}, e só se a ação ou a narração mostrar isso acontecendo): {"op":"add","name":"...","size":"P|M|G|GG","kg":número,"qty":1,"to":"maoD|maoE|maos|chao|nome do recipiente|auto","wear":"cabeca|torso|pernas|pes|costas|cintura (se for vestível)","cap":{"vol":n,"max":"P|M|G","kg":n} (se guardar coisas),"food":{"fome":n,"sede":n} (se for comida ou bebida)}; {"op":"remove","id":"...","qty":n} (comido, usado, entregue, perdido); {"op":"move","id":"...","to":"..."}; {"op":"wear","id":"..."}; {"op":"unwear","id":"...","to":"..."}. Tamanhos: P cabe no bolso (isqueiro, faca pequena); M ocupa uma mão (garrafa, peixe, camisa dobrada); G pede as duas mãos ou uma mochila grande (machado, lança, rede); GG é enorme (tronco, pessoa).`;
   try {
     if (due) { AUX.keeping = true; renderScene(); }
-    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: due ? 1300 : 700});
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens: (due ? 1300 : 700) + (vs ? 250 : 0)});
     const j = parseJSON(r.text);
     if (!j || typeof j !== "object" || Array.isArray(j)) return;
-    if (S.story !== st) return;
+    if (!ckValid(tok, st)) return;
     sim.snap = {msgId: reply.id, before};
     if (due) applyKeeperJSON(st, j);
     const minutes = clamp(Number(j.minutos) || 0, 0, 60 * 24 * 60);
@@ -3083,11 +3179,14 @@ Operações de inventário (só para ${n}, e só se a ação ou a narração mos
     const warn = STATS.filter(d => stLevel(sim.player[d.k]) >= 2).map(d => d.t[stLevel(sim.player[d.k])]);
     persist(); renderSimBar(); if (sheetName === "sim") renderSim();
     if (warn.length) toast(n + ": " + warn.join(", ") + ".");
+    if (vs) applyVocab(st, j.vocab, reply.id, both);
+    ckMark(st, tok.key);
   } catch {} finally { if (due) { AUX.keeping = false; renderScene(); } }
 }
-async function simInit(force){
+async function simInit(force, o = {}){
   const st = S.story; const sim = simOf(st);
-  if (!sim || !hasAI() || !S.char || SIMX.init) return;
+  if (!sim || !hasAI() || !S.char || SIMX.init) return false;
+  const tok = ckTok(st);
   SIMX.init = true; renderSimBar(); if (sheetName === "sim") renderSim();
   const n = st.setup.name, c = S.char.name, u = st.setup, npc = hasNpc(st);
   const prompt = `Você monta o estado inicial da simulação de um roleplay (status e inventário realista). Use só o que a ficha, o jogador e a cena indicam, completando com o óbvio e plausível (roupas que a pessoa está usando, por exemplo).
@@ -3106,6 +3205,7 @@ Status: 100 é ótimo, 0 é péssimo; reflita a situação (dias perdido = fome 
     const r = await ask(prompt, {cache:false, modelTier:"default", maxTokens:1800});
     const j = parseJSON(r.text);
     if (S.story !== st || !j || typeof j !== "object") throw 0;
+    await CK.ready; if (!ckLive(tok, st)) return false;
     const hm = String(j.hora || "").match(/(\d{1,2})[:h](\d{2})?/);
     sim.clock = {day: Math.max(1, parseInt(j.dia, 10) || 1), min: hm ? clamp(parseInt(hm[1], 10), 0, 23) * 60 + clamp(parseInt(hm[2] || "0", 10), 0, 59) : 8 * 60};
     const stt = j.status || {};
@@ -3121,12 +3221,14 @@ Status: 100 é ótimo, 0 é péssimo; reflita a situação (dias perdido = fome 
       else { const why = tryPlace(sim, it, d); if (why && sim.mode === "real") { const w2 = autoPlace(sim, it); notes.push(it.name + " não coube em " + w + (w2 ? "; " + w2 : "; foi para " + placeName(sim, it))); } }
     }
     sim.notes = notes; sim.ready = true; sim.snap = null;
-    persist(); toast("Ficha montada: status e inventário prontos.");
-  } catch { if (force) toast("Não consegui montar a ficha agora. Tente de novo na Ficha."); }
+    if (o.all) { ckEditAll("simS", () => CK_PARTS.simS(st)); ckEditAll("simI", () => CK_PARTS.simI(st)); } else ckBackfillSim(st);
+    persist(); ckMark(st); toast("Ficha montada: status e inventário prontos.");
+    return true;
+  } catch { if (force) toast("Não consegui montar a ficha agora. Tente de novo na Ficha."); return false; }
   finally { SIMX.init = false; renderSimBar(); if (sheetName === "sim") renderSim(); }
 }
 const SIMX = {init:false, open:null, tab:"status", adjust:false};
-const SIM_WORDS = /com[eio]|bebe|beb[io]|água|agua|fome|sede|peg[aou]|guard|larg|solt|entreg|tir[aeo]|vest|dorm|cochil|descans|banho|lav[aeo]|xixi|mij|banheiro|ferid|cort[aeo]|sangr|caç|pesc|mochila|bolso|horas?\b|noite|amanhe|madrugada|entardec|semana|meses|minutos|depois de|carreg|arrast|cozinh|assa|eat|drink|grab|take|sleep|hour/i;
+const SIM_WORDS = /com[eio]|bebe|beb[io]|água|agua|fome|sede|peg[aou]|guard|larg|solt|entreg|tir[aeo]|vest|dorm|cochil|descans|banho|lav[aeo]|xixi|mij|banheiro|ferid|cort[aeo]|sangr|quebr|fratur|torc[ei]|machuc|queim|mord|facad|tiro|soco|socou|chut|golpe|desmai|vomit|febre|doen|caç|pesc|mochila|bolso|horas?\b|noite|amanhe|madrugada|entardec|semana|meses|minutos|depois de|carreg|arrast|cozinh|assa|eat|drink|grab|take|sleep|hour/i;
 
 /* faixa compacta na conversa */
 function renderSimBar(){
@@ -3251,13 +3353,15 @@ function bindSim(){
     const row = t.closest(".srow"); const d = STATS.find(x => x.k === t.dataset.k); const lv = stLevel(s[d.k]);
     row.className = "srow lv" + lv; row.querySelector(".sbar b").style.setProperty("--v", s[d.k] + "%"); row.querySelector(".sv").textContent = Math.round(s[d.k]) + " · " + d.t[lv];
   });
-  $("#sim-box").addEventListener("change", e => { if (e.target.classList.contains("sadj") && S.story) { persist(); renderSimBar(); } });
+  $("#sim-box").addEventListener("change", e => { if (e.target.classList.contains("sadj") && S.story) { renderSimBar(); ckMark(S.story); } });
   $("#sim-box").addEventListener("click", e => {
     const b = e.target.closest("[data-sx]"); if (!b || !S.story) return;
     const st = S.story, sim = st.sim, act = b.dataset.sx, it = b.dataset.id ? itemById(sim, b.dataset.id) : null, n = st.setup.name;
     if (act === "init" || act === "reinit") {
       if (act === "reinit" && b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar: refazer status e inventário"; return; }
-      sim.ready = false; simInit(true); renderSim();
+      const was = sim.ready; sim.ready = false;
+      simInit(true, {all: act === "reinit"}).then(ok => { if (!ok && was && S.story === st && !sim.ready) { sim.ready = true; renderSim(); renderSimBar(); } });
+      renderSim();
     }
     else if (act === "adjust") { SIMX.adjust = !SIMX.adjust; renderSim(); }
     else if (act === "open") { SIMX.open = SIMX.open === b.dataset.id ? null : b.dataset.id; renderSim(); }
@@ -3286,6 +3390,7 @@ function bindSim(){
       sim.items.push(nit); const why = autoPlace(sim, nit); if (why) toast(why);
       persist(); renderSim();
     }
+    if (act === "mv" || act === "eat" || act === "del" || act === "add") ckMark(st);
   });
 }
 function simAfterReply(kind){ if (simOn(S.story)) { if (S.story.sim) S.story.sim.notes = []; simStep(kind); } }
@@ -3294,6 +3399,393 @@ function simTimeHint(st, label){
   if (!simOn(st) || !st.sim.ready) return "";
   const n = st.setup.name, c = st.charName;
   return " Simulação ligada: mostre de forma resumida como " + (hasNpc(st) ? n + " e " + c : n) + " atravessaram esse tempo em relação a comida, água, sono, higiene e necessidades, coerente com os recursos que têm, os hábitos de cada um e o estado atual (" + statsLine(n, st.sim.player) + (hasNpc(st) ? "; " + statsLine(c, st.sim.npc) : "") + "). Para " + n + ", só rotinas óbvias de sobrevivência que combinem com quem é; nada de decisões importantes. Se faltou comida ou água, mostre o custo.";
+}
+
+/* ---------- linha do tempo: o estado acompanha a história ---------- */
+/* Cada resposta (e cada versão dela) ganha um ponto de volta com o estado derivado:
+   estado da cena, lore, sugestões, palavras aprendidas e simulação. Voltar, Regerar,
+   trocar de versão, editar a última resposta e Ramificar restauram o ponto certo. */
+const CK = {sid:null, pool:{}, map:{}, ready:Promise.resolve(), dirty:false, epoch:0, swT:null};
+const CK_KEEP = 60;
+const ckMax = () => S.store && S.store.kind === "db" ? 200000 : 50000;
+const ckKey = m => m.id + "_" + (m.role === "assistant" ? (m.ai || 0) : 0);
+function ckCurrentKey(st){ const ms = st.messages; for (let k = ms.length - 1; k >= 0; k--) if (ms[k].role === "assistant") return ckKey(ms[k]); return "start"; }
+function ckAlive(st, key){ return key === "start" || st.messages.some(m => m.role === "assistant" && ckKey(m) === key); }
+function ckTok(st){ return {sid: st.id, key: ckCurrentKey(st), ep: CK.epoch}; }
+/* resultado de consulta ainda vale? (a história não andou, não voltou, não trocou de versão) */
+function ckValid(t, st){ return !!st && S.story === st && CK.sid === st.id && CK.epoch === t.ep && ckCurrentKey(st) === t.key; }
+function ckLive(t, st){ return !!st && S.story === st && CK.sid === st.id && CK.epoch === t.ep && ckAlive(st, t.key); }
+function ckHash(s){ let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + s.length.toString(36); }
+function ckIntern(pool, v){ const s = JSON.stringify(v == null ? null : v); let id = ckHash(s); while (pool[id] !== undefined && pool[id] !== s) id += "x"; pool[id] = s; return id; }
+function ckGet(pool, id, d){ const s = pool[id]; if (s === undefined) return d; try { const v = JSON.parse(s); return v == null ? d : v; } catch { return d; } }
+const CK_PARTS = {
+  state: st => st.state || null,
+  slore: st => st.slore || [],
+  sug: st => st.sloreSug || [],
+  vocab: st => (st.vocab || []).map(v => { const o = Object.assign({}, v); delete o.n; delete o.seen; return o; }),
+  vocabN: st => { const o = {}; (st.vocab || []).forEach(v => { o[v.id] = v.n || 1; }); return o; },
+  simS: st => st.sim && st.sim.ready ? {clock: st.sim.clock, player: st.sim.player, npc: st.sim.npc, notes: st.sim.notes || []} : null,
+  simI: st => st.sim && st.sim.ready ? st.sim.items || [] : null
+};
+function ckSnap(st, pool){ const r = {keepN: st.keepN || 0, keepDue: !!st.keepDue}; for (const [k, f] of Object.entries(CK_PARTS)) r[k] = ckIntern(pool, f(st)); return r; }
+function ckApply(st, snap, pool){
+  pool = pool || CK.pool; CK.epoch++;
+  const state = ckGet(pool, snap.state, null);
+  st.state = state && typeof state === "object" && !Array.isArray(state) ? state : undefined;
+  st.slore = ckGet(pool, snap.slore, []);
+  const nm = e => String((e && e.name) || "").toLowerCase().trim();
+  const skip = new Set((st.sloreSkip || []).map(x => String(x).toLowerCase().trim())), have = new Set(st.slore.map(nm));
+  st.sloreSug = ckGet(pool, snap.sug, []).filter(e => e && !have.has(nm(e)) && !skip.has(nm(e)));
+  const vn = ckGet(pool, snap.vocabN, {}) || {};
+  st.vocab = ckGet(pool, snap.vocab, []).map(v => Object.assign({}, v, {n: vn[v.id] || v.n || 1}));
+  st.keepN = snap.keepN || 0; st.keepDue = !!snap.keepDue;
+  if (st.sim) {
+    const s = ckGet(pool, snap.simS, null), it = ckGet(pool, snap.simI, null);
+    if (s && it) { st.sim.clock = s.clock; st.sim.player = s.player; st.sim.npc = s.npc; st.sim.notes = s.notes || []; st.sim.items = it; st.sim.ready = true; }
+    else { st.sim.ready = false; st.sim.items = []; st.sim.notes = []; }
+    st.sim.snap = null;
+  }
+}
+/* decisões suas (lore aceita ou removida, palavra anotada ou apagada) valem em todos os pontos */
+function ckEditAll(part, fn){
+  const d = part === "state" || part === "simS" || part === "simI" ? null : [];
+  for (const s of Object.values(CK.map)) s[part] = ckIntern(CK.pool, fn(ckGet(CK.pool, s[part], d)));
+  CK.dirty = true;
+}
+function ckBackfillSim(st){
+  const sS = ckIntern(CK.pool, CK_PARTS.simS(st)), sI = ckIntern(CK.pool, CK_PARTS.simI(st));
+  for (const s of Object.values(CK.map)) if (!ckGet(CK.pool, s.simS, null)) { s.simS = sS; s.simI = sI; }
+  CK.dirty = true;
+}
+function ckData(src){ src = src || CK; return {v:2, data: JSON.stringify({pool: src.pool, map: src.map})}; }
+function ckLoad(st){
+  if (CK.dirty && CK.sid && CK.sid !== st.id) { const sid = CK.sid, data = ckData(); enqueue(() => S.store.setCk(sid, data)).catch(() => {}); }
+  CK.sid = st.id; CK.pool = {}; CK.map = {}; CK.dirty = false; CK.epoch++; clearTimeout(CK.swT);
+  const sid = st.id;
+  CK.ready = (async () => {
+    let got = null, d = null;
+    try { got = await S.store.getCk(sid); } catch {}
+    if (CK.sid !== sid) return;
+    try { d = got && typeof got.data === "string" ? JSON.parse(got.data) : null; } catch {}
+    if (d && d.pool && d.map && typeof d.pool === "object" && typeof d.map === "object") {
+      CK.pool = Object.assign({}, d.pool, CK.pool); CK.map = Object.assign({}, d.map, CK.map);
+    }
+    if (!Object.keys(CK.map).length && S.story && S.story.id === sid) ckMark(S.story);
+  })();
+  return CK.ready;
+}
+function ckMark(st, key){
+  st = st || S.story; if (!st || CK.sid !== st.id) return;
+  CK.map[key || ckCurrentKey(st)] = ckSnap(st, CK.pool); CK.dirty = true; persist();
+}
+/* o ponto de volta mais recente antes da mensagem i (ou nela, se inclusive) */
+function ckFind(st, i, inclusive){
+  const ms = st.messages;
+  for (let k = inclusive ? i : i - 1; k >= 0; k--) { const m = ms[k]; if (m && m.role === "assistant" && CK.map[ckKey(m)]) return CK.map[ckKey(m)]; }
+  return CK.map.start || null;
+}
+function ckPrune(ck, msgs, archived){
+  const keep = new Set(archived ? [] : ["start"]), order = [];
+  for (const m of msgs) if (m.role === "assistant") (m.alts && m.alts.length ? m.alts : [m.text]).forEach((_, ai) => { const k = m.id + "_" + ai; keep.add(k); if (ck.map[k]) order.push(k); });
+  for (const k of Object.keys(ck.map)) if (!keep.has(k)) delete ck.map[k];
+  const gc = () => { const used = new Set(); for (const s of Object.values(ck.map)) for (const p of Object.keys(CK_PARTS)) used.add(s[p]); for (const id of Object.keys(ck.pool)) if (!used.has(id)) delete ck.pool[id]; };
+  const size = () => bytes(JSON.stringify(ckData(ck)));
+  gc();
+  while (order.length > 2 && (order.length > CK_KEEP || size() > ckMax())) { delete ck.map[order.shift()]; gc(); }
+}
+async function ckSave(st){
+  if (!CK.dirty || CK.sid !== st.id) return;
+  await CK.ready; if (CK.sid !== st.id) return;
+  ckPrune(CK, st.messages, st.archiveChunks > 0); CK.dirty = false;
+  try { await S.store.setCk(st.id, ckData()); }
+  catch {
+    const keys = Object.keys(CK.map); keys.slice(0, Math.floor(keys.length / 2)).forEach(k => delete CK.map[k]);
+    ckPrune(CK, st.messages, true);
+    try { await S.store.setCk(st.id, ckData()); } catch {}
+  }
+}
+async function ckExport(st){
+  if (CK.sid !== st.id) { try { return await S.store.getCk(st.id); } catch { return null; } }
+  await CK.ready; ckPrune(CK, st.messages, st.archiveChunks > 0); return ckData();
+}
+function refreshDerived(){
+  renderScene(); renderSimBar(); updateVocabChip();
+  if (sheetName === "memory") renderMemExtra();
+  if (sheetName === "sim") renderSim();
+  if (sheetName === "vocab") renderVocab();
+}
+function softRenderLog(){ if (S.view === "chat" && S.story && S.editing == null && !S.busy) renderLog(); }
+/* reprocessa a última resposta: estado, simulação e palavras */
+function reprocess(kind){
+  const st = S.story; if (!st || !hasAI() || !S.char) return;
+  afterReply(); simAfterReply(kind); ckMark(st);
+}
+/* depois de trocar a versão da última resposta (deslizar ou setas) */
+async function afterSwipe(i){
+  const st = S.story; if (!st || i !== lastAssistantIdx()) return;
+  await CK.ready; if (S.story !== st || CK.sid !== st.id || i !== lastAssistantIdx()) return;
+  clearTimeout(CK.swT);
+  const key = ckKey(st.messages[i]), own = CK.map[key];
+  if (own) { ckApply(st, own); persist(); refreshDerived(); softRenderLog(); return; }
+  if (!hasAI() || !S.char) return;
+  const pre = ckFind(st, i, false); if (!pre) return;
+  ckApply(st, pre); persist(); refreshDerived();
+  CK.swT = setTimeout(() => { if (S.story === st && !S.busy && ckCurrentKey(st) === key && !CK.map[key]) reprocess("swipe"); }, 1500);
+}
+/* a última resposta foi editada à mão: refaz o estado a partir do ponto anterior */
+async function afterEdit(i){
+  const st = S.story; if (!st || !hasAI() || !S.char || S.busy) return;
+  await CK.ready; if (S.story !== st || CK.sid !== st.id || i !== lastAssistantIdx()) return;
+  const pre = ckFind(st, i, false); if (!pre) return;
+  delete CK.map[ckKey(st.messages[i])];
+  ckApply(st, pre); persist(); refreshDerived(); reprocess("edit");
+}
+
+/* ---------- palavras aprendidas de verdade ---------- */
+const VOC = {busy:false, rev:null, re:null, reSig:null, rx:new Map()};
+const VLEV = ["nova", "conhecida", "dominada"];
+const vLevel = v => (v.n || 1) >= 5 ? 2 : (v.n || 1) >= 2 ? 1 : 0;
+const vnorm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[’‘`´]/g, "'").replace(/\s+/g, " ").trim();
+const VACC = {a:"aàáâãäåāą", e:"eèéêëẽēę", i:"iìíîïĩī", o:"oòóôõöøō", u:"uùúûüũū", c:"cçć", n:"nñń", y:"yýÿ", s:"sśš", z:"zźżž"};
+function vpat(w){ return [...vnorm(w)].map(ch => ch === " " ? "[\\s\\-]+" : ch === "'" ? "['’‘`´]?" : VACC[ch] ? "[" + VACC[ch] + "]" : ch.replace(/[.*+?^${}()|[\]\\\/-]/g, "\\$&")).join(""); }
+function vrx(w){
+  let r = VOC.rx.get(w);
+  if (!r) { try { r = new RegExp("(^|[^\\p{L}\\p{N}])" + vpat(w) + "(?=[^\\p{L}\\p{N}]|$)", "iu"); } catch { r = /(?!)/; } VOC.rx.set(w, r); }
+  return r;
+}
+const vhas = (text, w) => !!w && vrx(w).test(String(text || "").normalize("NFC"));
+const vocabOn = () => prefs.vocab !== false;
+const vocabOf = st => (st && st.vocab) || [];
+const vsame = (a, w, who) => vnorm(a.w) === vnorm(w) && vnorm(a.who) === vnorm(who);
+
+/* o que o narrador lê */
+function vocabBlock(st){
+  const n = st.setup.name, list = vocabOf(st);
+  const teach = "Quando alguém ensinar, traduzir ou explicar uma palavra de outro idioma de propósito, escreva essa palavra exata entre aspas e deixe o sentido claro na cena. Num idioma inventado, só palavras soltas e curtas, sempre com a mesma grafia; nunca frases inteiras inventadas.";
+  if (!list.length) return vocabOn() ? "IDIOMAS\n" + teach : "";
+  const by = new Map(); list.forEach(v => { const k = v.who || n; if (!by.has(k)) by.set(k, []); by.get(k).push(v); });
+  const lines = [...by.entries()].map(([who, vs]) => who + ": " + vs.slice(-120).map(v => v.w + " = " + v.m + " (" + [v.lang, VLEV[vLevel(v)]].filter(Boolean).join(", ") + ")").join("; "));
+  return "PALAVRAS APRENDIDAS EM CENA (o que cada um aprendeu de verdade nesta história; nova = acabou de aprender, conhecida = já reconhece, dominada = usa sem esforço)\n" + lines.join("\n") +
+    "\nRegras de idioma: quem ouve uma fala num idioma que não domina entende só as palavras da própria lista (as novas com esforço e às vezes errando), mais gestos, tom e contexto; o resto continua sem tradução para essa pessoa. Quem aprendeu pode usar essas palavras na própria fala; as dominadas dispensam tradução entre colchetes." + (vocabOn() ? "\n" + teach : "");
+}
+/* trecho do pedido de JSON que extrai palavras novas (vai junto da simulação ou do anotador) */
+function vocabSpec(st){
+  const lang = (LANGS[prefs.lang] || LANGS.pt)[1];
+  const known = vocabOf(st).slice(-80).map(v => v.w + " (" + (v.who || st.setup.name) + ")").join("; ") || "(nenhuma)";
+  return {json: `,
+ "vocab": [palavras ou expressões curtas de outro idioma que alguém aprendeu de verdade aqui: {"palavra":"grafia exata do texto","significado":"tradução curta em ${lang}","idioma":"nome do idioma","quem":"nome de quem aprendeu","como":"até 8 palavras: quem ensinou ou como entendeu"}]`,
+    rules: `Vocab: só quando a cena mostra alguém aprendendo de fato: um personagem ensina, traduz ou explica a palavra para outro, ou o sentido fica claro pela situação e a pessoa mostra que entendeu. Tradução que o narrador põe entre colchetes só para o leitor não conta. Palavras soltas ou expressões de até 4 palavras, com a grafia exata do texto; sem nomes próprios; não invente palavras nem significados; ignore as já aprendidas: ${known}. No máximo 3; se não houver, [].`};
+}
+function applyVocab(st, list, at, scope){
+  if (!Array.isArray(list) || !list.length) return 0;
+  const no = new Set(st.vocabNo || []); const added = [];
+  st.vocab = vocabOf(st).slice();
+  for (const x of list.slice(0, 4)) {
+    if (!x || typeof x !== "object") continue;
+    const w = str(x.palavra || x.word, 60).replace(/^["'“”‘’«»*\s]+|["'“”‘’«»*.,!?;:\s]+$/g, "");
+    const m = str(x.significado || x.meaning, 120);
+    if (!w || !m || w.split(/\s+/).length > 5 || vnorm(w) === vnorm(m)) continue;
+    if (scope && !vhas(scope, w)) continue;
+    const who = str(x.quem || x.who, 40) || st.setup.name;
+    if (no.has(vnorm(w) + "|" + vnorm(who)) || st.vocab.some(v => vsame(v, w, who))) continue;
+    const v = {id: "v" + rid(), w, m, lang: str(x.idioma || x.lang, 30), who, how: str(x.como || x.how, 90), n: 1, at: at || null, ts: Date.now()};
+    st.vocab.push(v); added.push(v);
+  }
+  if (st.vocab.length > 400) st.vocab = st.vocab.slice(-400);
+  if (added.length) {
+    toast("📖 " + added.map(v => v.who + " aprendeu “" + v.w + "” (" + v.m + ")").join(" · "));
+    updateVocabChip(); if (sheetName === "vocab") renderVocab(); softRenderLog();
+  }
+  return added.length;
+}
+/* cada vez que a palavra aparece numa troca, o personagem conhece um pouco mais (sem consulta) */
+function vocabCount(st){
+  const list = vocabOf(st); if (!list.length) return;
+  const li = lastAssistantIdx(); if (li < 0) return;
+  const r = st.messages[li], u = st.messages[li - 1];
+  const text = (u && u.role === "user" && u.kind !== "cmd" ? u.text : "") + "\n" + r.text;
+  const up = [];
+  for (const v of list) {
+    if (v.at === r.id || !vhas(text, v.w)) continue;
+    const lv = vLevel(v); v.n = (v.n || 1) + 1; v.seen = Date.now();
+    if (vLevel(v) === 2 && lv < 2) up.push(v);
+  }
+  if (up.length) toast("📖 " + up.map(v => (v.who || st.setup.name) + " já domina “" + v.w + "”").join(" · "));
+}
+const VOCAB_HINT = /significa|quer(?:em)? dizer|tradu[zçc]|translat|\bmeans?\b|meaning|veut dire|signifie|quiere decir|c[oó]mo se dice|como (?:se )?(?:diz|fala|chama)|how (?:do )?(?:you )?say|word for|comment (?:on )?(?:dit|appelle)|(?:a|essa|esta|nova) palavra|(?:repet|ensin|pronunci|soletr|apont)\w*[^.!?\n]{0,60}["“«]/i;
+function vocabHint(st){
+  const li = lastAssistantIdx(); if (li < 0) return false;
+  const u = st.messages[li - 1];
+  return VOCAB_HINT.test((u && u.role === "user" ? u.text : "") + "\n" + st.messages[li].text);
+}
+/* consulta curta só para palavras (quando nem a simulação nem o anotador vão rodar) */
+async function vocabStep(){
+  const st = S.story; if (!st || !S.char || !hasAI() || VOC.busy) return;
+  const li = lastAssistantIdx(); if (li < 0) return;
+  const reply = st.messages[li], u = st.messages[li - 1];
+  const tok = ckTok(st), vs = vocabSpec(st);
+  const scope = (u && u.role === "user" ? u.text : "") + "\n" + reply.text;
+  const prompt = `Você registra as palavras de outros idiomas que personagens de um roleplay aprenderam de verdade em cena. Jogador: ${st.setup.name}. Narrador e demais personagens: ${S.char.name}.
+
+TRECHO:
+${trunc(scope, 7000)}
+
+Responda SOMENTE com um objeto JSON: {${vs.json.replace(/^,\s*/, "")}}
+${vs.rules}`;
+  VOC.busy = true;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:400});
+    const j = parseJSON(r.text);
+    if (!ckValid(tok, st)) return;
+    if (applyVocab(st, asList(j, "vocab"), reply.id, scope)) { persist(); ckMark(st, tok.key); }
+  } catch {} finally { VOC.busy = false; }
+}
+
+/* palavras conhecidas ficam sublinhadas na conversa */
+function vocabRe(st){
+  const list = vocabOf(st).filter(v => v.w); if (!list.length) return null;
+  const sig = list.map(v => v.w).join("\u0001");
+  if (VOC.reSig === sig) return VOC.re;
+  const pats = [...new Set(list.map(v => vpat(v.w)))].sort((a, b) => b.length - a.length);
+  try { VOC.re = new RegExp("(^|[^\\p{L}\\p{N}])(" + pats.join("|") + ")(?=[^\\p{L}\\p{N}]|$)", "giu"); } catch { VOC.re = null; }
+  VOC.reSig = sig; return VOC.re;
+}
+function markVocab(root, st){
+  const re = vocabRe(st); if (!re) return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); const nodes = [];
+  while (w.nextNode()) nodes.push(w.currentNode);
+  for (const tn of nodes) {
+    const t = tn.nodeValue.normalize("NFC"); re.lastIndex = 0;
+    if (!re.test(t)) continue;
+    re.lastIndex = 0; const frag = document.createDocumentFragment(); let last = 0, m;
+    while ((m = re.exec(t))) {
+      const s = m.index + m[1].length, e = s + m[2].length;
+      if (s > last) frag.append(t.slice(last, s));
+      const sp = el("span", "vw", t.slice(s, e)); sp.title = "Palavra aprendida: toque para ver"; frag.append(sp);
+      last = e; if (re.lastIndex <= m.index) re.lastIndex = m.index + 1;
+    }
+    if (last < t.length) frag.append(t.slice(last));
+    tn.replaceWith(frag);
+  }
+}
+function vocabTap(text){
+  const st = S.story; if (!st) return;
+  const hits = vocabOf(st).filter(v => vnorm(v.w) === vnorm(text) || vhas(text, v.w)); if (!hits.length) return;
+  const v = hits[0];
+  toast("📖 " + v.w + " = " + v.m + (v.lang ? " · " + v.lang : "") + " · " + hits.map(x => (x.who || st.setup.name) + ": " + VLEV[vLevel(x)]).join(", "));
+}
+function insertWord(w){
+  const ta = $("#in");
+  if (ta.disabled) { toast("Para escrever, a história precisa de um modelo ativo."); return; }
+  const s = ta.selectionStart != null ? ta.selectionStart : ta.value.length, e = ta.selectionEnd != null ? ta.selectionEnd : s;
+  const a = ta.value.slice(0, s), b = ta.value.slice(e);
+  const pre = a && !/[\s"“(*]$/.test(a) ? " " : "", post = b && !/^[\s"”).,!?*]/.test(b) ? " " : "";
+  ta.value = a + pre + w + post + b; const at = (a + pre + w).length;
+  closeSheet(); ta.focus(); try { ta.setSelectionRange(at, at); } catch {} autosize();
+}
+function updateVocabChip(){
+  const b = $("#b-vocab"); if (!b) return;
+  const st = S.story, n = vocabOf(st).length;
+  b.hidden = !st || (!vocabOn() && !n);
+  b.textContent = "📖 Palavras" + (n ? " " + n : "");
+}
+
+/* painel Palavras */
+function renderVocab(){
+  const box = $("#vocab-box"); if (!box) return; box.textContent = "";
+  const st = S.story; if (!st) return;
+  const list = vocabOf(st), me = st.setup.name;
+  if (VOC.rev && VOC.rev.ids.length) { renderReview(box, st); return; }
+  const top = el("div");
+  if (list.length) {
+    const dom = list.filter(v => vLevel(v) === 2).length;
+    top.append(el("p", "empty", list.length + (list.length === 1 ? " palavra" : " palavras") + " · " + dom + (dom === 1 ? " dominada" : " dominadas")));
+    const ac = el("div", "actions"); ac.style.marginTop = "10px";
+    const rv = el("button", "btn sm", "Revisar"); rv.type = "button"; rv.dataset.vx = "rev"; ac.append(rv); top.append(ac);
+  } else top.append(el("p", "empty", "Nenhuma palavra ainda."));
+  top.append(el("p", "hint", vocabOn()
+    ? "Quando alguém ensina ou explica uma palavra de outro idioma na cena, ela entra aqui sozinha. O narrador passa a respeitar o que cada um entende: o resto da fala continua sem tradução. Quanto mais a palavra aparece, mais o personagem domina. Na conversa, toque numa palavra sublinhada para ver o significado."
+    : "O dicionário automático está desligado em Ajustes. Você ainda pode anotar palavras à mão."));
+  box.append(top);
+  const by = new Map(); list.forEach(v => { const k = v.who || me; if (!by.has(k)) by.set(k, []); by.get(k).push(v); });
+  const order = [...by.keys()].sort((a, b) => (vnorm(b) === vnorm(me)) - (vnorm(a) === vnorm(me)));
+  for (const who of order) {
+    const g = el("div"); g.append(el("h4", "", who + (vnorm(who) === vnorm(me) ? " (você)" : "")));
+    const ul = el("ul", "vlist");
+    by.get(who).slice().reverse().forEach(v => {
+      const li = el("li"), lv = vLevel(v);
+      const h = el("div", "vh"); h.append(el("b", "vw-w", v.w), el("span", "vlv l" + lv, VLEV[lv]));
+      li.append(h, el("p", "vm", v.m));
+      const meta = [v.lang, v.how, (v.n || 1) > 1 ? "apareceu " + v.n + "×" : ""].filter(Boolean).join(" · ");
+      if (meta) li.append(el("small", "", meta));
+      const ac = el("div", "acts2");
+      const u = el("button", "btn ghost sm", "Usar"); u.type = "button"; u.dataset.vx = "use"; u.dataset.id = v.id; u.title = "Põe a palavra na sua mensagem";
+      const d = el("button", "btn ghost sm danger", "Remover"); d.type = "button"; d.dataset.vx = "del"; d.dataset.id = v.id;
+      ac.append(u, d); li.append(ac); ul.append(li);
+    });
+    g.append(ul); box.append(g);
+  }
+  const add = el("details", "adv"); add.append(el("summary", "", "Anotar palavra à mão"));
+  const inner = el("div", "inner");
+  const r1 = el("div", "row"); r1.append(fieldEl("Palavra", "vx-w", "input", "", {max:60, ph:"ex.: jërëjëf"}), fieldEl("Significado", "vx-m", "input", "", {max:120, ph:"ex.: obrigado"}));
+  const r2 = el("div", "row"); r2.append(fieldEl("Idioma", "vx-lang", "input", "", {max:30, ph:"ex.: wolof"}), fieldEl("Quem aprendeu", "vx-who", "input", me, {max:40}));
+  const dl = el("datalist"); dl.id = "vx-names";
+  [...new Set([me, st.charName, ...castChars(st).map(x => x.name), ...list.map(v => v.who)].filter(Boolean))].forEach(x => { const o = el("option"); o.value = x; dl.append(o); });
+  r2.querySelector("#vx-who").setAttribute("list", "vx-names"); r2.append(dl);
+  inner.append(r1, r2, fieldEl("Como aprendeu (opcional)", "vx-how", "input", "", {max:90, ph:"ex.: Ousmane ensinou no almoço"}));
+  const ac = el("div", "actions"); const b = el("button", "btn sm", "Anotar"); b.type = "button"; b.dataset.vx = "add"; ac.append(b); inner.append(ac);
+  inner.append(el("p", "hint", "Palavras anotadas ou removidas à mão valem na história inteira, mesmo se você voltar mensagens."));
+  add.append(inner); box.append(add);
+}
+function startReview(st){
+  const sh = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const list = vocabOf(st);
+  VOC.rev = {ids: [0, 1, 2].flatMap(l => sh(list.filter(v => vLevel(v) === l))).map(v => v.id), i: 0, show: false};
+}
+function renderReview(box, st){
+  const r = VOC.rev, v = vocabOf(st).find(x => x.id === r.ids[r.i]);
+  if (!v) { VOC.rev = null; renderVocab(); return; }
+  const card = el("div", "vcard");
+  card.append(el("small", "", [v.lang, v.who, VLEV[vLevel(v)]].filter(Boolean).join(" · ")), el("b", "", v.w));
+  if (r.show) { card.append(el("p", "vm", v.m)); if (v.how) card.append(el("small", "", v.how)); }
+  else card.append(el("p", "hint", "Lembra o que significa?"));
+  box.append(card);
+  const ac = el("div", "actions");
+  const mk = (t, a, cls) => { const b = el("button", cls, t); b.type = "button"; b.dataset.vx = a; ac.append(b); };
+  if (!r.show) mk("Mostrar significado", "show", "btn sm"); else mk(r.i + 1 < r.ids.length ? "Próxima" : "Recomeçar", "next", "btn sm");
+  mk("Sair da revisão", "rev-end", "btn ghost sm");
+  box.append(ac, el("p", "hint", (r.i + 1) + " de " + r.ids.length + ". As palavras novas aparecem primeiro."));
+}
+function bindVocab(){
+  $("#b-vocab").addEventListener("click", () => openSheet("vocab"));
+  $("#vocab-box").addEventListener("click", e => {
+    const b = e.target.closest("[data-vx]"); if (!b || !S.story) return;
+    const st = S.story, act = b.dataset.vx, v = b.dataset.id ? vocabOf(st).find(x => x.id === b.dataset.id) : null;
+    if (act === "use" && v) insertWord(v.w);
+    else if (act === "del" && v) {
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
+      const k = vnorm(v.w) + "|" + vnorm(v.who);
+      st.vocab = vocabOf(st).filter(x => !vsame(x, v.w, v.who));
+      st.vocabNo = (st.vocabNo || []).filter(x => x !== k).concat([k]).slice(-100);
+      ckEditAll("vocab", a => a.filter(x => !vsame(x, v.w, v.who)));
+      persist(); renderVocab(); updateVocabChip(); softRenderLog();
+    }
+    else if (act === "add") {
+      const w = ($("#vx-w").value || "").trim().slice(0, 60), m = ($("#vx-m").value || "").trim().slice(0, 120);
+      if (!w || !m) { toast("Preencha a palavra e o significado."); return; }
+      const who = (($("#vx-who").value || "").trim() || st.setup.name).slice(0, 40);
+      if (vocabOf(st).some(x => vsame(x, w, who))) { toast("Essa palavra já está nas palavras de " + who + "."); return; }
+      const nv = {id: "v" + rid(), w, m, lang: ($("#vx-lang").value || "").trim().slice(0, 30), who, how: ($("#vx-how").value || "").trim().slice(0, 90) || "anotada à mão", n: 1, at: null, ts: Date.now(), manual: true};
+      st.vocab = vocabOf(st).concat([nv]);
+      st.vocabNo = (st.vocabNo || []).filter(x => x !== vnorm(w) + "|" + vnorm(who));
+      ckEditAll("vocab", a => a.some(x => vsame(x, w, who)) ? a : a.concat([nv]));
+      persist(); renderVocab(); updateVocabChip(); softRenderLog(); toast("Anotada: " + w + ".");
+    }
+    else if (act === "rev") { startReview(st); renderVocab(); }
+    else if (act === "show" && VOC.rev) { VOC.rev.show = true; renderVocab(); }
+    else if (act === "next" && VOC.rev) { VOC.rev.i = (VOC.rev.i + 1) % VOC.rev.ids.length; VOC.rev.show = false; renderVocab(); }
+    else if (act === "rev-end") { VOC.rev = null; renderVocab(); }
+  });
 }
 
 /* ---------- modelos e API (cópia fora do Claude) ---------- */
