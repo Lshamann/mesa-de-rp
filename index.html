@@ -668,6 +668,7 @@ function header(st, ch, loreHead){
 - Nunca escreva falas, ações, pensamentos, sentimentos, decisões ou consentimento de ${n}. Termine num ponto em que ${n} possa agir ou responder.
 - Cada resposta avança um passo da cena: não resolva a trama em um turno, deixe espaço para ${n}.
 - Continuidade: lembre corpo, ferimentos, itens, roupas, hora do dia, clima, lugar e o que cada personagem sabe e não sabe. Personagens têm objetivos próprios e vida fora da cena; reagem na medida do que acontece.
+- Conhecimento é local: cada personagem só sabe o que viu, ouviu ou ficou sabendo por alguém, em cena. Você, como narrador, sabe tudo; eles não. Uma conversa de ${n} com uma pessoa não chega a quem não estava lá, a menos que haja um caminho plausível (alguém que estava presente conta depois, e isso leva tempo, chega pela metade ou distorcido). Fofoca de vila existe, mas precisa de quem viu e de tempo para correr. Na dúvida, o personagem não sabe: não deixe ninguém citar, insinuar ou reagir a algo que não presenciou nem lhe contaram.
 - Romance e cenas íntimas só entre adultos, com consentimento claro e participação recíproca.`;
   const examples = (ch.examples || "").trim() ? "EXEMPLOS DE VOZ E FORMATO (não repita o conteúdo)\n" + S_(ch.examples.replace(/<START>\s*/gi, "---\n")) : "";
   const persona = [`JOGADOR (persona; vale mais que qualquer aparência ou nome "padrão" citado na ficha)`, `Nome: ${n} (${PRO[u.pro] || PRO.ele})`,
@@ -682,7 +683,7 @@ function header(st, ch, loreHead){
 function tail(st, ch, loreTail){
   const n = st.setup.name;
   const parts = ["[Orientações internas para esta resposta; não as cite]",
-    `Continue a cena a partir do que já foi estabelecido: confira quem está presente, o que cada um sabe, quanto tempo passou e o estado do corpo e do ambiente. Não escreva nada por ${n}. Varie o ritmo e não repita fórmulas das respostas anteriores.`];
+    `Continue a cena a partir do que já foi estabelecido: confira quem está presente, o que cada um sabe de fato (só o que viu, ouviu ou lhe contaram; nada do que aconteceu longe dele), quanto tempo passou e o estado do corpo e do ambiente. Não escreva nada por ${n}. Varie o ritmo e não repita fórmulas das respostas anteriores.`];
   if (ch.post && ch.post.trim()) parts.push(sub(ch.post, n, ch.name));
   if (st.notes && st.notes.trim()) parts.push("Nota de cena do jogador: " + st.notes.trim());
   const sn = simTail(st); if (sn) parts.push(sn);
@@ -1077,7 +1078,7 @@ function summaryPrompt(st, old, mem0){
   const log = old.map(m => (m.role === "assistant" ? c + " (narração)" : n) + ": " + m.text).join("\n\n");
   return `Você mantém a memória de um roleplay entre ${n} (jogador) e ${c} (narrador e demais personagens). Atualize a memória combinando a MEMÓRIA ATUAL com as MENSAGENS NOVAS abaixo, no mesmo idioma das mensagens.
 
-Escreva em tópicos curtos, no máximo 500 palavras, cobrindo: tempo decorrido e lugar atual; estado dos personagens (ferimentos, itens, roupas, humor); estado da relação e da confiança; fatos estabelecidos (nomes, lugares, combinados, promessas, conflitos abertos, objetos trocados); o que cada personagem sabe e não sabe; barreiras de comunicação, se houver. Inclua só o que de fato aconteceu. Responda apenas com a memória atualizada.
+Escreva em tópicos curtos, no máximo 500 palavras, cobrindo: tempo decorrido e lugar atual; estado dos personagens (ferimentos, itens, roupas, humor); estado da relação e da confiança; fatos estabelecidos (nomes, lugares, combinados, promessas, conflitos abertos, objetos trocados); o que cada personagem sabe e não sabe (registre quem estava presente em cada conversa ou acontecimento importante, e quem ficou sabendo depois e por quem); barreiras de comunicação, se houver. Inclua só o que de fato aconteceu. Responda apenas com a memória atualizada.
 
 MEMÓRIA ATUAL:
 ${memNow || "(vazia)"}
@@ -2646,7 +2647,7 @@ function bindLock(){
 function refreshLockBtn(){ const b = $("#b-lock"); if (b) b.hidden = !lockOn(); }
 
 /* ---------- memória que se cuida sozinha ---------- */
-const STATE_FIELDS = [["lugar", "📍", "Lugar"], ["hora", "🕐", "Hora e tempo"], ["presentes", "👥", "Quem está na cena"], ["corpo", "🩹", "Corpo e condição"], ["itens", "🎒", "Itens"], ["relacao", "🤝", "Relação"], ["pendencias", "❗", "Em aberto"]];
+const STATE_FIELDS = [["lugar", "📍", "Lugar"], ["hora", "🕐", "Hora e tempo"], ["presentes", "👥", "Quem está na cena"], ["corpo", "🩹", "Corpo e condição"], ["itens", "🎒", "Itens"], ["relacao", "🤝", "Relação"], ["pendencias", "❗", "Em aberto"], ["saber", "🧠", "Quem sabe o quê"]];
 const filled = v => typeof v === "string" && v.trim() && v.trim() !== "—" && v.trim() !== "-";
 function stateBlock(st){
   const s = st.state || {}; const lines = STATE_FIELDS.filter(([k]) => filled(s[k])).map(([k, , l]) => l + ": " + s[k].trim());
@@ -2682,8 +2683,8 @@ MENSAGENS RECENTES:
 ${recentLog(st, 8, 10000)}
 
 Responda SOMENTE com um objeto JSON neste formato:
-{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]}
-Cada campo do estado com no máximo 20 palavras; use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes, palavras aprendidas) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.`;
+{"estado":{"lugar":"onde a cena está agora","hora":"momento do dia, dia da história ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, fome e roupas relevantes de cada um","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "como estão as relações de " + n + " com os NPCs importantes" : "estado da relação e da confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},"lore":[{"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras com o fato estabelecido"}]}
+Cada campo do estado com no máximo 20 palavras (\"saber\" até 50, uma linha por fato); use "—" quando não houver informação. Em "lore", no máximo 2 itens, só com fatos NOVOS e duradouros que apareceram nas mensagens (pessoas com nome, lugares, combinados, objetos importantes, palavras aprendidas) e que não estão na lore existente; se não houver, use []. Escreva no idioma das mensagens.`;
   AUX.keeping = true; renderScene();
   try {
     const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:900});
@@ -2699,7 +2700,7 @@ Cada campo do estado com no máximo 20 palavras; use "—" quando não houver in
 function applyKeeperJSON(st, j){
   const e = j && typeof j === "object" && !Array.isArray(j) ? (j.estado || j.state || {}) : {};
   const next = {};
-  STATE_FIELDS.forEach(([k]) => { next[k] = str(e[k], 300); });
+  STATE_FIELDS.forEach(([k]) => { next[k] = str(e[k], k === "saber" ? 900 : 300); });
   if (STATE_FIELDS.some(([k]) => filled(next[k]))) st.state = next;
   const have = new Set(allLoreNames(st));
   const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
@@ -2710,9 +2711,9 @@ function applyKeeperJSON(st, j){
 function keeperSpec(st){
   const n = st.setup.name, c = S.char.name;
   return {json: `,
- "estado": {"lugar":"onde a cena está agora","hora":"momento do dia ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, roupas relevantes","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "relações de " + n + " com os NPCs importantes" : "relação e confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto"},
+ "estado": {"lugar":"onde a cena está agora","hora":"momento do dia ou tempo decorrido","presentes":"quem está na cena","corpo":"ferimentos, cansaço, roupas relevantes","itens":"objetos importantes e quem está com eles","relacao":"${S.char.role === "narrator" ? "relações de " + n + " com os NPCs importantes" : "relação e confiança entre " + c + " e " + n}","pendencias":"promessas, perigos e questões em aberto","saber":"quem sabe o quê: fatos importantes que só alguns conhecem, com quem estava presente e quem NÃO sabe (ex.: Ousmane não sabe da conversa com o capanga)"},
  "lore": [no máximo 2 fatos NOVOS e duradouros: {"name":"título curto","keys":["2 a 5 palavras-chave"],"content":"20 a 60 palavras"}]`,
-    rules: `Estado: cada campo com no máximo 20 palavras, considerando a memória e o estado anterior (${JSON.stringify(st.state || {})}); use "—" quando não houver informação. Lore: só pessoas com nome, lugares, combinados, objetos importantes ou palavras aprendidas que apareceram agora e não estão em: ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}; se não houver, []. Escreva no idioma das mensagens.`};
+    rules: `Estado: cada campo com no máximo 20 palavras (\"saber\" até 50, uma linha por fato, mantendo os fatos antigos que continuam valendo), considerando a memória e o estado anterior (${JSON.stringify(st.state || {})}); use "—" quando não houver informação. Lore: só pessoas com nome, lugares, combinados, objetos importantes ou palavras aprendidas que apareceram agora e não estão em: ${allLoreNames(st).slice(0, 60).join("; ") || "(nenhuma)"}; se não houver, []. Escreva no idioma das mensagens.`};
 }
 function afterReply(){
   const st = S.story; if (!st) return;
@@ -2729,7 +2730,7 @@ function renderMemExtra(){
   STATE_FIELDS.forEach(([k, i, l]) => {
     const w = el("div", "field"); w.style.marginBottom = "10px";
     const lb = el("label", "", i + " " + l); lb.htmlFor = "st-" + k;
-    const t = el("textarea"); t.id = "st-" + k; t.rows = 1; t.maxLength = 300; t.value = filled(s[k]) ? s[k] : "";
+    const t = el("textarea"); t.id = "st-" + k; t.rows = k === "saber" ? 3 : 1; t.maxLength = k === "saber" ? 900 : 300; t.value = filled(s[k]) ? s[k] : "";
     w.append(lb, t); a.append(w);
   });
   const ac = el("div", "actions");
