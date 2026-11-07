@@ -193,6 +193,17 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .trbox{margin-top:10px;border-left:2px solid var(--ochre);padding:4px 0 4px 12px;font:400 14px/1.55 var(--f-body);color:var(--muted)}
 .trbox p{margin:0 0 .4em}.trbox p:last-child{margin:0}
 .trbox b{font-weight:600;color:var(--fg)}
+html.locked #app>:not(#lock),html.veil #app>:not(#lock){visibility:hidden}
+.lock{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lockcard{width:min(380px,100%);display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:22px 18px}
+.lockbrand{display:flex;align-items:center;gap:10px;font:800 22px/1 var(--f-display);margin-bottom:4px}
+.lockbrand .mark{width:34px;height:34px;color:var(--accent)}
+.lockcard .field input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:400 16px/1.4 var(--f-body)}
+.lockhint{margin:0;color:var(--muted);font:400 14px/1.55 var(--f-body)}
+.lockmsg{margin:0;color:var(--danger);font:500 13px/1.4 var(--f-mono)}
+.lockt{font:700 18px/1.2 var(--f-display)}
+.lockcode{margin:0;text-align:center;font:600 22px/1.3 var(--f-mono);letter-spacing:.12em;padding:12px;border:1px dashed var(--ochre);border-radius:10px;color:var(--fg)}
+.btn.danger-fill{background:var(--danger);color:var(--accent-ink)}
 .planb{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;border-top:1px dashed var(--line);padding-top:10px}
 .planb>span:first-child{flex-basis:100%}
 .planb a.btn{display:inline-flex;align-items:center;text-decoration:none}
@@ -304,6 +315,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <button class="ib" id="b-sim" type="button" title="Ficha" aria-label="Ficha do personagem" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg><span class="lbl">Ficha</span></button>
         <button class="ib" id="b-memory" type="button" title="Memória" aria-label="Memória" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span class="lbl">Memória</span></button>
         <button class="ib" id="b-models" type="button" title="Modelo" aria-label="Modelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg><span class="lbl">Modelo</span></button>
+        <button class="ib" id="b-lock" type="button" title="Bloquear o app" aria-label="Bloquear o app" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lbl">Bloquear</span></button>
         <button class="ib" id="b-settings" type="button" title="Ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span class="lbl">Ajustes</span></button>
       </div>
     </div></div>
@@ -409,6 +421,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
       <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
+        <div><h4>Login e bloqueio</h4><div id="lock-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
         <div><h4>Você</h4><div id="me-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
         <div id="sec-mode"><h4>Velocidade e cuidado</h4><div class="seg" id="seg-mode"></div><p class="hint" id="mode-hint"></p></div>
         <div><h4>Tamanho das respostas</h4><div class="seg" id="seg-len"></div></div>
@@ -430,6 +443,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
   <input type="file" id="f-charimg" accept="image/*" hidden>
   <input type="file" id="f-lore" hidden>
   <div class="toast" id="toast" role="status" hidden></div>
+  <div class="lock" id="lock" hidden></div>
 </div>
 
 <script>
@@ -1444,7 +1458,7 @@ async function saveFile(filename, data){
       const type = /\.json$/i.test(filename) ? "application/json" : /\.html?$/i.test(filename) ? "text/html" : "text/markdown";
       const url = URL.createObjectURL(new Blob([data], {type: type + ";charset=utf-8"}));
       const a = document.createElement("a"); a.href = url; a.download = filename; a.rel = "noopener"; a.style.display = "none";
-      document.body.append(a); a.click(); a.remove();
+      lockExempt(30000); document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60000);
       toast("Baixado: " + filename + " (fica na pasta Downloads).");
       return true;
@@ -1613,7 +1627,7 @@ function renderSettings(){
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
   if (BMT_OK) seg($("#seg-treng"), [["ia", "IA (melhor)"], ["off", "Offline (Bergamot)"]], prefs.trEngine === "off" ? "off" : "ia", id => { prefs.trEngine = id; savePrefs(); });
   $("#seg-treng").parentElement.hidden = !BMT_OK; renderBmt();
-  renderMe(); const ut = $("#usage"); if (ut) ut.textContent = usageText();
+  renderLockSettings(); renderMe(); const ut = $("#usage"); if (ut) ut.textContent = usageText();
   hint();
   $("#sec-mode").hidden = !S.sample;
 }
@@ -1745,7 +1759,7 @@ function wrapInput(spec){
   t.value = t.value.slice(0, s) + a + sel + b + t.value.slice(e);
   const pos = s + a.length + sel.length; t.focus(); const at = sel ? pos + b.length : s + a.length; t.setSelectionRange(at, at); autosize();
 }
-function pickFile(input, accept){ if (accept) input.accept = accept; else input.removeAttribute("accept"); input.click(); }
+function pickFile(input, accept){ lockExempt(); if (accept) input.accept = accept; else input.removeAttribute("accept"); input.click(); }
 function bind(){
   $("#b-home").addEventListener("click", async () => {
     if (S.view === "library") return;
@@ -1758,7 +1772,7 @@ function bind(){
   $("#b-memory").addEventListener("click", () => openSheet("memory"));
   $("#b-settings").addEventListener("click", () => openSheet("settings"));
   $("#b-models").addEventListener("click", () => openSheet("models"));
-  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt();
+  bindFeatures(); bindSim(); bindImages(); bindTranslate(); bindBmt(); bindLock();
   $("#banner").addEventListener("click", e => { const b = e.target.closest("[data-bact]"); if (!b) return; if (b.dataset.bact === "models") openSheet("models"); else { S.noModelHidden = true; showBanner(""); } });
   $("#b-model").addEventListener("click", () => openSheet("models"));
   bindModels();
@@ -2416,6 +2430,220 @@ function bindBmt(){
   box.addEventListener("click", e => { const b = e.target.closest("[data-bmt]"); if (!b) return; if (b.dataset.bmt === "dl") bmtDownload(b.dataset.code); else bmtRemove(b.dataset.code); });
   bmtRefresh();
 }
+
+/* ---------- bloqueio do app (só fora do Claude) ---------- */
+const LOCK_OK = !IN_CLAUDE && !!(window.crypto && crypto.subtle);
+const LK = {locked:false, hiddenAt:0, exempt:0, last:Date.now(), form:null, msg:"", busy:false};
+function lockCfg(){ try { return JSON.parse(LS.get("rp.lock") || "null"); } catch { return null; } }
+function lockOn(){ return LOCK_OK && !!lockCfg(); }
+const b64 = u8 => btoa(String.fromCharCode(...new Uint8Array(u8)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function pbkdf2(secret, saltB64, iter){
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt: unb64(saltB64), iterations: iter}, key, 256);
+  return b64(bits);
+}
+const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
+function recoveryCode(){
+  const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; const r = crypto.getRandomValues(new Uint8Array(12));
+  const s = [...r].map(x => A[x % A.length]).join(""); return s.slice(0, 4) + "-" + s.slice(4, 8) + "-" + s.slice(8);
+}
+const normCode = c => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const normUser = u => String(u || "").trim().toLowerCase();
+async function lockSetup(user, pass){
+  const salt = newSalt(), iter = 210000, code = recoveryCode(), rsalt = newSalt();
+  const cfg = Object.assign({mode:"leave", grace:0, idle:0, remember:true}, lockCfg() || {}, {user: user.trim(), salt, iter, hash: await pbkdf2(normUser(user) + "\n" + pass, salt, iter), rsalt, rhash: await pbkdf2(normCode(code), rsalt, iter)});
+  LS.set("rp.lock", JSON.stringify(cfg)); if (cfg.remember) LS.set("rp.lock.user", cfg.user);
+  return code;
+}
+async function lockCheck(user, pass){ const c = lockCfg(); if (!c) return true; return (await pbkdf2(normUser(user) + "\n" + pass, c.salt, c.iter)) === c.hash && normUser(user) === normUser(c.user); }
+function failState(){ try { return JSON.parse(LS.get("rp.lock.fail") || "{}"); } catch { return {}; } }
+function waitLeft(){ const f = failState(); return f.until && f.until > Date.now() ? Math.ceil((f.until - Date.now()) / 1000) : 0; }
+function noteFail(){ const f = failState(); f.n = (f.n || 0) + 1; if (f.n >= 5) f.until = Date.now() + Math.min(900, 30 * Math.pow(2, f.n - 5)) * 1000; LS.set("rp.lock.fail", JSON.stringify(f)); }
+function lockExempt(ms){ LK.exempt = Date.now() + (ms || 120000); }
+function lockNow(){
+  if (!lockOn()) return;
+  LK.locked = true; LK.form = "login"; LK.msg = "";
+  document.documentElement.classList.add("locked");
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch {}
+  renderLock();
+}
+function unlock(){
+  LK.locked = false; LK.last = Date.now(); LK.form = null; LK.msg = "";
+  document.documentElement.classList.remove("locked", "veil");
+  $("#lock").hidden = true; $("#lock").textContent = "";
+}
+function renderLock(){
+  const box = $("#lock"); if (!box) return;
+  box.hidden = false; box.textContent = "";
+  const c = lockCfg() || {};
+  const card = el("form", "lockcard"); card.autocomplete = "on"; card.noValidate = true;
+  const brand = el("div", "lockbrand"); brand.append(markSvg(), el("b", "", "Mesa de RP"));
+  card.append(brand);
+  const field = (label, id, type, val, auto) => { const w = el("div", "field"); const l = el("label", "", label); l.htmlFor = id; const i = el("input"); i.type = type; i.id = id; i.value = val || ""; if (auto) i.autocomplete = auto; i.autocapitalize = "off"; i.spellcheck = false; w.append(l, i); return w; };
+  if (LK.form === "recover") {
+    card.append(el("p", "lockhint", "Digite o código de recuperação que o app mostrou quando você criou o login, e escolha uma senha nova."));
+    card.append(field("Código de recuperação", "lk-code", "text", "", "off"), field("Senha nova", "lk-p1", "password", "", "new-password"), field("Repita a senha nova", "lk-p2", "password", "", "new-password"));
+    const ac = el("div", "actions"); const go = el("button", "btn", "Trocar a senha"); go.type = "submit"; go.dataset.lk = "recover";
+    const back = el("button", "txt", "Voltar"); back.type = "button"; back.dataset.lk = "login"; ac.append(go, back); card.append(ac);
+    const wipe = el("button", "txt danger", "Não tenho o código: apagar tudo e recomeçar"); wipe.type = "button"; wipe.dataset.lk = "wipe1"; card.append(wipe);
+  } else if (LK.form === "wipe") {
+    card.append(el("p", "lockhint", "Isso apaga deste aparelho todas as histórias, personagens, modelos, chaves e o login. Não dá para desfazer. Para confirmar, digite APAGAR."));
+    card.append(field("Confirmação", "lk-wipe", "text", "", "off"));
+    const ac = el("div", "actions"); const go = el("button", "btn danger-fill", "Apagar tudo"); go.type = "submit"; go.dataset.lk = "wipe";
+    const back = el("button", "txt", "Voltar"); back.type = "button"; back.dataset.lk = "login"; ac.append(go, back); card.append(ac);
+  } else {
+    const remembered = c.remember ? (LS.get("rp.lock.user") || "") : "";
+    card.append(field("Usuário", "lk-user", "text", remembered, "username"), field("Senha", "lk-pass", "password", "", "current-password"));
+    const rem = el("label", "chk"); const ck = el("input"); ck.type = "checkbox"; ck.id = "lk-rem"; ck.checked = c.remember !== false; rem.append(ck, document.createTextNode("Lembrar usuário")); card.append(rem);
+    const ac = el("div", "actions"); const go = el("button", "btn", "Entrar"); go.type = "submit"; go.dataset.lk = "login-go"; ac.append(go);
+    const fg = el("button", "txt", "Esqueci a senha"); fg.type = "button"; fg.dataset.lk = "recover-form"; ac.append(fg); card.append(ac);
+    setTimeout(() => { const t = remembered ? $("#lk-pass") : $("#lk-user"); if (t) t.focus(); }, 30);
+  }
+  const w = waitLeft();
+  const m = el("p", "lockmsg"); m.setAttribute("role", "alert"); m.textContent = w ? "Muitas tentativas erradas. Espere " + w + " s." : LK.msg; m.hidden = !(w || LK.msg); card.append(m);
+  box.append(card);
+}
+async function lockSubmit(act){
+  if (LK.busy) return;
+  const c = lockCfg(); if (!c) { unlock(); return; }
+  const say = t => { LK.msg = t; const m = $("#lock .lockmsg"); if (m) { m.textContent = t; m.hidden = !t; } };
+  if (waitLeft()) { renderLock(); return; }
+  LK.busy = true;
+  try {
+    if (act === "login-go") {
+      const u = $("#lk-user").value, p = $("#lk-pass").value, rem = $("#lk-rem").checked;
+      if (!u.trim() || !p) { say("Preencha usuário e senha."); return; }
+      if (await lockCheck(u, p)) {
+        LS.del("rp.lock.fail");
+        const cfg = lockCfg(); cfg.remember = rem; LS.set("rp.lock", JSON.stringify(cfg));
+        if (rem) LS.set("rp.lock.user", cfg.user); else LS.del("rp.lock.user");
+        unlock();
+      } else { noteFail(); $("#lk-pass").value = ""; say(waitLeft() ? "Muitas tentativas erradas. Espere " + waitLeft() + " s." : "Usuário ou senha incorretos."); }
+    } else if (act === "recover") {
+      const code = $("#lk-code").value, p1 = $("#lk-p1").value, p2 = $("#lk-p2").value;
+      if (p1.length < 4) { say("A senha nova precisa de pelo menos 4 caracteres."); return; }
+      if (p1 !== p2) { say("As duas senhas não são iguais."); return; }
+      if ((await pbkdf2(normCode(code), c.rsalt, c.iter)) !== c.rhash) { noteFail(); say("Código de recuperação incorreto."); return; }
+      LS.del("rp.lock.fail");
+      const fresh = await lockSetup(c.user, p1);
+      unlock(); lockCodeNotice(fresh, "Senha trocada.");
+    } else if (act === "wipe") {
+      if (($("#lk-wipe").value || "").trim().toUpperCase() !== "APAGAR") { say("Digite APAGAR para confirmar."); return; }
+      try { Object.keys(localStorage).filter(k => k.startsWith("rp.")).forEach(k => localStorage.removeItem(k)); } catch {}
+      try { if (window.caches) await caches.delete("mesa-bergamot-v1"); } catch {}
+      location.reload();
+    }
+  } finally { LK.busy = false; }
+}
+function lockCodeNotice(code, title){
+  const box = $("#lock"); box.hidden = false; box.textContent = ""; document.documentElement.classList.add("veil");
+  const card = el("div", "lockcard");
+  card.append(el("b", "lockt", title || "Login criado."));
+  card.append(el("p", "lockhint", "Guarde este código de recuperação em um lugar seguro (anote ou tire print). Ele é o único jeito de trocar a senha se você esquecer. Ele não aparece de novo."));
+  const k = el("p", "lockcode", code); card.append(k);
+  const ac = el("div", "actions");
+  const cp = el("button", "btn ghost sm", "Copiar código"); cp.type = "button"; cp.dataset.lk = "copy"; cp.dataset.code = code;
+  const ok = el("button", "btn", "Já guardei"); ok.type = "button"; ok.dataset.lk = "done";
+  ac.append(cp, ok); card.append(ac); box.append(card);
+}
+function renderLockSettings(){
+  const box = $("#lock-box"); if (!box) return; box.textContent = "";
+  if (IN_CLAUDE) { box.append(el("p", "hint", "Aqui dentro do Claude, o acesso já é protegido pela sua conta. O login com senha existe na versão web (o site).")); return; }
+  if (!LOCK_OK) { box.append(el("p", "hint", "Este navegador não oferece a criptografia necessária para o login. Abra pelo site (https).")); return; }
+  const c = lockCfg();
+  const field = (label, id, type, auto) => { const w = el("div", "field"); const l = el("label", "", label); l.htmlFor = id; const i = el("input"); i.type = type; i.id = id; if (auto) i.autocomplete = auto; i.autocapitalize = "off"; i.spellcheck = false; w.append(l, i); return w; };
+  if (!c) {
+    box.append(el("p", "hint", "Crie um usuário e uma senha para o app pedir login sempre que for aberto."));
+    box.append(field("Usuário", "ls-user", "text", "username"), field("Senha", "ls-p1", "password", "new-password"), field("Repita a senha", "ls-p2", "password", "new-password"));
+    const ac = el("div", "actions"); const b = el("button", "btn sm", "Criar login"); b.type = "button"; b.dataset.ls = "create"; ac.append(b); box.append(ac);
+    const m0 = el("p", "hint"); m0.id = "ls-msg"; m0.style.color = "var(--danger)"; m0.hidden = true; box.append(m0);
+    box.append(el("p", "hint", "O login impede que outra pessoa abra o app no seu celular. Ele não criptografa os dados guardados no navegador; para levar ou guardar tudo, use Baixar tudo em Histórias."));
+    return;
+  }
+  box.append(el("p", "empty", "Login ativo · usuário " + c.user));
+  const s1 = el("div"); s1.append(el("p", "hint", "Quando bloquear")); const g1 = el("div", "seg"); s1.append(g1); box.append(s1);
+  seg(g1, [["leave", "Ao sair do app"], ["manual", "Só quando eu mandar"]], c.mode || "leave", id => { const x = lockCfg(); x.mode = id; LS.set("rp.lock", JSON.stringify(x)); renderLockSettings(); });
+  if ((c.mode || "leave") === "leave") {
+    const s2 = el("div"); s2.append(el("p", "hint", "Depois de sair (celular bloqueado, outro app)")); const g2 = el("div", "seg"); s2.append(g2); box.append(s2);
+    seg(g2, [["0", "Na hora"], ["60", "1 min"], ["300", "5 min"]], String(c.grace || 0), id => { const x = lockCfg(); x.grace = Number(id); LS.set("rp.lock", JSON.stringify(x)); });
+  }
+  const s3 = el("div"); s3.append(el("p", "hint", "Também bloquear depois de parado")); const g3 = el("div", "seg"); s3.append(g3); box.append(s3);
+  seg(g3, [["0", "Não"], ["5", "5 min"], ["15", "15 min"], ["30", "30 min"]], String(c.idle || 0), id => { const x = lockCfg(); x.idle = Number(id); LS.set("rp.lock", JSON.stringify(x)); });
+  const rem = el("label", "chk"); const ck = el("input"); ck.type = "checkbox"; ck.id = "ls-rem"; ck.checked = c.remember !== false; rem.append(ck, document.createTextNode("Lembrar usuário no login")); box.append(rem);
+  const ac = el("div", "actions");
+  const now = el("button", "btn sm", "🔒 Bloquear agora"); now.type = "button"; now.dataset.ls = "now";
+  const ch = el("button", "btn ghost sm", "Trocar senha"); ch.type = "button"; ch.dataset.ls = "change-form";
+  const rm = el("button", "btn ghost sm danger", "Remover login"); rm.type = "button"; rm.dataset.ls = "remove-form";
+  ac.append(now, ch, rm); box.append(ac);
+  if (LK.sform === "change" || LK.sform === "remove") {
+    const f = el("div", "rowcard");
+    f.append(field("Senha atual", "ls-cur", "password", "current-password"));
+    if (LK.sform === "change") f.append(field("Senha nova", "ls-n1", "password", "new-password"), field("Repita a senha nova", "ls-n2", "password", "new-password"));
+    const a2 = el("div", "actions"); const go = el("button", "btn sm" + (LK.sform === "remove" ? " danger" : ""), LK.sform === "change" ? "Salvar senha nova" : "Remover o login"); go.type = "button"; go.dataset.ls = LK.sform;
+    const cx = el("button", "txt", "Cancelar"); cx.type = "button"; cx.dataset.ls = "cancel"; a2.append(go, cx); f.append(a2); box.append(f);
+  }
+  const m = el("p", "hint"); m.id = "ls-msg"; m.style.color = "var(--danger)"; m.hidden = true; box.append(m);
+}
+function bindLock(){
+  const lock = $("#lock");
+  lock.addEventListener("submit", e => { e.preventDefault(); const b = lock.querySelector("button[type=submit]"); if (b) lockSubmit(b.dataset.lk); });
+  lock.addEventListener("click", async e => {
+    const b = e.target.closest("[data-lk]"); if (!b) return; const a = b.dataset.lk;
+    if (a === "login") { LK.form = "login"; LK.msg = ""; renderLock(); }
+    else if (a === "recover-form") { LK.form = "recover"; LK.msg = ""; renderLock(); }
+    else if (a === "wipe1") { LK.form = "wipe"; LK.msg = ""; renderLock(); }
+    else if (a === "copy") { try { await navigator.clipboard.writeText(b.dataset.code); b.textContent = "✓ Copiado"; } catch { toast("Copie o código à mão."); } }
+    else if (a === "done") { document.documentElement.classList.remove("veil"); lock.hidden = true; lock.textContent = ""; if (sheetName === "settings") renderLockSettings(); }
+  });
+  const box = $("#lock-box");
+  box.addEventListener("change", e => { if (e.target.id === "ls-rem") { const x = lockCfg(); x.remember = e.target.checked; LS.set("rp.lock", JSON.stringify(x)); if (x.remember) LS.set("rp.lock.user", x.user); else LS.del("rp.lock.user"); } });
+  box.addEventListener("click", async e => {
+    const b = e.target.closest("[data-ls]"); if (!b) return; const a = b.dataset.ls;
+    const say = t => { const m = $("#ls-msg"); if (m) { m.textContent = t; m.hidden = !t; } };
+    const v = id => ($("#" + id) || {}).value || "";
+    if (a === "create") {
+      const u = v("ls-user").trim(), p1 = v("ls-p1"), p2 = v("ls-p2");
+      if (u.length < 2) { say("Escolha um usuário com pelo menos 2 caracteres."); return; }
+      if (p1.length < 4) { say("A senha precisa de pelo menos 4 caracteres."); return; }
+      if (p1 !== p2) { say("As duas senhas não são iguais."); return; }
+      b.disabled = true; const code = await lockSetup(u, p1); refreshLockBtn(); lockCodeNotice(code, "Login criado.");
+    }
+    else if (a === "now") { closeSheet(); lockNow(); }
+    else if (a === "change-form" || a === "remove-form") { LK.sform = a.replace("-form", ""); renderLockSettings(); }
+    else if (a === "cancel") { LK.sform = null; renderLockSettings(); }
+    else if (a === "change" || a === "remove") {
+      const c = lockCfg(); if (!(await lockCheck(c.user, v("ls-cur")))) { say("Senha atual incorreta."); return; }
+      if (a === "change") {
+        const n1 = v("ls-n1"), n2 = v("ls-n2");
+        if (n1.length < 4) { say("A senha nova precisa de pelo menos 4 caracteres."); return; }
+        if (n1 !== n2) { say("As duas senhas não são iguais."); return; }
+        const code = await lockSetup(c.user, n1); LK.sform = null; lockCodeNotice(code, "Senha trocada.");
+      } else { LS.del("rp.lock"); LS.del("rp.lock.user"); LS.del("rp.lock.fail"); LK.sform = null; refreshLockBtn(); renderLockSettings(); toast("Login removido."); }
+    }
+  });
+  $("#b-lock").addEventListener("click", () => lockNow());
+  /* não bloquear quando o próprio app abre o seletor de arquivos, um download ou um link externo */
+  document.addEventListener("click", e => { if (e.target.closest("a[target=_blank]")) lockExempt(600000); }, true);
+  document.addEventListener("visibilitychange", () => {
+    if (!lockOn() || LK.locked) return;
+    const c = lockCfg(); if ((c.mode || "leave") !== "leave") return;
+    if (document.visibilityState === "hidden") {
+      if (Date.now() < LK.exempt) return;
+      LK.hiddenAt = Date.now();
+      if (!c.grace) lockNow(); else document.documentElement.classList.add("veil");
+    } else {
+      document.documentElement.classList.remove("veil");
+      if (LK.hiddenAt && c.grace && Date.now() - LK.hiddenAt >= c.grace * 1000) lockNow();
+      LK.hiddenAt = 0; LK.exempt = 0;
+    }
+  });
+  window.addEventListener("focus", () => { if (!LK.locked) LK.exempt = 0; });
+  ["pointerdown", "keydown", "touchstart"].forEach(t => document.addEventListener(t, () => { LK.last = Date.now(); }, {passive:true, capture:true}));
+  setInterval(() => { const c = lockCfg(); if (lockOn() && !LK.locked && c.idle && Date.now() - LK.last > c.idle * 60000) lockNow(); }, 15000);
+  refreshLockBtn();
+}
+function refreshLockBtn(){ const b = $("#b-lock"); if (b) b.hidden = !lockOn(); }
 
 /* ---------- memória que se cuida sozinha ---------- */
 const STATE_FIELDS = [["lugar", "📍", "Lugar"], ["hora", "🕐", "Hora e tempo"], ["presentes", "👥", "Quem está na cena"], ["corpo", "🩹", "Corpo e condição"], ["itens", "🎒", "Itens"], ["relacao", "🤝", "Relação"], ["pendencias", "❗", "Em aberto"]];
@@ -3396,7 +3624,8 @@ function bindModels(){
 /* ---------- início ---------- */
 async function cap(name){ try { const c = window.claude; if (!c || typeof c.use !== "function") return null; return await c.use(name); } catch { return null; } }
 async function boot(){
-  loadPrefs(); loadModels(); applyTheme(); bind(); renderSettings();
+  loadPrefs(); applyTheme(); if (lockOn()) lockNow();
+  loadModels(); bind(); renderSettings();
   const [sample, downloads, db, user] = await Promise.all([cap("sample"), cap("downloads"), cap("db"), cap("user")]);
   S.sample = sample; S.downloads = downloads;
   let uid = null; try { uid = user ? await user.id() : null; } catch {}
