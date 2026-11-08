@@ -1,0 +1,487 @@
+{
+ "title": "Guia de suaíli",
+ "intro": "O suaíli (kiswahili) é uma língua real, falada por mais de cem milhões de pessoas na África Oriental. Na história, é a língua dos Namaru. Toque numa palavra para pôr na sua mensagem.",
+ "sections": [
+  {
+   "h": "Pronúncia",
+   "rows": [
+    [
+     "a, e, i, o, u",
+     "sempre abertas, como em pá, pé, pi, pó, pu"
+    ],
+    [
+     "j",
+     "como “dj”: jina = djina"
+    ],
+    [
+     "ch",
+     "como “tch”: chakula = tchakula"
+    ],
+    [
+     "sh",
+     "como o “x” de xícara"
+    ],
+    [
+     "ng'",
+     "como o “ng” do inglês sing: ng'ombe (vaca)"
+    ],
+    [
+     "dh / th",
+     "como o “th” do inglês: this / think"
+    ],
+    [
+     "sílaba forte",
+     "quase sempre a penúltima: ra-FI-ki, a-SAN-te"
+    ]
+   ],
+   "ref": true
+  },
+  {
+   "h": "Para começar",
+   "rows": [
+    [
+     "Jambo / Hujambo?",
+     "olá / você está bem?"
+    ],
+    [
+     "Sijambo",
+     "estou bem (resposta)"
+    ],
+    [
+     "Habari?",
+     "e aí? como vai?"
+    ],
+    [
+     "Nzuri",
+     "bem, bom"
+    ],
+    [
+     "Asante (sana)",
+     "obrigado (muito)"
+    ],
+    [
+     "Karibu",
+     "bem-vindo; de nada; pode entrar"
+    ],
+    [
+     "Kwaheri",
+     "tchau"
+    ],
+    [
+     "Ndiyo / Hapana",
+     "sim / não"
+    ],
+    [
+     "Sawa",
+     "ok, certo"
+    ],
+    [
+     "Pole",
+     "sinto muito (por dor ou cansaço)"
+    ],
+    [
+     "Polepole",
+     "devagar"
+    ],
+    [
+     "Haraka",
+     "rápido, depressa"
+    ],
+    [
+     "Hakuna shida",
+     "sem problema"
+    ],
+    [
+     "Tafadhali",
+     "por favor"
+    ]
+   ]
+  },
+  {
+   "h": "Pessoas",
+   "rows": [
+    [
+     "mimi / wewe / yeye",
+     "eu / você / ele, ela"
+    ],
+    [
+     "sisi / ninyi / wao",
+     "nós / vocês / eles"
+    ],
+    [
+     "mtu / watu",
+     "pessoa / pessoas"
+    ],
+    [
+     "mgeni / wageni",
+     "estranho, visitante / estranhos"
+    ],
+    [
+     "rafiki",
+     "amigo"
+    ],
+    [
+     "mtoto / watoto",
+     "criança / crianças"
+    ],
+    [
+     "mama / baba",
+     "mãe / pai"
+    ],
+    [
+     "kaka / dada",
+     "irmão / irmã"
+    ],
+    [
+     "mzee / wazee",
+     "ancião / anciãos"
+    ],
+    [
+     "mwanamke / mwanaume",
+     "mulher / homem"
+    ]
+   ]
+  },
+  {
+   "h": "Ilha e natureza",
+   "rows": [
+    [
+     "maji",
+     "água"
+    ],
+    [
+     "moto",
+     "fogo"
+    ],
+    [
+     "jua",
+     "sol"
+    ],
+    [
+     "mwezi",
+     "lua"
+    ],
+    [
+     "nyota",
+     "estrela"
+    ],
+    [
+     "mvua",
+     "chuva"
+    ],
+    [
+     "upepo",
+     "vento"
+    ],
+    [
+     "bahari",
+     "mar"
+    ],
+    [
+     "mto",
+     "rio"
+    ],
+    [
+     "mti",
+     "árvore"
+    ],
+    [
+     "msitu",
+     "floresta"
+    ],
+    [
+     "mchanga",
+     "areia"
+    ],
+    [
+     "jiwe",
+     "pedra"
+    ],
+    [
+     "samaki",
+     "peixe"
+    ],
+    [
+     "ndege",
+     "pássaro"
+    ],
+    [
+     "nyuki",
+     "abelha"
+    ],
+    [
+     "asali",
+     "mel"
+    ],
+    [
+     "nyoka",
+     "cobra"
+    ],
+    [
+     "papa",
+     "tubarão"
+    ],
+    [
+     "asubuhi / usiku",
+     "manhã / noite"
+    ],
+    [
+     "leo / kesho / jana",
+     "hoje / amanhã / ontem"
+    ]
+   ]
+  },
+  {
+   "h": "Corpo",
+   "rows": [
+    [
+     "kichwa",
+     "cabeça"
+    ],
+    [
+     "macho",
+     "olhos"
+    ],
+    [
+     "mdomo",
+     "boca"
+    ],
+    [
+     "mkono",
+     "mão, braço"
+    ],
+    [
+     "mguu",
+     "pé, perna"
+    ],
+    [
+     "tumbo",
+     "barriga"
+    ],
+    [
+     "moyo",
+     "coração"
+    ],
+    [
+     "damu",
+     "sangue"
+    ]
+   ]
+  },
+  {
+   "h": "Coisas do dia a dia",
+   "rows": [
+    [
+     "upinde",
+     "arco"
+    ],
+    [
+     "mshale / mishale",
+     "flecha / flechas"
+    ],
+    [
+     "mkuki",
+     "lança"
+    ],
+    [
+     "kisu",
+     "faca"
+    ],
+    [
+     "chakula",
+     "comida"
+    ],
+    [
+     "kamba",
+     "corda"
+    ],
+    [
+     "mtumbwi",
+     "canoa"
+    ],
+    [
+     "nyumba",
+     "casa, abrigo"
+    ]
+   ]
+  },
+  {
+   "h": "Ordens e ações",
+   "rows": [
+    [
+     "Njoo!",
+     "vem!"
+    ],
+    [
+     "Nenda!",
+     "vai!"
+    ],
+    [
+     "Kaa!",
+     "senta, fica!"
+    ],
+    [
+     "Simama!",
+     "levanta! para!"
+    ],
+    [
+     "Angalia!",
+     "olha!"
+    ],
+    [
+     "Sikiliza!",
+     "escuta!"
+    ],
+    [
+     "Ngoja!",
+     "espera!"
+    ],
+    [
+     "Usiguse!",
+     "não toca!"
+    ],
+    [
+     "Twende!",
+     "vamos!"
+    ],
+    [
+     "Kula / kunywa / lala",
+     "come / bebe / dorme"
+    ],
+    [
+     "Saidia",
+     "ajuda"
+    ],
+    [
+     "kucheka",
+     "rir"
+    ]
+   ]
+  },
+  {
+   "h": "Como as frases funcionam",
+   "rows": [
+    [
+     "ni- u- a- tu- m- wa-",
+     "quem faz: eu, você, ele, nós, vocês, eles"
+    ],
+    [
+     "-na- / -li- / -ta-",
+     "quando: agora / passado / futuro"
+    ],
+    [
+     "Ninakula",
+     "eu estou comendo (ni + na + kula)"
+    ],
+    [
+     "Nilikula / Nitakula",
+     "eu comi / eu vou comer"
+    ],
+    [
+     "Unakula?",
+     "você está comendo? (pergunta é só a entonação)"
+    ],
+    [
+     "Sielewi / Sijui / Sitaki",
+     "não entendo / não sei / não quero"
+    ],
+    [
+     "nini? nani? wapi? lini? vipi?",
+     "o quê? quem? onde? quando? como?"
+    ]
+   ],
+   "ref": true
+  },
+  {
+   "h": "Frases úteis",
+   "rows": [
+    [
+     "Jina lako nani?",
+     "qual é o seu nome?"
+    ],
+    [
+     "Jina langu ni…",
+     "meu nome é…"
+    ],
+    [
+     "Unatoka wapi?",
+     "de onde você vem?"
+    ],
+    [
+     "Ninataka maji",
+     "quero água"
+    ],
+    [
+     "Nina njaa / Nina kiu",
+     "estou com fome / com sede"
+    ],
+    [
+     "Nimechoka",
+     "estou cansado"
+    ],
+    [
+     "Nisaidie",
+     "me ajuda"
+    ],
+    [
+     "Hatari!",
+     "perigo!"
+    ],
+    [
+     "Unacheka nini?",
+     "está rindo de quê?"
+    ],
+    [
+     "Wewe ni mcheshi",
+     "você é engraçado"
+    ]
+   ]
+  },
+  {
+   "h": "Palavras dos Namaru para o que vem de fora",
+   "rows": [
+    [
+     "mgeni",
+     "o estranho (como chamam você)"
+    ],
+    [
+     "ndege kubwa",
+     "“pássaro grande”: o avião visto de longe"
+    ],
+    [
+     "mtumbwi mkubwa",
+     "“canoa grande”: barco de fora"
+    ],
+    [
+     "watu wa bahari",
+     "“gente do mar”: quem veio de fora"
+    ],
+    [
+     "ndege wa asali",
+     "o pássaro que guia até o mel"
+    ],
+    [
+     "chuma",
+     "metal"
+    ]
+   ]
+  },
+  {
+   "h": "Números",
+   "rows": [
+    [
+     "moja, mbili, tatu",
+     "1, 2, 3"
+    ],
+    [
+     "nne, tano, sita",
+     "4, 5, 6"
+    ],
+    [
+     "saba, nane, tisa, kumi",
+     "7, 8, 9, 10"
+    ]
+   ]
+  }
+ ]
+}

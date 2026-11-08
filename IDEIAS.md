@@ -18,6 +18,7 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 ## O que já existe (até 07/11/2026)
 
 - Modelos: Claude (dentro do Claude) ou API (OpenRouter, Gemini, Groq, DeepSeek, Mistral, OpenAI, Ollama, LM Studio, personalizada), com medidor de uso e plano B quando o limite do Claude acaba.
+- Tau (v6): fala suaíli de verdade (sem tradução para o jogador), ri fácil, caça com arco; povo inspirado nos caçadores-coletores (partilha, mel com o pássaro-guia). Guia de suaíli escondido no painel Palavras. A ficha é gerada por `fonte/make_tau6.py` a partir da v5.
 - Personagens: editor com IA, cards do SillyTavern, Chub, conversas .jsonl do SillyTavern, personagem a partir de imagem, elenco em grupo, teste antes de jogar e revisão da ficha.
 - Memória: resumo automático, estado da cena (com "quem sabe o quê"), lore aprendida, fichas de NPC com rotina, boatos, diário em capítulos.
 - Linha do tempo: Voltar, Regerar, trocar de versão, editar a última resposta e Ramificar levam o estado junto; "Recalcular do zero" para histórias antigas.
@@ -28,7 +29,8 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 
 ## Para testar jogando
 
-- [ ] O Tau ensina palavras de Namaru e elas entram no 📖 Palavras?
+- [ ] O Tau fala suaíli correto, sem traduzir, e as palavras que ele ensina entram no 📖 Palavras?
+- [ ] O Tau ri e provoca na medida certa (sem virar palhaço quando o perigo é real)?
 - [ ] Ousmane: as fichas de NPC (Cheikh, vizinhos) e os boatos respeitam quem estava presente?
 - [ ] "Recalcular do zero" na história do dedo quebrado limpou tudo?
 - [ ] Sincronização entre celular e computador (e uma exclusão viajando).

@@ -225,6 +225,11 @@ html.locked #app>:not(#lock),html.veil #app>:not(#lock){visibility:hidden}
 .vcard .vm{margin:0;font:400 18px/1.45 var(--f-body);color:var(--nar)}
 .vcard small{font:400 12px/1.4 var(--f-mono);color:var(--faint)}
 .vcard .hint{margin:0}
+.gl{display:flex;flex-direction:column}
+.glr{display:flex;justify-content:space-between;align-items:baseline;gap:14px;width:100%;text-align:left;background:none;border:0;border-bottom:1px dashed var(--line);padding:9px 2px;font:inherit;color:var(--fg)}
+button.glr{cursor:pointer}button.glr:active{background:var(--surface-2)}
+.glr b{font:600 15px/1.35 var(--f-display);min-width:0;overflow-wrap:anywhere}
+.glr span{font:400 14px/1.4 var(--f-body);color:var(--muted);text-align:right;min-width:0}
 .xgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .xcell{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
 .xcell b{font:600 14px/1.2 var(--f-display)}
@@ -2311,9 +2316,9 @@ async function importChub(link){
 }
 
 /* ---------- tradução ---------- */
-const TR_LANGS = ["francês", "inglês", "espanhol", "italiano", "alemão", "árabe", "wolof", "japonês", "português"];
+const TR_LANGS = ["francês", "inglês", "espanhol", "italiano", "alemão", "árabe", "wolof", "suaíli", "japonês", "português"];
 const TRX = {busy:null, undo:null, out:null, inBusy:false};
-function trLang(){ return (S.story && S.story.trLang) || LS.get("rp.trLang") || "francês"; }
+function trLang(){ return (S.story && S.story.trLang) || (S.char && S.char.trLang) || LS.get("rp.trLang") || "francês"; }
 function renderTrMenu(){
   const m = $("#trmenu"); m.textContent = "";
   const cur = trLang();
@@ -2326,7 +2331,7 @@ function renderTrMenu(){
     const g = el("button", "", got.length ? "Baixar mais idiomas…" : "Baixar idiomas…"); g.type = "button"; g.dataset.goset = "1"; m.append(g);
   }
   const t = ($("#in").value || "").trim();
-  const gl = {"francês":"fr", "inglês":"en", "espanhol":"es", "italiano":"it", "alemão":"de", "árabe":"ar", "wolof":"wo", "japonês":"ja", "português":"pt"}[cur] || "fr";
+  const gl = {"francês":"fr", "inglês":"en", "espanhol":"es", "italiano":"it", "alemão":"de", "árabe":"ar", "wolof":"wo", "suaíli":"sw", "japonês":"ja", "português":"pt"}[cur] || "fr";
   const a = el("a", "", "Abrir no Google Tradutor ↗"); a.href = "https://translate.google.com/?sl=auto&tl=" + gl + "&op=translate" + (t ? "&text=" + encodeURIComponent(t.slice(0, 2000)) : ""); a.target = "_blank"; a.rel = "noopener";
   m.append(a);
 }
@@ -3753,6 +3758,21 @@ function renderVocab(){
     ? "Quando alguém ensina ou explica uma palavra de outro idioma na cena, ela entra aqui sozinha. O narrador passa a respeitar o que cada um entende: o resto da fala continua sem tradução. Quanto mais a palavra aparece, mais o personagem domina. Na conversa, toque numa palavra sublinhada para ver o significado."
     : "O dicionário automático está desligado em Ajustes. Você ainda pode anotar palavras à mão."));
   box.append(top);
+  const G = S.char && S.char.guide;
+  if (G && Array.isArray(G.sections)) {
+    const gd = el("details", "adv"); gd.append(el("summary", "", "📘 " + (G.title || "Guia") + " (abra só se quiser)"));
+    const gi = el("div", "inner"); if (G.intro) gi.append(el("p", "hint", G.intro));
+    G.sections.forEach(sec => {
+      gi.append(el("h4", "", sec.h)); const gl = el("div", "gl");
+      (sec.rows || []).forEach(([a2, b2]) => {
+        const r = el(sec.ref ? "div" : "button", "glr"); r.append(el("b", "", a2), el("span", "", b2));
+        if (!sec.ref) { r.type = "button"; r.dataset.vx = "gw"; r.dataset.w = String(a2).split(" / ")[0].replace(/\s*\([^)]*\)/g, "").replace(/[!?…]/g, "").trim(); r.title = "Pôr na mensagem"; }
+        gl.append(r);
+      });
+      gi.append(gl);
+    });
+    gd.append(gi); box.append(gd);
+  }
   const by = new Map(); list.forEach(v => { const k = v.who || me; if (!by.has(k)) by.set(k, []); by.get(k).push(v); });
   const order = [...by.keys()].sort((a, b) => (vnorm(b) === vnorm(me)) - (vnorm(a) === vnorm(me)));
   for (const who of order) {
@@ -3808,6 +3828,7 @@ function bindVocab(){
     const b = e.target.closest("[data-vx]"); if (!b || !S.story) return;
     const st = S.story, act = b.dataset.vx, v = b.dataset.id ? vocabOf(st).find(x => x.id === b.dataset.id) : null;
     if (act === "use" && v) insertWord(v.w);
+    else if (act === "gw") insertWord(b.dataset.w);
     else if (act === "del" && v) {
       if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
       const k = vnorm(v.w) + "|" + vnorm(v.who);
@@ -4260,12 +4281,13 @@ function exprPrompt(ch, m){
 }
 
 /* vozes */
-const TTS_LANG = {pt:"pt-BR", en:"en-US", es:"es-ES", fr:"fr-FR", de:"de-DE", it:"it-IT"};
+const TTS_LANG = {pt:"pt-BR", en:"en-US", es:"es-ES", fr:"fr-FR", de:"de-DE", it:"it-IT", sw:"sw-KE"};
 const LANG_HINTS = {
   fr: /\b(je|tu|vous|nous|c'est|est|suis|êtes|pas|ne|le|la|les|des|une|et|qui|mon|ma|ton|ça|oui|non|merci|bonjour|avec|pour|dans|au|aux|mais|très|bien|où|il|elle)\b/gi,
   en: /\b(the|you|is|are|and|what|my|your|not|yes|this|that|with|for|it|of|to|i'm|don't|will|have)\b/gi,
   es: /\b(usted|qué|está|estoy|sí|pero|muy|los|las|una|por|para|con|y|el|es|mi|tu|bueno|gracias|señor|hola|yo)\b/gi,
-  pt: /\b(você|não|sim|está|estou|uma|para|com|e|o|os|é|meu|seu|mas|muito|isso|eu|obrigad[oa]|tá|né|vou|aqui)\b/gi
+  pt: /\b(você|não|sim|está|estou|uma|para|com|e|o|os|é|meu|seu|mas|muito|isso|eu|obrigad[oa]|tá|né|vou|aqui)\b/gi,
+  sw: /\b(mimi|wewe|yeye|sisi|ni|hapa|nini|nani|wapi|njoo|kaa|sana|asante|karibu|rafiki|sawa|hakuna|twende|ndiyo|hapana|polepole|jina|lako|langu|maji|moto|toka|kama|lakini|pia|hii|hiyo)\b|\b\w*(?:sielewi|sijui|nina|una|ana|tuna|wana|ali|nili|nita|uta|ata)\w*\b/gi
 };
 function guessLang(t, base){
   const sc = {}; for (const [k, re] of Object.entries(LANG_HINTS)) sc[k] = (t.match(re) || []).length;
