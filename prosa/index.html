@@ -1,0 +1,516 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#c8472d"><style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Prosa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f3efe8;--surface:#fffdf8;--surface-2:#ebe5da;--line:#d9d1c2;--fg:#211c26;--muted:#6b6472;--faint:#978f9c;--accent:#c8472d;--accent-ink:#fff8f3;--mine:#f6d9cd;--mine-ink:#2a1712;--ok:#2f7d5b;--danger:#b3261e;
+  --f-d:"Bricolage Grotesque","Figtree",system-ui,sans-serif;--f-b:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--surface:#1e1b24;--surface-2:#282431;--line:#37323f;--fg:#f1ecf4;--muted:#a79fb0;--faint:#7d7686;--accent:#f0775c;--accent-ink:#1c0d08;--mine:#5a2a1f;--mine-ink:#ffe9e1;--ok:#6fcf9f;--danger:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141218;--surface:#1e1b24;--surface-2:#282431;--line:#37323f;--fg:#f1ecf4;--muted:#a79fb0;--faint:#7d7686;--accent:#f0775c;--accent-ink:#1c0d08;--mine:#5a2a1f;--mine-ink:#ffe9e1;--ok:#6fcf9f;--danger:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.45 var(--f-b);margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{max-width:720px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;min-width:0}
+.bar{display:flex;align-items:center;gap:10px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:var(--surface);min-width:0}
+.bar h1{font:800 26px/1 var(--f-d);margin:0;letter-spacing:-.02em;flex:1}
+.bar h1 i{font-style:normal;color:var(--accent)}
+.ib{width:42px;height:42px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;font-size:19px;line-height:1}
+.ib:active{background:var(--surface-2)}
+.av{width:48px;height:48px;flex:none;border-radius:50%;background:var(--surface-2) center/cover no-repeat;display:grid;place-items:center;font:800 19px/1 var(--f-d);color:var(--accent);border:1px solid var(--line)}
+.av.sm{width:40px;height:40px;font-size:16px}
+.av.lg{width:88px;height:88px;font-size:34px}
+#list{flex:1;overflow-y:auto;padding-bottom:24px}
+.row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+.row:active{background:var(--surface-2)}
+.row .mid{flex:1;min-width:0}
+.row b{display:block;font:600 17px/1.25 var(--f-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .pv{display:block;color:var(--muted);font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .end{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;color:var(--faint)}
+.badge{min-width:22px;height:22px;border-radius:11px;background:var(--accent);color:var(--accent-ink);font:600 12.5px/22px var(--f-b);text-align:center;padding:0 6px}
+.empty{padding:36px max(24px,env(safe-area-inset-left,0px));text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:14px;align-items:center}
+.empty h2{font:800 24px/1.15 var(--f-d);color:var(--fg);margin:0;text-wrap:balance}
+.empty p{margin:0;max-width:44ch}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:11px 20px;font-weight:600;min-height:44px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.quiet{border-color:var(--line);background:transparent;color:var(--fg)}
+.btn.danger{border-color:var(--danger);background:transparent;color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:default}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+#chat{flex:1;display:flex;flex-direction:column;min-height:0}
+.who{flex:1;min-width:0;background:none;border:0;text-align:left;padding:0;display:flex;gap:10px;align-items:center}
+.who b{display:block;font:600 17px/1.2 var(--f-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small.typing{color:var(--accent);font-weight:600}
+#log{flex:1;overflow-y:auto;padding-block:14px;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:3px}
+.day{align-self:center;margin:10px 0 6px;font:600 11.5px/1 var(--f-b);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:6px 12px}
+.m{max-width:82%;padding:8px 12px 6px;border-radius:18px;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;font-size:16px;line-height:1.4}
+.m.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.m.u{align-self:flex-end;background:var(--mine);color:var(--mine-ink);border-bottom-right-radius:6px}
+.m + .m.a.first,.m + .m.u.first{margin-top:8px}
+.m time{display:block;text-align:right;font-size:11px;opacity:.65;margin-top:2px}
+.m.u time .tk{margin-left:5px;letter-spacing:-3px}
+.m.u time .tk.rd{color:var(--accent);opacity:1;font-weight:700}
+.dots{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:18px 18px 18px 6px;padding:13px 14px;display:flex;gap:5px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bl 1.1s infinite}
+.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
+@keyframes bl{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion: reduce){.dots i{animation:none;opacity:.6}}
+.note{align-self:center;text-align:center;max-width:46ch;color:var(--muted);font-size:14px;margin:8px 0}
+.note button{background:none;border:0;color:var(--accent);font-weight:600;text-decoration:underline;padding:4px}
+.comp{display:flex;gap:8px;align-items:flex-end;padding-top:8px;padding-bottom:max(10px,env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));border-top:1px solid var(--line);background:var(--surface)}
+.comp textarea{flex:1;min-width:0;resize:none;max-height:140px;border:1px solid var(--line);border-radius:22px;background:var(--bg);padding:10px 14px;line-height:1.35}
+.comp .send{width:46px;height:46px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:20px;flex:none}
+.comp .send:disabled{opacity:.45}
+#sheet{position:fixed;inset:0;background:rgba(10,8,14,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+#sheet .panel{background:var(--bg);width:100%;max-width:720px;max-height:92dvh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;min-height:0}
+#sheet .ph{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+#sheet .ph h2{flex:1;margin:0;font:800 21px/1.1 var(--f-d)}
+#sheet .pb{overflow-y:auto;padding:16px;padding-bottom:max(24px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f label{font:600 12px/1.2 var(--f-b);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.f input,.f textarea,.f select{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px 12px;width:100%;min-width:0}
+.f textarea{resize:vertical;min-height:74px;line-height:1.4}
+.f small,.hint{color:var(--muted);font-size:13.5px;line-height:1.45;margin:0}
+.seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.seg button{flex:1;border:0;background:none;padding:10px 6px;font-size:14.5px;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.box{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:14px;display:flex;flex-direction:column;gap:12px}
+.box h3{margin:0;font:600 17px/1.2 var(--f-d)}
+.pick{display:flex;align-items:center;gap:14px}
+#toast{position:fixed;left:50%;bottom:max(84px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:14px;max-width:min(92vw,520px);font-size:14.5px;z-index:40;text-align:center}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<div id="app">
+  <section id="v-list" style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <header class="bar"><h1>Prosa<i>.</i></h1>
+      <button class="ib" id="b-new" type="button" title="Novo contato" aria-label="Novo contato">＋</button>
+      <button class="ib" id="b-set" type="button" title="Ajustes" aria-label="Ajustes">⚙</button></header>
+    <div id="list"></div>
+  </section>
+  <section id="chat" hidden>
+    <header class="bar">
+      <button class="ib" id="b-back" type="button" aria-label="Voltar">←</button>
+      <button class="who" id="b-who" type="button" title="Ver contato"><span class="av sm" id="c-av"></span><span style="min-width:0"><b id="c-name"></b><small id="c-sub"></small></span></button>
+    </header>
+    <div id="log" aria-live="polite"></div>
+    <form class="comp" id="comp"><textarea id="in" rows="1" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="b-send" type="submit" aria-label="Enviar">➤</button></form>
+  </section>
+</div>
+<div id="sheet" hidden><div class="panel" role="dialog" aria-modal="true"><div class="ph"><h2 id="sh-t"></h2><button class="ib" id="sh-x" type="button" aria-label="Fechar">✕</button></div><div class="pb" id="sh-b"></div></div></div>
+<div id="toast" hidden role="status"></div>
+<input type="file" id="f-av" accept="image/*" hidden><input type="file" id="f-card" accept=".png,.json,image/png,application/json" hidden><input type="file" id="f-bk" accept=".json,application/json" hidden>
+
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const rid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const IN_CLAUDE = !!(window.claude && typeof window.claude.use === "function");
+const clean = o => JSON.parse(JSON.stringify(o));
+const trunc = (s, n) => { s = String(s || ""); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+const S = {ix:{contacts:[], me:{name:"", about:""}, theme:"auto", model:null}, cur:null, store:null, sample:null, downloads:null, busy:new Set(), timers:{}, edit:null};
+
+/* ---------- armazenamento ---------- */
+const MEM = new Map();
+const LS = { get(k){ try { const v = localStorage.getItem(k); return v == null ? (MEM.has(k) ? MEM.get(k) : null) : v; } catch { return MEM.has(k) ? MEM.get(k) : null; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch { MEM.set(k, v); } }, del(k){ try { localStorage.removeItem(k); } catch {} MEM.delete(k); } };
+function localStore(){
+  const g = k => { try { return JSON.parse(LS.get(k) || "null"); } catch { return null; } };
+  return {kind:"local", async getIndex(){ return g("pz.index"); }, async setIndex(v){ LS.set("pz.index", JSON.stringify(v)); },
+    async getChat(id){ return g("pz.c." + id); }, async setChat(c){ LS.set("pz.c." + c.id, JSON.stringify(c)); }, async delChat(id){ LS.del("pz.c." + id); }};
+}
+function dbStore(db, uid){
+  const base = db.doc("data/users/" + uid + "/app"), col = base.collection("contacts");
+  return {kind:"db", async getIndex(){ const s = await base.get(); return s.exists ? clean(s.data()) : null; }, async setIndex(v){ await base.set(clean(v)); },
+    async getChat(id){ const s = await col.doc(id).get(); return s.exists ? clean(s.data()) : null; }, async setChat(c){ await col.doc(c.id).set(clean(c)); }, async delChat(id){ await col.doc(id).delete(); }};
+}
+let q = Promise.resolve();
+const enqueue = fn => (q = q.then(fn, fn));
+const saveIx = () => enqueue(() => S.store.setIndex(S.ix)).catch(() => toast("Não consegui salvar agora."));
+const saveChat = c => enqueue(() => S.store.setChat(c)).catch(() => toast("Não consegui salvar a conversa."));
+const meta = id => S.ix.contacts.find(x => x.id === id);
+const CH = new Map();
+async function loadChat(id){ if (CH.has(id)) return CH.get(id); const c = await S.store.getChat(id); if (c) { c.msgs = c.msgs || []; CH.set(id, c); } return c; }
+
+/* ---------- utilidades ---------- */
+let toastT;
+function toast(t){ const b = $("#toast"); b.textContent = t; b.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { b.hidden = true; }, 3800); }
+const p2 = n => String(n).padStart(2, "0");
+const hhmm = t => { const d = new Date(t); return p2(d.getHours()) + ":" + p2(d.getMinutes()); };
+const DAYS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+const dayKey = t => { const d = new Date(t); return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); };
+function dayLabel(t){ const n = new Date(), y = new Date(n - 864e5); if (dayKey(t) === dayKey(n)) return "Hoje"; if (dayKey(t) === dayKey(y)) return "Ontem"; const d = new Date(t); return p2(d.getDate()) + "/" + p2(d.getMonth() + 1) + (d.getFullYear() !== n.getFullYear() ? "/" + d.getFullYear() : ""); }
+const listTime = t => !t ? "" : dayKey(t) === dayKey(Date.now()) ? hhmm(t) : dayLabel(t);
+const nowText = t => { const d = new Date(t || Date.now()); return DAYS[d.getDay()] + ", " + p2(d.getDate()) + "/" + p2(d.getMonth() + 1) + ", " + hhmm(d); };
+function gapText(ms){ const m = Math.round(ms / 60000); if (m < 60) return m + " min"; const h = Math.round(m / 60); if (h < 36) return h + " h"; return Math.round(h / 24) + " dias"; }
+function avatar(node, m){ node.style.backgroundImage = m && m.av ? 'url("' + m.av + '")' : ""; node.textContent = m && m.av ? "" : ((m && m.name) || "?").trim().slice(0, 1).toUpperCase(); }
+function fileToAvatar(file){ return new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const im = new Image(); im.onerror = rej; im.onload = () => { const s = 160, c = document.createElement("canvas"); c.width = c.height = s; const k = Math.min(im.width, im.height), x = c.getContext("2d"); x.drawImage(im, (im.width - k) / 2, (im.height - k) * 0.2, k, k, 0, 0, s, s); res(c.toDataURL("image/jpeg", 0.78)); }; im.src = r.result; }; r.readAsDataURL(file); }); }
+function parseJSON(t){ t = String(t || "").replace(/```(?:json)?/gi, "").trim(); const a = t.indexOf("{"), b = t.lastIndexOf("}"); if (a < 0 || b <= a) return null; try { return JSON.parse(t.slice(a, b + 1)); } catch { return null; } }
+function applyTheme(){ const t = S.ix.theme; if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme"); }
+
+/* ---------- modelo ---------- */
+function model(){
+  if (S.ix.model && S.ix.model.base && S.ix.model.model) return S.ix.model;
+  if (IN_CLAUDE) return null;
+  try { const j = JSON.parse(LS.get("rp.models") || "null"); const m = j && (j.list || []).find(x => x.id === j.active); if (m && m.base && m.model) return Object.assign({mesa:true}, m); } catch {}
+  return null;
+}
+const hasAI = () => !!(S.sample || model());
+function merge(turns){ const out = []; for (const t of turns) { if (!t.content) continue; const l = out[out.length - 1]; if (l && l.role === t.role) l.content += "\n" + t.content; else out.push({role: t.role, content: t.content}); } return out; }
+async function ask(turns, o = {}){
+  turns = merge(turns);
+  if (S.sample && !(S.ix.model && S.ix.model.base)) { const r = await S.sample(turns, {cache:false, modelTier: o.tier || "default"}); return String((r && r.text) || "").trim(); }
+  const m = model(); if (!m) throw {code:"no_model"};
+  const h = {"Content-Type": "application/json"}; if (m.key) h.Authorization = "Bearer " + String(m.key).trim();
+  let res; try { res = await fetch(String(m.base).trim().replace(/\/+$/, "") + "/chat/completions", {method:"POST", headers:h, body: JSON.stringify({model: String(m.model).trim(), messages: turns, max_tokens: o.max || 500, stream:false})}); }
+  catch { throw {code:"net"}; }
+  if (!res.ok) throw {code:"http", status: res.status};
+  const j = await res.json(); const c = j.choices && j.choices[0];
+  const t = String((c && ((c.message && c.message.content) || c.text)) || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+  if (!t) throw {code:"empty"}; return t;
+}
+const errText = e => { const c = e && e.code; return c === "no_model" ? "Escolha um modelo em Ajustes." : c === "net" ? "Sem conexão com o modelo." : c === "http" ? (e.status === 429 ? "O modelo está no limite agora. Tente em instantes." : e.status === 401 ? "A chave do modelo foi recusada." : "O modelo deu erro (" + e.status + ").") : c === "rate_limited" ? "O Claude está no limite agora. Tente em instantes." : "Não consegui responder agora."; };
+
+/* ---------- o que o contato lê ---------- */
+function sheetOf(c){
+  const me = S.ix.me.name || "a pessoa";
+  const sub = t => String(t || "").replace(/\{\{user\}\}/gi, me).replace(/\{\{char\}\}/gi, c.name);
+  return `Você é ${c.name} e está trocando mensagens com ${me} por um aplicativo de mensagens no celular. Isto é uma conversa de texto, não uma cena narrada. Se a sua história original não teria celular, considere que nesta versão do mundo você tem um e escreve do seu jeito.
+
+QUEM VOCÊ É:
+${trunc(sub(c.quem), 7000) || "(sem descrição)"}
+${c.relacao ? "\nSUA RELAÇÃO COM " + me.toUpperCase() + ":\n" + trunc(sub(c.relacao), 2500) + "\n" : ""}${c.estilo ? "\nCOMO VOCÊ ESCREVE NO CELULAR:\n" + trunc(sub(c.estilo), 800) + "\n" : ""}${c.rotina ? "\nSUA ROTINA:\n" + trunc(sub(c.rotina), 800) + "\n" : ""}${S.ix.me.about ? "\nO QUE VOCÊ SABE DE " + me.toUpperCase() + ":\n" + trunc(S.ix.me.about, 1200) + "\n" : ""}${c.memory ? "\nO QUE JÁ ACONTECEU NESTA CONVERSA (resumo):\n" + trunc(c.memory, 3000) + "\n" : ""}
+REGRAS:
+- Escreva só o que ${c.name} digitaria: mensagens curtas e naturais, com o vocabulário, as gírias, a pontuação e os emojis (ou a falta deles) dessa pessoa.
+- De 1 a 4 mensagens, UMA POR LINHA. Sem narração, sem asteriscos, sem aspas, sem o seu nome na frente, sem descrever ações.
+- Você tem vida própria: hora do dia, trabalho, sono, humor. Pode estar ocupado, responder seco, mudar de assunto, perguntar, contar algo seu, discordar.
+- Não é assistente: não ofereça ajuda como um robô, não faça listas, não se explique demais.
+- Nunca escreva mensagens de ${me}. Lembre do que já foi dito e do tempo que passou entre as mensagens.
+- Use o idioma em que ${c.name} falaria com ${me}.`;
+}
+function turnsOf(c, proactive){
+  const me = S.ix.me.name || "a pessoa", ms = c.msgs.slice(-44); const out = [{role:"user", content: sheetOf(c) + "\n\n[Início da conversa]"}];
+  let prev = ms.length ? ms[0].at : Date.now(), size = 0;
+  for (const m of ms) { size += m.t.length; }
+  let skip = 0; while (size > 14000 && skip < ms.length - 6) { size -= ms[skip].t.length; skip++; }
+  ms.slice(skip).forEach(m => {
+    const gap = m.at - prev; prev = m.at;
+    if (gap > 45 * 60000) out.push({role:"user", content: "[" + gapText(gap) + " depois · " + nowText(m.at) + "]"});
+    out.push({role: m.r === "u" ? "user" : "assistant", content: m.t});
+  });
+  const last = c.msgs[c.msgs.length - 1], since = last ? Date.now() - last.at : 0;
+  out.push({role:"user", content: proactive
+    ? `[${me} não mandou nada${last ? " há " + gapText(since) : ""}. Agora é ${nowText()}. Mande você uma mensagem por iniciativa própria, como ${c.name} faria nesta hora e nesta fase da relação: pode ser novidade sua, pergunta, cobrança, foto descrita em palavras não. 1 ou 2 mensagens curtas, uma por linha.${c.unans ? " Sua última mensagem ficou sem resposta; reaja a isso do seu jeito, sem repetir a mesma coisa." : ""}]`
+    : `[Agora é ${nowText()}. Responda como ${c.name}: 1 a 4 mensagens curtas, uma por linha.]`});
+  return out;
+}
+function splitMsgs(t){
+  return String(t).split(/\n+/).map(x => x.replace(/^\s*(?:[-•]\s+|\d+[.)]\s+)/, "").replace(/\*[^*\n]{1,120}\*/g, " ").replace(/\*/g, "").replace(/^["“]([^"“”]*)["”]/, "$1").replace(/\s{2,}/g, " ").trim()).filter(x => x && !/^\[.*\]$/.test(x)).slice(0, 5);
+}
+
+/* ---------- iniciativa ---------- */
+const INI = {off:null, low:[10, 26], mid:[3, 8], high:[1, 3]};
+function schedule(c){
+  const r = INI[c.ini || "mid"]; if (!r) { c.next = null; return; }
+  const mult = Math.pow(2, Math.min(c.unans || 0, 3));
+  let t = Date.now() + (r[0] + Math.random() * (r[1] - r[0])) * 36e5 * mult;
+  const [a, b] = String(c.sleep || "23-7").split("-").map(Number), d = new Date(t), h = d.getHours();
+  const asleep = a > b ? (h >= a || h < b) : (h >= a && h < b);
+  if (asleep) { if (h >= a && a > b) d.setDate(d.getDate() + 1); d.setHours(b, Math.floor(Math.random() * 50) + 5, 0, 0); t = d.getTime(); }
+  c.next = t; const m = meta(c.id); if (m) m.next = t;
+}
+async function tick(){
+  if (!hasAI() || document.visibilityState === "hidden") return;
+  const due = S.ix.contacts.filter(m => m.next && m.next <= Date.now() && !S.busy.has(m.id)).sort((x, y) => x.next - y.next)[0];
+  if (!due) return;
+  const c = await loadChat(due.id).catch(() => null);
+  if (!c) { due.next = null; saveIx(); return; }
+  if ((c.unans || 0) >= 3) { c.next = due.next = null; saveChat(c); saveIx(); return; }
+  S.busy.add(c.id); setSub();
+  try {
+    const lines = splitMsgs(await ask(turnsOf(c, true), {tier:"default"})).slice(0, 2);
+    const last = c.msgs[c.msgs.length - 1];
+    let at = Date.now() - due.next > 20 * 36e5 ? Date.now() - (5 + Math.random() * 80) * 60000 : due.next;
+    if (last && at <= last.at) at = Date.now();
+    if (S.cur && S.cur.id === c.id) at = Date.now();
+    c.unans = (c.unans || 0) + 1;
+    await deliver(c, lines, at);
+  } catch { c.next = due.next = Date.now() + 30 * 60000; }
+  finally { S.busy.delete(c.id); setSub(); }
+}
+
+/* ---------- conversa ---------- */
+function touch(c, m, unreadInc){
+  const x = meta(c.id); if (!x) return;
+  x.last = (m.r === "u" ? "Você: " : "") + trunc(m.t, 80); x.lastAt = m.at; x.next = c.next || null;
+  if (unreadInc) x.unread = (x.unread || 0) + 1;
+  S.ix.contacts.sort((a, b) => (b.lastAt || b.made || 0) - (a.lastAt || a.made || 0));
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function deliver(c, lines, at){
+  const open = () => S.cur && S.cur.id === c.id && !$("#chat").hidden;
+  for (let i = 0; i < lines.length; i++) {
+    if (open() && at == null) { S.typing = true; setSub(); renderLog(); await wait(Math.min(2600, 500 + lines[i].length * 28)); }
+    const m = {id: rid(), r:"a", t: lines[i], at: at != null ? at + i * 20000 : Date.now()};
+    c.msgs.push(m); touch(c, m, !open());
+    if (open()) { S.typing = false; setSub(); renderLog(); }
+  }
+  if (at != null && Date.now() - c.msgs[c.msgs.length - 1].at < 0) c.msgs[c.msgs.length - 1].at = Date.now();
+  schedule(c); saveChat(c); saveIx(); renderList(); title();
+  if (!open()) toast(c.name + ": " + trunc(lines[0] || "", 70));
+}
+async function reply(c){
+  if (S.busy.has(c.id)) return;
+  if (!hasAI()) { renderLog(); return; }
+  S.busy.add(c.id); c.err = "";
+  try {
+    await wait(700 + Math.random() * 900);
+    c.msgs.forEach(m => { if (m.r === "u") m.read = true; }); if (S.cur === c) renderLog();
+    S.typing = S.cur === c; setSub(); if (S.cur === c) renderLog();
+    const n0 = c.msgs.length;
+    const lines = splitMsgs(await ask(turnsOf(c, false)));
+    if (!lines.length) throw {code:"empty"};
+    c.unans = 0;
+    await deliver(c, lines, null);
+    if (c.msgs.length > n0 && c.msgs.slice(n0).some(m => m.r === "u")) { S.busy.delete(c.id); return reply(c); }
+    compact(c);
+  } catch (e) { c.err = errText(e); S.typing = false; setSub(); if (S.cur === c) renderLog(); }
+  finally { S.busy.delete(c.id); S.typing = false; setSub(); }
+}
+function send(){
+  const c = S.cur, ta = $("#in"), t = ta.value.trim(); if (!c || !t) return;
+  ta.value = ""; grow();
+  const m = {id: rid(), r:"u", t, at: Date.now()}; c.msgs.push(m); c.unans = 0; c.err = ""; touch(c, m);
+  saveChat(c); saveIx(); renderLog(); renderList();
+  clearTimeout(S.timers[c.id]); S.timers[c.id] = setTimeout(() => reply(c), 1500);
+}
+async function compact(c){
+  if (c.msgs.length < 90 || c.compacting) return; c.compacting = true;
+  try {
+    const old = c.msgs.slice(0, 45), me = S.ix.me.name || "Você";
+    const txt = await ask([{role:"user", content: `Resuma em até 220 palavras, em tópicos curtos, o que importa lembrar desta conversa de mensagens entre ${c.name} e ${me}: fatos, combinados, datas, sentimentos, apelidos e piadas internas. ${c.memory ? "Junte com o resumo anterior:\n" + c.memory + "\n\n" : ""}CONVERSA:\n` + old.map(m => (m.r === "u" ? me : c.name) + ": " + m.t).join("\n").slice(0, 16000)}], {tier:"quick", max:500});
+    if (txt) { c.memory = txt.slice(0, 3000); c.msgs = c.msgs.slice(45); saveChat(c); }
+  } catch {} finally { c.compacting = false; }
+}
+
+/* ---------- telas ---------- */
+function title(){ const n = S.ix.contacts.reduce((a, x) => a + (x.unread || 0), 0); document.title = (n ? "(" + n + ") " : "") + "Prosa"; }
+function renderList(){
+  const box = $("#list"); box.textContent = "";
+  if (!S.ix.contacts.length) {
+    const e = el("div", "empty"); e.append(el("h2", "", "Ninguém para prosear ainda"), el("p", "", "Crie um contato com o jeito que você quiser: ele responde, lembra do que vocês falaram e te chama por conta própria."));
+    const b = el("div", "btns"); b.style.justifyContent = "center";
+    const mk = (t, f, cls) => { const x = el("button", cls || "btn", t); x.type = "button"; x.onclick = f; b.append(x); };
+    mk("Criar contato", () => openEditor(null)); mk("Importar card", () => $("#f-card").click(), "btn ghost");
+    if (mesaChars().length) mk("Trazer da Mesa de RP", openMesa, "btn ghost");
+    e.append(b); box.append(e); return;
+  }
+  S.ix.contacts.forEach(m => {
+    const r = el("button", "row"); r.type = "button"; const a = el("span", "av"); avatar(a, m);
+    const mid = el("span", "mid"); mid.append(el("b", "", m.name), el("span", "pv", m.last || m.bio || "Toque para conversar"));
+    const end = el("span", "end"); end.append(el("span", "", listTime(m.lastAt))); if (m.unread) end.append(el("span", "badge", String(m.unread)));
+    r.append(a, mid, end); r.onclick = () => openChat(m.id); box.append(r);
+  });
+}
+function setSub(){
+  const c = S.cur; if (!c) return; const s = $("#c-sub"), m = meta(c.id);
+  const typing = S.typing && S.busy.has(c.id);
+  s.textContent = typing ? "digitando…" : (m && m.bio) || "toque para ver o contato"; s.classList.toggle("typing", !!typing);
+}
+function renderLog(){
+  const c = S.cur, box = $("#log"); if (!c) return;
+  const stick = box.scrollHeight - box.scrollTop - box.clientHeight < 120;
+  box.textContent = ""; let day = "", prev = "";
+  if (!c.msgs.length) { const n = el("p", "note", "Mande a primeira mensagem, ou "); const b = el("button", "", "peça para " + c.name + " puxar assunto"); b.type = "button"; b.onclick = () => { if (!hasAI()) { toast(errText({code:"no_model"})); return; } const x = meta(c.id); c.next = x.next = Date.now(); c.unans = 0; tick(); }; n.append(b, "."); box.append(n); }
+  c.msgs.forEach(m => {
+    const k = dayKey(m.at); if (k !== day) { day = k; prev = ""; box.append(el("div", "day", dayLabel(m.at))); }
+    const b = el("div", "m " + m.r + (prev !== m.r ? " first" : "")); prev = m.r; b.append(m.t);
+    const t = el("time", "", hhmm(m.at)); if (m.r === "u") { const tk = el("span", "tk" + (m.read ? " rd" : ""), "✓✓"); tk.title = m.read ? "Lida" : "Enviada"; t.append(tk); }
+    b.append(t); box.append(b);
+  });
+  if (S.typing && S.busy.has(c.id)) { const d = el("div", "dots"); d.append(el("i"), el("i"), el("i")); d.setAttribute("aria-label", c.name + " está digitando"); box.append(d); }
+  if (c.err) { const n = el("p", "note", c.err + " "); const b = el("button", "", "Tentar de novo"); b.type = "button"; b.onclick = () => reply(c); n.append(b); box.append(n); }
+  else if (!hasAI()) box.append(el("p", "note", "Para " + c.name + " responder, escolha um modelo em Ajustes."));
+  if (stick) box.scrollTop = box.scrollHeight;
+}
+async function openChat(id){
+  let c; try { c = await loadChat(id); } catch {}
+  const m = meta(id); if (!c || !m) { toast("Não achei essa conversa."); return; }
+  c.msgs = c.msgs || []; S.cur = c; S.typing = false; m.unread = 0; saveIx(); title();
+  $("#v-list").style.display = "none"; $("#chat").hidden = false;
+  avatar($("#c-av"), m); $("#c-name").textContent = c.name; setSub(); renderLog();
+  const box = $("#log"); box.scrollTop = box.scrollHeight;
+  const last = c.msgs[c.msgs.length - 1]; if (last && last.r === "u" && !S.busy.has(c.id)) reply(c);
+}
+function closeChat(){ S.cur = null; $("#chat").hidden = true; $("#v-list").style.display = "flex"; renderList(); }
+function grow(){ const ta = $("#in"); ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight) + "px"; }
+
+/* ---------- painéis ---------- */
+function sheet(t, build){ $("#sh-t").textContent = t; const b = $("#sh-b"); b.textContent = ""; build(b); $("#sheet").hidden = false; b.scrollTop = 0; }
+const closeSheet = () => { $("#sheet").hidden = true; S.edit = null; };
+function field(label, id, kind, val, o = {}){
+  const w = el("div", "f"), l = el("label", "", label); l.htmlFor = id; let i;
+  if (kind === "select") { i = el("select"); o.options.forEach(([v, t]) => { const x = el("option", "", t); x.value = v; i.append(x); }); }
+  else { i = el(kind === "area" ? "textarea" : "input"); if (kind !== "area") i.type = o.type || "text"; if (o.rows) i.rows = o.rows; if (o.ph) i.placeholder = o.ph; if (o.max) i.maxLength = o.max; }
+  i.id = id; i.value = val || ""; w.append(l, i); if (o.help) w.append(el("small", "", o.help)); return w;
+}
+function segEl(opts, cur, on){ const s = el("div", "seg"); opts.forEach(([v, t]) => { const b = el("button", "", t); b.type = "button"; b.setAttribute("aria-pressed", String(v === cur)); b.onclick = () => { [...s.children].forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); on(v); }; s.append(b); }); return s; }
+function openEditor(id, preset){
+  const c = id ? S.cur : null, m = id ? meta(id) : null;
+  const d = S.edit = Object.assign({id: id || null, name:"", av:"", bio:"", quem:"", relacao:"", estilo:"", rotina:"", ini:"mid", sleep:"23-7", first:""}, c ? {name:c.name, quem:c.quem, relacao:c.relacao, estilo:c.estilo, rotina:c.rotina, ini:c.ini || "mid", sleep:c.sleep || "23-7", av:m.av || "", bio:m.bio || ""} : {}, preset || {});
+  sheet(id ? "Contato" : "Novo contato", b => {
+    if (!id) {
+      const bx = el("div", "box"); bx.append(el("h3", "", "Criar com a IA"), field("Descreva em uma frase", "e-idea", "area", "", {rows:2, ph:"ex.: minha avó mineira que manda bom dia com figurinha e pergunta se eu comi"}));
+      const go = el("button", "btn", "Montar contato"); go.type = "button"; go.onclick = () => aiFill(go); const r = el("div", "btns"); r.append(go);
+      const imp = el("button", "btn ghost", "Importar card"); imp.type = "button"; imp.onclick = () => $("#f-card").click(); r.append(imp);
+      if (mesaChars().length) { const ms = el("button", "btn ghost", "Trazer da Mesa de RP"); ms.type = "button"; ms.onclick = openMesa; r.append(ms); }
+      bx.append(r); if (!hasAI()) bx.append(el("p", "hint", "Para criar com a IA, escolha um modelo em Ajustes.")); b.append(bx);
+    }
+    const pk = el("div", "pick"), av = el("span", "av lg"); avatar(av, d); const pb = el("button", "btn quiet", d.av ? "Trocar foto" : "Escolher foto"); pb.type = "button"; pb.onclick = () => $("#f-av").click(); pk.append(av, pb); pk.id = "e-pick"; b.append(pk);
+    b.append(field("Nome", "e-name", "text", d.name, {max:50}), field("Recado (aparece embaixo do nome)", "e-bio", "text", d.bio, {max:70, ph:"ex.: no estúdio, não ligo de volta"}),
+      field("Quem é", "e-quem", "area", d.quem, {rows:5, ph:"Idade, jeito, história, o que gosta e o que detesta."}),
+      field("Relação com você", "e-rel", "area", d.relacao, {rows:3, ph:"ex.: meu padrasto, sumiu há um ano e voltou a responder agora"}),
+      field("Como escreve no celular", "e-est", "area", d.estilo, {rows:2, ph:"ex.: tudo minúsculo, sem ponto, áudio transcrito, poucos emojis"}),
+      field("Rotina", "e-rot", "area", d.rotina, {rows:2, ph:"ex.: acorda tarde, trabalha à noite na boate, some de madrugada"}));
+    const f = el("div", "f"); f.append(el("label", "", "Puxa assunto sozinho")); f.append(segEl([["off", "Nunca"], ["low", "Pouco"], ["mid", "Normal"], ["high", "Muito"]], d.ini, v => { d.ini = v; }));
+    f.append(el("small", "", "O contato manda mensagem por conta própria quando o app está aberto (ou assim que você abrir). Se você não responder, ele espaça e depois para.")); b.append(f);
+    b.append(field("Dorme (hora que para e hora que volta)", "e-sleep", "select", d.sleep, {options: [["23-7", "23h às 7h"], ["1-9", "1h às 9h"], ["3-11", "3h às 11h (vida noturna)"], ["21-5", "21h às 5h (madruga cedo)"]]}));
+    const act = el("div", "btns"); const sv = el("button", "btn", id ? "Salvar" : "Adicionar contato"); sv.type = "button"; sv.onclick = saveEditor; act.append(sv);
+    if (id) {
+      const rg = el("button", "btn quiet", "Refazer última resposta"); rg.type = "button"; rg.onclick = () => { const cc = S.cur; while (cc.msgs.length && cc.msgs[cc.msgs.length - 1].r === "a") cc.msgs.pop(); closeSheet(); renderLog(); if (cc.msgs.length) reply(cc); saveChat(cc); };
+      const cl = el("button", "btn danger", "Limpar conversa"); cl.type = "button"; cl.onclick = () => arm(cl, () => { S.cur.msgs = []; S.cur.memory = ""; const x = meta(id); x.last = ""; x.lastAt = 0; saveChat(S.cur); saveIx(); closeSheet(); renderLog(); });
+      const dl = el("button", "btn danger", "Apagar contato"); dl.type = "button"; dl.onclick = () => arm(dl, async () => { S.ix.contacts = S.ix.contacts.filter(x => x.id !== id); try { await S.store.delChat(id); } catch {} CH.delete(id); saveIx(); closeSheet(); closeChat(); });
+      act.append(rg, cl, dl);
+    }
+    b.append(act);
+  });
+}
+function arm(b, fn){ if (b.dataset.armed === "1") return fn(); b.dataset.armed = "1"; b.textContent = "Confirmar"; }
+function readEditor(){ const d = S.edit; if (!d) return; const v = id => ($("#" + id) || {}).value || ""; Object.assign(d, {name: v("e-name").trim(), bio: v("e-bio").trim(), quem: v("e-quem").trim(), relacao: v("e-rel").trim(), estilo: v("e-est").trim(), rotina: v("e-rot").trim(), sleep: v("e-sleep") || "23-7"}); }
+async function saveEditor(){
+  readEditor(); const d = S.edit; if (!d.name) { toast("Dê um nome ao contato."); return; }
+  if (d.id) {
+    const c = S.cur, m = meta(d.id); Object.assign(c, {name:d.name, quem:d.quem, relacao:d.relacao, estilo:d.estilo, rotina:d.rotina, ini:d.ini, sleep:d.sleep}); Object.assign(m, {name:d.name, av:d.av, bio:d.bio});
+    schedule(c); saveChat(c); saveIx(); closeSheet(); avatar($("#c-av"), m); $("#c-name").textContent = c.name; setSub(); return;
+  }
+  const c = {id: rid(), name:d.name, quem:d.quem, relacao:d.relacao, estilo:d.estilo, rotina:d.rotina, ini:d.ini, sleep:d.sleep, memory:"", msgs:[], unans:0};
+  const m = {id:c.id, name:c.name, av:d.av, bio:d.bio, last:"", lastAt:0, made:Date.now(), unread:0};
+  S.ix.contacts.unshift(m);
+  if (d.first) { const x = {id: rid(), r:"a", t: d.first, at: Date.now()}; c.msgs.push(x); touch(c, x, true); }
+  CH.set(c.id, c); schedule(c); await saveChat(c); saveIx(); closeSheet(); renderList(); title(); openChat(c.id);
+}
+async function aiFill(btn){
+  const idea = ($("#e-idea").value || "").trim(); if (!idea) { toast("Escreva uma frase sobre o contato."); return; }
+  if (!hasAI()) { toast(errText({code:"no_model"})); return; }
+  btn.disabled = true; btn.textContent = "Montando…";
+  try {
+    const me = S.ix.me.name || "a pessoa";
+    const j = parseJSON(await ask([{role:"user", content: `Crie um contato para um aplicativo de mensagens em que ${me} conversa com um personagem. Ideia: ${idea}
+
+Responda SOMENTE com JSON:
+{"nome":"nome próprio","recado":"frase curta de status, até 8 palavras","quem":"80 a 130 palavras: idade, jeito, história, gostos, defeitos","relacao":"até 40 palavras: o que essa pessoa é de ${me} e como está a relação","estilo":"até 30 palavras: como ela digita no celular (maiúsculas, pontuação, gírias, emojis, tamanho)","rotina":"até 30 palavras: horários e ocupações","primeira":"a primeira mensagem que ela mandaria agora, curta, no estilo dela"}
+Escreva no idioma da ideia. Nada de assistente: uma pessoa com vida própria.`}], {max:700}));
+    if (!j || !j.nome) throw 0;
+    readEditor(); const keepAv = S.edit.av;
+    openEditor(null, {name: trunc(j.nome, 50), bio: trunc(j.recado, 70), quem: String(j.quem || ""), relacao: String(j.relacao || ""), estilo: String(j.estilo || ""), rotina: String(j.rotina || ""), first: trunc(j.primeira, 300), av: keepAv});
+    toast("Contato montado. Ajuste o que quiser e adicione.");
+  } catch (e) { toast(e && e.code ? errText(e) : "A IA não devolveu um contato. Tente outra frase."); btn.disabled = false; btn.textContent = "Montar contato"; }
+}
+
+/* ---------- importar ---------- */
+function cardToPreset(j){
+  const d = (j && j.data) || j || {}; if (!d.name) return null;
+  const mz = (d.extensions && d.extensions.mesa_rp) || {};
+  return {name: trunc(d.name, 50), bio: trunc(mz.tagline || d.creator_notes || "", 70), quem: [d.description, d.personality].filter(Boolean).join("\n\n"), relacao: d.scenario || "", estilo:"", rotina:""};
+}
+async function readCard(file){
+  if (/\.json$/i.test(file.name) || file.type === "application/json") return {j: JSON.parse(await file.text())};
+  const buf = new Uint8Array(await file.arrayBuffer()); let p = 8, found = null;
+  while (p + 8 <= buf.length) {
+    const len = (buf[p] << 24 | buf[p + 1] << 16 | buf[p + 2] << 8 | buf[p + 3]) >>> 0, type = String.fromCharCode(buf[p + 4], buf[p + 5], buf[p + 6], buf[p + 7]);
+    if (type === "tEXt") { const data = buf.subarray(p + 8, p + 8 + len), z = data.indexOf(0), key = new TextDecoder("latin1").decode(data.subarray(0, z)); if (key === "chara" || (key === "ccv3" && !found)) found = new TextDecoder("latin1").decode(data.subarray(z + 1)); }
+    if (type === "IEND") break; p += 12 + len;
+  }
+  if (!found) throw 0;
+  const bin = atob(found), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return {j: JSON.parse(new TextDecoder().decode(u)), av: await fileToAvatar(file)};
+}
+function mesaChars(){
+  if (IN_CLAUDE) return [];
+  try { const ix = JSON.parse(LS.get("rp.index") || "null"); return ((ix && ix.chars) || []).map(m => { try { return JSON.parse(LS.get("rp.char." + m.id) || "null"); } catch { return null; } }).filter(c => c && c.name); } catch { return []; }
+}
+function openMesa(){
+  const list = mesaChars();
+  sheet("Trazer da Mesa de RP", b => {
+    b.append(el("p", "hint", "Personagens que você criou ou importou na Mesa de RP neste navegador. Aqui eles viram contato e escrevem como mensagem de celular."));
+    list.forEach(ch => { const r = el("button", "row"); r.type = "button"; r.style.padding = "10px 0"; const a = el("span", "av"); avatar(a, {name: ch.name, av: ch.face || ch.portrait || ""}); const mid = el("span", "mid"); mid.append(el("b", "", ch.name), el("span", "pv", ch.tagline || ""));
+      r.append(a, mid); r.onclick = async () => { let av = ch.face || ch.portrait || ""; if (av.length > 40000) { try { av = await fileToAvatar(await (await fetch(av)).blob()); } catch { av = ""; } }
+        openEditor(null, {name: ch.name, bio: trunc(ch.tagline || "", 70), quem: [ch.description, ch.personality].filter(Boolean).join("\n\n"), relacao: ch.scenario || "", av}); }; b.append(r); });
+  });
+}
+
+/* ---------- ajustes ---------- */
+function openSettings(){
+  sheet("Ajustes", b => {
+    const me = el("div", "box"); me.append(el("h3", "", "Você"), field("Seu nome", "s-name", "text", S.ix.me.name, {max:40}), field("O que seus contatos sabem de você", "s-about", "area", S.ix.me.about, {rows:3, ph:"ex.: 24 anos, moro em São Paulo, trabalho de noite, torço pro Corinthians"}));
+    const sv = el("button", "btn", "Salvar"); sv.type = "button"; sv.onclick = () => { S.ix.me = {name: $("#s-name").value.trim(), about: $("#s-about").value.trim()}; saveIx(); toast("Salvo."); }; me.append(sv); b.append(me);
+    const md = el("div", "box"); md.append(el("h3", "", "Modelo")); const cur = model();
+    md.append(el("p", "hint", S.sample && !S.ix.model ? "Aqui dentro do Claude, quem responde é o Claude. Não precisa de chave." : cur ? "Usando " + (cur.name || cur.model) + (cur.mesa ? " (o modelo ativo da Mesa de RP)." : ".") : "Nenhum modelo escolhido. Configure um na Mesa de RP, neste mesmo navegador, ou preencha abaixo."));
+    if (!IN_CLAUDE) {
+      const o = S.ix.model || {}; md.append(field("Endereço da API (compatível com OpenAI)", "s-base", "text", o.base, {ph:"https://openrouter.ai/api/v1"}), field("Chave", "s-key", "text", o.key, {type:"password"}), field("Modelo", "s-model", "text", o.model, {ph:"ex.: google/gemini-2.0-flash-001"}));
+      const r = el("div", "btns"); const s2 = el("button", "btn", "Usar este modelo"); s2.type = "button"; s2.onclick = () => { const base = $("#s-base").value.trim(), mdl = $("#s-model").value.trim(); if (!base || !mdl) { toast("Preencha o endereço e o modelo."); return; } S.ix.model = {base, key: $("#s-key").value.trim(), model: mdl, name: mdl}; saveIx(); openSettings(); toast("Modelo salvo neste aparelho."); };
+      const s3 = el("button", "btn quiet", "Voltar ao da Mesa de RP"); s3.type = "button"; s3.onclick = () => { S.ix.model = null; saveIx(); openSettings(); }; r.append(s2, s3); md.append(r);
+    }
+    b.append(md);
+    const th = el("div", "box"); th.append(el("h3", "", "Aparência"), segEl([["auto", "Automático"], ["light", "Claro"], ["dark", "Escuro"]], S.ix.theme || "auto", v => { S.ix.theme = v; applyTheme(); saveIx(); })); b.append(th);
+    const bk = el("div", "box"); bk.append(el("h3", "", "Backup"), el("p", "hint", "Guarda todos os contatos e conversas num arquivo. A chave do modelo não entra."));
+    const r = el("div", "btns"); const d1 = el("button", "btn quiet", "Baixar backup"); d1.type = "button"; d1.onclick = backup; const d2 = el("button", "btn quiet", "Restaurar"); d2.type = "button"; d2.onclick = () => $("#f-bk").click(); r.append(d1, d2); bk.append(r); b.append(bk);
+  });
+}
+async function backup(){
+  const chats = []; for (const m of S.ix.contacts) { try { const c = await loadChat(m.id); if (c) chats.push(c); } catch {} }
+  const data = JSON.stringify({format:"prosa-v1", exported: Date.now(), me: S.ix.me, contacts: S.ix.contacts, chats});
+  const name = "prosa-backup.json";
+  try { if (S.downloads) await S.downloads.save({filename: name, data}); else { const a = el("a"); a.href = URL.createObjectURL(new Blob([data], {type:"application/json"})); a.download = name; document.body.append(a); a.click(); a.remove(); } } catch { toast("Não consegui baixar o backup."); }
+}
+async function restore(file){
+  try {
+    const j = JSON.parse(await file.text()); if (j.format !== "prosa-v1" || !Array.isArray(j.chats)) throw 0; let n = 0;
+    for (const c of j.chats) { if (!c || !c.id || !c.name) continue; const m = (j.contacts || []).find(x => x.id === c.id) || {id:c.id, name:c.name}; const cur = meta(c.id);
+      if (cur && (cur.lastAt || 0) >= (m.lastAt || 0)) continue; await S.store.setChat(c); CH.delete(c.id); S.ix.contacts = S.ix.contacts.filter(x => x.id !== c.id).concat([m]); n++; }
+    if (!S.ix.me.name && j.me) S.ix.me = j.me;
+    S.ix.contacts.sort((a, b) => (b.lastAt || 0) - (a.lastAt || 0)); saveIx(); closeSheet(); renderList(); toast(n ? n + (n === 1 ? " conversa restaurada." : " conversas restauradas.") : "Nada novo no backup.");
+  } catch { toast("Esse arquivo não é um backup da Prosa."); }
+}
+
+/* ---------- início ---------- */
+async function cap(n){ try { return IN_CLAUDE ? await window.claude.use(n) : null; } catch { return null; } }
+async function boot(){
+  $("#b-new").onclick = () => openEditor(null); $("#b-set").onclick = openSettings; $("#b-back").onclick = closeChat; $("#sh-x").onclick = closeSheet;
+  $("#sheet").addEventListener("click", e => { if (e.target.id === "sheet") closeSheet(); });
+  $("#b-who").onclick = () => S.cur && openEditor(S.cur.id);
+  $("#comp").addEventListener("submit", e => { e.preventDefault(); send(); });
+  $("#in").addEventListener("input", grow);
+  $("#in").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && matchMedia("(pointer:fine)").matches) { e.preventDefault(); send(); } });
+  $("#f-av").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (!f || !S.edit) return; try { readEditor(); S.edit.av = await fileToAvatar(f); const a = $("#e-pick .av"); if (a) avatar(a, S.edit); } catch { toast("Não consegui usar essa imagem."); } });
+  $("#f-card").addEventListener("change", async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return; try { const r = await readCard(f), p = cardToPreset(r.j); if (!p) throw 0; if (r.av) p.av = r.av; openEditor(null, p); toast("Card lido. Confira e adicione."); } catch { toast("Não achei um personagem nesse arquivo."); } });
+  $("#f-bk").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) restore(f); });
+  const [sample, downloads, db, user] = await Promise.all([cap("sample"), cap("downloads"), cap("db"), cap("user")]);
+  S.sample = sample; S.downloads = downloads;
+  let uid = null; try { uid = user ? await user.id() : null; } catch {}
+  S.store = db && uid ? dbStore(db, uid) : localStore();
+  try { const ix = await Promise.race([S.store.getIndex(), new Promise((_, r) => setTimeout(() => r(0), 10000))]); if (ix) S.ix = Object.assign(S.ix, ix); }
+  catch { S.store = localStore(); try { const ix = await S.store.getIndex(); if (ix) S.ix = Object.assign(S.ix, ix); } catch {} }
+  S.ix.contacts = S.ix.contacts || []; S.ix.me = S.ix.me || {name:"", about:""};
+  applyTheme(); renderList(); title();
+  setTimeout(tick, 2500); setInterval(tick, 60000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") setTimeout(tick, 1500); });
+}
+boot();
+})();
+</script>
+
+</body></html>

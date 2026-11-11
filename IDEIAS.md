@@ -27,6 +27,14 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - Rosto e voz: expressões por humor que trocam sozinhas e vozes por personagem.
 - Site: login com senha, bloqueio automático e sincronização criptografada pelo GitHub (Gist secreto).
 
+## Prosa (segundo app)
+
+- Mensageiro em que os contatos são personagens de IA: https://lshamann.github.io/mesa-de-rp/prosa/ e artifact próprio no Claude. Fonte em `fonte/prosa/` (`python3 fonte/prosa/build.py`).
+- v1 (11/11/2026): lista de conversas, balões, digitando, lida, contato criado por uma frase, importar card PNG/JSON, trazer personagens da Mesa de RP (mesmo navegador), contato que puxa assunto sozinho (espaça se ficar sem resposta), resumo automático de conversas longas, backup.
+- No site usa o modelo ativo da Mesa de RP (mesmo navegador) ou um próprio em Ajustes.
+- Ideias: grupos, fotos e áudios, status, notificações de verdade (precisa de servidor), sincronização como a da Mesa.
+- Personagem novo: Idris dos Santos (`fonte/make_idris.py` gera o card; a foto não fica no repositório).
+
 ## Para testar jogando
 
 - [ ] O Tau fala suaíli correto, sem traduzir, e as palavras que ele ensina entram no 📖 Palavras?
