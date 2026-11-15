@@ -1,3 +1,6 @@
 fonte/saida/
 fonte/testes/out/
 __pycache__/
+fonte/prosa/saida/
+fonte/testes/*.png
+fonte/testes/*.json

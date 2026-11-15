@@ -1,9 +1,10 @@
 {
  "title": "Guia de suaíli",
- "intro": "O suaíli (kiswahili) é uma língua real, falada por mais de cem milhões de pessoas na África Oriental. Na história, é a língua dos Namaru. Toque numa palavra para pôr na sua mensagem.",
+ "intro": "O suaíli (kiswahili) é uma língua real, falada por mais de cem milhões de pessoas na África Oriental. Na história, é a língua dos Namaru. Toque numa palavra ou frase para pôr na sua mensagem. As seções com 🧩 são as regras para você montar as suas próprias frases.",
  "sections": [
   {
    "h": "Pronúncia",
+   "ref": true,
    "rows": [
     [
      "a, e, i, o, u",
@@ -30,11 +31,775 @@
      "como o “th” do inglês: this / think"
     ],
     [
+     "m ou n antes de consoante",
+     "soa junto, sem vogal: mtu = “m-tu”, ndege = “n-dé-gue”"
+    ],
+    [
      "sílaba forte",
      "quase sempre a penúltima: ra-FI-ki, a-SAN-te"
     ]
-   ],
-   "ref": true
+   ]
+  },
+  {
+   "h": "🧩 1. A frase básica: quem + quando + verbo",
+   "ref": true,
+   "note": "O verbo suaíli é uma palavra só, montada em três peças coladas: QUEM faz + QUANDO + a AÇÃO. Não precisa dizer “eu” ou “você” separado: já está dentro do verbo.",
+   "rows": [
+    [
+     "ni- (eu)",
+     "ninakula = eu estou comendo"
+    ],
+    [
+     "u- (você)",
+     "unakula = você está comendo"
+    ],
+    [
+     "a- (ele, ela)",
+     "anakula = ele está comendo"
+    ],
+    [
+     "tu- (nós)",
+     "tunakula = nós estamos comendo"
+    ],
+    [
+     "m- (vocês)",
+     "mnakula = vocês estão comendo"
+    ],
+    [
+     "wa- (eles)",
+     "wanakula = eles estão comendo"
+    ],
+    [
+     "-na- (agora, costume)",
+     "ninawinda = eu caço, estou caçando"
+    ],
+    [
+     "-li- (passado)",
+     "niliwinda = eu cacei"
+    ],
+    [
+     "-ta- (futuro)",
+     "nitawinda = eu vou caçar"
+    ],
+    [
+     "-me- (já aconteceu, e vale agora)",
+     "nimechoka = cansei, estou cansado"
+    ],
+    [
+     "a receita",
+     "ni + li + ona = niliona (eu vi) · u + ta + rudi = utarudi (você vai voltar)"
+    ],
+    [
+     "verbos curtinhos",
+     "kula, kunywa, kuja guardam o ku-: ninakuja (estou vindo), alikunywa (ele bebeu)"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 2. Verbos para encaixar",
+   "ref": true,
+   "note": "No dicionário o verbo vem com ku- na frente (kutaka = querer). Para usar, tire o ku- e cole as peças da regra 1: ni + na + taka = ninataka.",
+   "rows": [
+    [
+     "kutaka",
+     "querer → ninataka"
+    ],
+    [
+     "kupenda",
+     "gostar, amar → ninapenda"
+    ],
+    [
+     "kuona",
+     "ver → ninaona"
+    ],
+    [
+     "kusikia",
+     "ouvir, sentir → ninasikia"
+    ],
+    [
+     "kujua",
+     "saber, conhecer → ninajua"
+    ],
+    [
+     "kuelewa",
+     "entender → ninaelewa"
+    ],
+    [
+     "kusema",
+     "falar, dizer → ninasema"
+    ],
+    [
+     "kuuliza",
+     "perguntar"
+    ],
+    [
+     "kufanya",
+     "fazer"
+    ],
+    [
+     "kuweza",
+     "poder, conseguir → ninaweza"
+    ],
+    [
+     "kwenda",
+     "ir → ninaenda"
+    ],
+    [
+     "kuja",
+     "vir → ninakuja"
+    ],
+    [
+     "kurudi",
+     "voltar"
+    ],
+    [
+     "kufika",
+     "chegar"
+    ],
+    [
+     "kukaa",
+     "sentar, ficar, morar"
+    ],
+    [
+     "kutembea",
+     "andar"
+    ],
+    [
+     "kukimbia",
+     "correr, fugir"
+    ],
+    [
+     "kulala",
+     "dormir"
+    ],
+    [
+     "kuamka",
+     "acordar"
+    ],
+    [
+     "kula",
+     "comer"
+    ],
+    [
+     "kunywa",
+     "beber"
+    ],
+    [
+     "kupika",
+     "cozinhar"
+    ],
+    [
+     "kuwinda",
+     "caçar"
+    ],
+    [
+     "kuvua samaki",
+     "pescar"
+    ],
+    [
+     "kutafuta",
+     "procurar"
+    ],
+    [
+     "kupata",
+     "achar, conseguir"
+    ],
+    [
+     "kuleta",
+     "trazer"
+    ],
+    [
+     "kubeba",
+     "carregar"
+    ],
+    [
+     "kukata",
+     "cortar"
+    ],
+    [
+     "kuwasha moto",
+     "acender fogo"
+    ],
+    [
+     "kusaidia",
+     "ajudar"
+    ],
+    [
+     "kufundisha",
+     "ensinar"
+    ],
+    [
+     "kujifunza",
+     "aprender"
+    ],
+    [
+     "kucheka",
+     "rir"
+    ],
+    [
+     "kulia",
+     "chorar"
+    ],
+    [
+     "kuogopa",
+     "ter medo"
+    ],
+    [
+     "kuumia",
+     "machucar-se"
+    ],
+    [
+     "kuuma",
+     "doer; morder"
+    ],
+    [
+     "kungoja",
+     "esperar"
+    ],
+    [
+     "kuangalia",
+     "olhar"
+    ],
+    [
+     "kugusa",
+     "tocar"
+    ],
+    [
+     "kufa",
+     "morrer"
+    ],
+    [
+     "kuishi",
+     "viver"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 3. Dizer “não”",
+   "ref": true,
+   "note": "Agora: troque o começo por si- (eu), hu- (você), ha- (ele), hatu- (nós), ham- (vocês), hawa- (eles), tire o -na- e troque o -a final por -i.",
+   "rows": [
+    [
+     "ninataka → sitaki",
+     "quero → não quero"
+    ],
+    [
+     "unataka → hutaki",
+     "você quer → você não quer"
+    ],
+    [
+     "anajua → hajui",
+     "ele sabe → ele não sabe"
+    ],
+    [
+     "tunaelewa → hatuelewi",
+     "entendemos → não entendemos"
+    ],
+    [
+     "Sijui · Sielewi · Siwezi",
+     "não sei · não entendo · não consigo"
+    ],
+    [
+     "Sioni · Sisikii · Siogopi",
+     "não vejo · não ouço · não tenho medo"
+    ],
+    [
+     "passado: si + ku + verbo",
+     "sikuona = não vi · hakuja = ele não veio"
+    ],
+    [
+     "futuro: si + ta + verbo",
+     "sitarudi = não vou voltar · hatakuja = ele não virá"
+    ],
+    [
+     "ainda não: si + ja + verbo",
+     "sijala = ainda não comi · sijaelewa = ainda não entendi"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 4. Ser, estar e ter",
+   "ref": true,
+   "note": "“Ser” é só ni, igual para todo mundo, e o “não ser” é si. “Estar num lugar” e “ter” mudam com a pessoa.",
+   "rows": [
+    [
+     "Mimi ni Kelvin",
+     "eu sou Kelvin"
+    ],
+    [
+     "Wewe ni rafiki",
+     "você é amigo"
+    ],
+    [
+     "Mimi si adui",
+     "eu não sou inimigo"
+    ],
+    [
+     "Hii ni nini?",
+     "o que é isto?"
+    ],
+    [
+     "niko · uko · yuko",
+     "estou · você está · ele está (num lugar)"
+    ],
+    [
+     "tuko · mko · wako",
+     "estamos · vocês estão · eles estão"
+    ],
+    [
+     "Niko hapa",
+     "estou aqui"
+    ],
+    [
+     "Uko wapi?",
+     "onde você está?"
+    ],
+    [
+     "nina · una · ana",
+     "tenho · você tem · ele tem"
+    ],
+    [
+     "tuna · mna · wana",
+     "temos · vocês têm · eles têm"
+    ],
+    [
+     "sina · huna · hana · hatuna",
+     "não tenho · não tem · ele não tem · não temos"
+    ],
+    [
+     "Nina njaa · Nina kiu",
+     "tenho fome · tenho sede"
+    ],
+    [
+     "Sina chakula",
+     "não tenho comida"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 5. Mandar, pedir e proibir",
+   "ref": true,
+   "note": "Ordem: o verbo sem ku-, puro. Para várias pessoas, troque o -a por -eni. Proibir: usi- no começo e -e no fim. Pedir com jeito: comece com a pessoa e termine em -e.",
+   "rows": [
+    [
+     "Kaa! · Simama! · Angalia!",
+     "senta! · levanta! · olha!"
+    ],
+    [
+     "Njoo! · Nenda! · Lete!",
+     "vem! · vai! · traz! (esses três são irregulares)"
+    ],
+    [
+     "Kaeni! · Njooni!",
+     "sentem! · venham! (várias pessoas)"
+    ],
+    [
+     "Usiende!",
+     "não vá!"
+    ],
+    [
+     "Usiguse! · Usiogope!",
+     "não toque! · não tenha medo!"
+    ],
+    [
+     "Usicheke!",
+     "não ria!"
+    ],
+    [
+     "Nisaidie",
+     "me ajude"
+    ],
+    [
+     "Nipe maji",
+     "me dê água"
+    ],
+    [
+     "Niambie",
+     "me conte, me diga"
+    ],
+    [
+     "Nionyeshe",
+     "me mostre"
+    ],
+    [
+     "Twende! · Tule! · Tukae",
+     "vamos! · vamos comer! · vamos sentar"
+    ],
+    [
+     "Ngoja nione",
+     "deixa eu ver"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 6. Juntar dois verbos",
+   "ref": true,
+   "note": "Depois de querer, poder, gostar e saber, o segundo verbo fica inteiro, com ku-.",
+   "rows": [
+    [
+     "Ninataka kula",
+     "quero comer"
+    ],
+    [
+     "Unataka kwenda?",
+     "você quer ir?"
+    ],
+    [
+     "Sitaki kulala",
+     "não quero dormir"
+    ],
+    [
+     "Ninaweza kusaidia",
+     "posso ajudar"
+    ],
+    [
+     "Siwezi kutembea",
+     "não consigo andar"
+    ],
+    [
+     "Ninapenda kucheka",
+     "gosto de rir"
+    ],
+    [
+     "Ninajua kuwasha moto",
+     "sei acender fogo"
+    ],
+    [
+     "Nifundishe kuwinda",
+     "me ensine a caçar"
+    ],
+    [
+     "Ninataka kujifunza",
+     "quero aprender"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 7. “Me”, “te”, “o” dentro do verbo",
+   "ref": true,
+   "note": "Quem recebe a ação entra logo antes do verbo: -ni- (me), -ku- (te), -m- ou -mw- (o, a), -tu- (nos), -wa- (os, as, vocês).",
+   "rows": [
+    [
+     "Ninakuona",
+     "eu te vejo (ni + na + ku + ona)"
+    ],
+    [
+     "Unaniona?",
+     "você me vê?"
+    ],
+    [
+     "Sikuelewi",
+     "não te entendo"
+    ],
+    [
+     "Ninakusikia",
+     "estou te ouvindo"
+    ],
+    [
+     "Nilikuona jana",
+     "eu te vi ontem"
+    ],
+    [
+     "Atatusaidia",
+     "ele vai nos ajudar"
+    ],
+    [
+     "Ninamjua",
+     "eu o conheço"
+    ],
+    [
+     "Ninakupenda",
+     "eu gosto de você, eu te amo"
+    ],
+    [
+     "Unanifundisha",
+     "você me ensina"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 8. Meu, teu, dele",
+   "ref": true,
+   "note": "O final é sempre o mesmo: -angu (meu), -ako (teu), -ake (dele, dela), -etu (nosso), -enu (de vocês), -ao (deles). O que muda é a primeira letra, que acompanha a palavra. Se errar a letra, entendem do mesmo jeito.",
+   "rows": [
+    [
+     "mtoto wangu · mtoto wako",
+     "meu filho · teu filho (gente usa w-)"
+    ],
+    [
+     "rafiki yangu · mama yangu · baba yangu",
+     "meu amigo · minha mãe · meu pai (família e amigo usam y-)"
+    ],
+    [
+     "jina langu · jina lako",
+     "meu nome · teu nome"
+    ],
+    [
+     "mkono wangu · mguu wake",
+     "minha mão · o pé dele"
+    ],
+    [
+     "kisu changu · chakula chako",
+     "minha faca · tua comida"
+    ],
+    [
+     "maji yangu · nyumba yetu",
+     "minha água · nossa casa"
+    ],
+    [
+     "mishale yangu · upinde wangu",
+     "minhas flechas · meu arco"
+    ],
+    [
+     "de alguém: ya, wa, la, cha",
+     "nyumba ya Tau (casa do Tau) · jina la mtoto (nome da criança)"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 9. Um e vários",
+   "ref": true,
+   "note": "O plural muda o começo da palavra, não o fim. São poucas famílias:",
+   "rows": [
+    [
+     "gente: m- → wa-",
+     "mtu / watu · mtoto / watoto · mgeni / wageni · mzee / wazee"
+    ],
+    [
+     "árvores e partes compridas: m- → mi-",
+     "mti / miti · mshale / mishale · mkono / mikono · mguu / miguu · mto / mito"
+    ],
+    [
+     "coisas: ki- → vi-",
+     "kisu / visu · kitu / vitu (coisa) · kichwa / vichwa · chakula / vyakula"
+    ],
+    [
+     "ji- ou nada → ma-",
+     "jiwe / mawe · jicho / macho · jina / majina · tunda / matunda (fruta)"
+    ],
+    [
+     "não mudam",
+     "nyumba · ndege · samaki · nyoka · asali (um ou vários, igual)"
+    ],
+    [
+     "rafiki / marafiki",
+     "amigo / amigos"
+    ],
+    [
+     "quantos? -ngapi",
+     "watu wangapi? (quantas pessoas?) · mishale mingapi? (quantas flechas?)"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 10. Como é: bom, grande, muito",
+   "ref": true,
+   "note": "A qualidade vem depois da coisa e copia o começo dela. Com gente: m- (um) e wa- (vários).",
+   "rows": [
+    [
+     "-zuri (bom, bonito)",
+     "mtu mzuri · watu wazuri · chakula kizuri · nyumba nzuri"
+    ],
+    [
+     "-baya (ruim, feio)",
+     "mtu mbaya · kitu kibaya"
+    ],
+    [
+     "-kubwa (grande)",
+     "mti mkubwa · kisu kikubwa · nyumba kubwa"
+    ],
+    [
+     "-dogo (pequeno)",
+     "mtoto mdogo · kisu kidogo"
+    ],
+    [
+     "-ingi (muitos)",
+     "watu wengi · samaki wengi · maji mengi"
+    ],
+    [
+     "sana (muito, depois da palavra)",
+     "nzuri sana (muito bom) · asante sana"
+    ],
+    [
+     "kidogo (um pouco)",
+     "ninaelewa kidogo (entendo um pouco)"
+    ],
+    [
+     "sozinhos, sem mudar",
+     "safi (limpo, legal) · tayari (pronto) · hatari (perigoso) · bure (à toa)"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 11. Perguntar",
+   "ref": true,
+   "note": "A frase não muda de ordem: é só a entonação, ou a palavra de pergunta no fim. Je no começo avisa que vem pergunta.",
+   "rows": [
+    [
+     "nini? (o quê)",
+     "Unataka nini? = o que você quer?"
+    ],
+    [
+     "nani? (quem)",
+     "Huyu ni nani? = quem é este?"
+    ],
+    [
+     "wapi? (onde)",
+     "Unaenda wapi? = aonde você vai?"
+    ],
+    [
+     "lini? (quando)",
+     "Utarudi lini? = quando você volta?"
+    ],
+    [
+     "kwa nini? (por quê)",
+     "Kwa nini unacheka? = por que você está rindo?"
+    ],
+    [
+     "vipi? / -je? (como)",
+     "Unasemaje? = como se diz? o que você falou?"
+    ],
+    [
+     "Je, …?",
+     "Je, unaelewa? = você entende?"
+    ],
+    [
+     "Hii inaitwaje?",
+     "como isto se chama?"
+    ],
+    [
+     "Maana yake nini?",
+     "o que significa?"
+    ],
+    [
+     "Sema tena, polepole",
+     "fala de novo, devagar"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 12. Lugar, direção e ligação",
+   "ref": true,
+   "note": "Para dizer “em” ou “no”, cole -ni no fim do lugar.",
+   "rows": [
+    [
+     "-ni (em, no, na)",
+     "nyumbani (em casa) · msituni (na floresta) · baharini (no mar) · mtoni (no rio)"
+    ],
+    [
+     "hapa · pale · huko",
+     "aqui · ali · lá longe"
+    ],
+    [
+     "ndani · nje",
+     "dentro · fora"
+    ],
+    [
+     "juu · chini",
+     "em cima · embaixo"
+    ],
+    [
+     "karibu · mbali",
+     "perto · longe"
+    ],
+    [
+     "mbele · nyuma",
+     "na frente · atrás"
+    ],
+    [
+     "na",
+     "e; com: mimi na wewe (eu e você)"
+    ],
+    [
+     "kwa",
+     "com (um instrumento), para: kwa upinde (com o arco)"
+    ],
+    [
+     "au · lakini",
+     "ou · mas"
+    ],
+    [
+     "kwa sababu",
+     "porque"
+    ],
+    [
+     "kama",
+     "se; como: kama samaki (como um peixe)"
+    ],
+    [
+     "sasa · bado · tena · pia · tu",
+     "agora · ainda · de novo · também · só"
+    ],
+    [
+     "kabla · baada",
+     "antes · depois"
+    ]
+   ]
+  },
+  {
+   "h": "🧩 13. Frases montadas passo a passo",
+   "rows": [
+    [
+     "Ninataka maji",
+     "ni + na + taka + maji = quero água"
+    ],
+    [
+     "Uliona ndege?",
+     "u + li + ona + ndege = você viu o pássaro?"
+    ],
+    [
+     "Kesho tutawinda",
+     "kesho + tu + ta + winda = amanhã vamos caçar"
+    ],
+    [
+     "Sijui jina lako",
+     "si + jui + jina lako = não sei o seu nome"
+    ],
+    [
+     "Nimeumia mkono",
+     "ni + me + umia + mkono = machuquei a mão"
+    ],
+    [
+     "Mguu unauma",
+     "a perna dói"
+    ],
+    [
+     "Ninakuja na wewe",
+     "vou com você"
+    ],
+    [
+     "Sitaki kwenda msituni usiku",
+     "não quero ir à floresta de noite"
+    ],
+    [
+     "Nifundishe neno hili",
+     "me ensine esta palavra"
+    ],
+    [
+     "Ninaweza kukusaidia",
+     "posso te ajudar"
+    ],
+    [
+     "Nina chakula. Unataka?",
+     "tenho comida. Você quer?"
+    ],
+    [
+     "Mimi si adui, mimi ni rafiki",
+     "não sou inimigo, sou amigo"
+    ],
+    [
+     "Kwa nini unanicheka?",
+     "por que você está rindo de mim?"
+    ],
+    [
+     "Nimeelewa!",
+     "entendi!"
+    ],
+    [
+     "Bado sielewi",
+     "ainda não entendo"
+    ]
+   ]
   },
   {
    "h": "Para começar",
@@ -80,6 +845,10 @@
      "sinto muito (por dor ou cansaço)"
     ],
     [
+     "Samahani",
+     "desculpa; com licença"
+    ],
+    [
      "Polepole",
      "devagar"
     ],
@@ -121,6 +890,10 @@
      "amigo"
     ],
     [
+     "adui",
+     "inimigo"
+    ],
+    [
      "mtoto / watoto",
      "criança / crianças"
     ],
@@ -139,6 +912,10 @@
     [
      "mwanamke / mwanaume",
      "mulher / homem"
+    ],
+    [
+     "mwindaji",
+     "caçador"
     ]
    ]
   },
@@ -198,12 +975,32 @@
      "pedra"
     ],
     [
+     "njia",
+     "caminho"
+    ],
+    [
+     "mlima",
+     "morro, montanha"
+    ],
+    [
      "samaki",
      "peixe"
     ],
     [
      "ndege",
      "pássaro"
+    ],
+    [
+     "nyama",
+     "carne"
+    ],
+    [
+     "mnyama / wanyama",
+     "bicho / bichos"
+    ],
+    [
+     "tunda",
+     "fruta"
     ],
     [
      "nyuki",
@@ -222,8 +1019,12 @@
      "tubarão"
     ],
     [
-     "asubuhi / usiku",
-     "manhã / noite"
+     "kaa",
+     "caranguejo"
+    ],
+    [
+     "asubuhi / mchana / jioni / usiku",
+     "manhã / dia / tardinha / noite"
     ],
     [
      "leo / kesho / jana",
@@ -232,7 +1033,7 @@
    ]
   },
   {
-   "h": "Corpo",
+   "h": "Corpo e saúde",
    "rows": [
     [
      "kichwa",
@@ -241,6 +1042,10 @@
     [
      "macho",
      "olhos"
+    ],
+    [
+     "masikio",
+     "orelhas"
     ],
     [
      "mdomo",
@@ -259,12 +1064,32 @@
      "barriga"
     ],
     [
+     "mgongo",
+     "costas"
+    ],
+    [
      "moyo",
      "coração"
     ],
     [
      "damu",
      "sangue"
+    ],
+    [
+     "kidonda",
+     "ferida"
+    ],
+    [
+     "Ninaumwa",
+     "estou doente, com dor"
+    ],
+    [
+     "Nina homa",
+     "estou com febre"
+    ],
+    [
+     "dawa",
+     "remédio"
     ]
    ]
   },
@@ -302,95 +1127,65 @@
     [
      "nyumba",
      "casa, abrigo"
+    ],
+    [
+     "kuni",
+     "lenha"
+    ],
+    [
+     "nguo",
+     "roupa"
+    ],
+    [
+     "mfuko",
+     "bolsa, saco"
+    ],
+    [
+     "sumu",
+     "veneno"
+    ],
+    [
+     "neno / maneno",
+     "palavra / palavras"
     ]
    ]
   },
   {
-   "h": "Ordens e ações",
+   "h": "Sentir",
    "rows": [
     [
-     "Njoo!",
-     "vem!"
+     "Nimefurahi",
+     "estou feliz"
     ],
     [
-     "Nenda!",
-     "vai!"
+     "Nimechoka",
+     "estou cansado"
     ],
     [
-     "Kaa!",
-     "senta, fica!"
+     "Ninaogopa",
+     "estou com medo"
     ],
     [
-     "Simama!",
-     "levanta! para!"
+     "Nimekasirika",
+     "estou bravo"
     ],
     [
-     "Angalia!",
-     "olha!"
+     "Nina huzuni",
+     "estou triste"
     ],
     [
-     "Sikiliza!",
-     "escuta!"
+     "Ninakuamini",
+     "confio em você"
     ],
     [
-     "Ngoja!",
-     "espera!"
+     "Sikuamini",
+     "não confio em você"
     ],
     [
-     "Usiguse!",
-     "não toca!"
-    ],
-    [
-     "Twende!",
-     "vamos!"
-    ],
-    [
-     "Kula / kunywa / lala",
-     "come / bebe / dorme"
-    ],
-    [
-     "Saidia",
-     "ajuda"
-    ],
-    [
-     "kucheka",
-     "rir"
+     "Inachekesha!",
+     "que engraçado!"
     ]
    ]
-  },
-  {
-   "h": "Como as frases funcionam",
-   "rows": [
-    [
-     "ni- u- a- tu- m- wa-",
-     "quem faz: eu, você, ele, nós, vocês, eles"
-    ],
-    [
-     "-na- / -li- / -ta-",
-     "quando: agora / passado / futuro"
-    ],
-    [
-     "Ninakula",
-     "eu estou comendo (ni + na + kula)"
-    ],
-    [
-     "Nilikula / Nitakula",
-     "eu comi / eu vou comer"
-    ],
-    [
-     "Unakula?",
-     "você está comendo? (pergunta é só a entonação)"
-    ],
-    [
-     "Sielewi / Sijui / Sitaki",
-     "não entendo / não sei / não quero"
-    ],
-    [
-     "nini? nani? wapi? lini? vipi?",
-     "o quê? quem? onde? quando? como?"
-    ]
-   ],
-   "ref": true
   },
   {
    "h": "Frases úteis",
@@ -408,16 +1203,8 @@
      "de onde você vem?"
     ],
     [
-     "Ninataka maji",
-     "quero água"
-    ],
-    [
-     "Nina njaa / Nina kiu",
-     "estou com fome / com sede"
-    ],
-    [
-     "Nimechoka",
-     "estou cansado"
+     "Ninatoka mbali",
+     "venho de longe"
     ],
     [
      "Nisaidie",
@@ -434,6 +1221,18 @@
     [
      "Wewe ni mcheshi",
      "você é engraçado"
+    ],
+    [
+     "Twende pamoja",
+     "vamos juntos"
+    ],
+    [
+     "Ngoja kidogo",
+     "espera um pouco"
+    ],
+    [
+     "Sawa, nimeelewa",
+     "certo, entendi"
     ]
    ]
   },
@@ -480,6 +1279,18 @@
     [
      "saba, nane, tisa, kumi",
      "7, 8, 9, 10"
+    ],
+    [
+     "kumi na moja",
+     "11 (dez e um)"
+    ],
+    [
+     "ishirini / mia",
+     "20 / 100"
+    ],
+    [
+     "wa kwanza / wa pili",
+     "primeiro / segundo"
     ]
    ]
   }

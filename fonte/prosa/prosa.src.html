@@ -366,7 +366,11 @@ function openEditor(id, preset){
       const go = el("button", "btn", "Montar contato"); go.type = "button"; go.onclick = () => aiFill(go); const r = el("div", "btns"); r.append(go);
       const imp = el("button", "btn ghost", "Importar card"); imp.type = "button"; imp.onclick = () => $("#f-card").click(); r.append(imp);
       if (mesaChars().length) { const ms = el("button", "btn ghost", "Trazer da Mesa de RP"); ms.type = "button"; ms.onclick = openMesa; r.append(ms); }
-      bx.append(r); if (!hasAI()) bx.append(el("p", "hint", "Para criar com a IA, escolha um modelo em Ajustes.")); b.append(bx);
+      bx.append(r); if (!hasAI()) bx.append(el("p", "hint", "Para criar com a IA, escolha um modelo em Ajustes."));
+      const pd = el("details"); pd.append(el("summary", "", "Colar um card (.json)")); pd.style.cursor = "pointer";
+      const pf = field("Se a janela de arquivos não abrir (acontece no app do Claude no celular), cole aqui o conteúdo do .json do personagem", "e-paste", "area", "", {rows:3});
+      const pbn = el("button", "btn quiet", "Usar card colado"); pbn.type = "button"; pbn.onclick = () => { try { const p = cardToPreset(JSON.parse($("#e-paste").value)); if (!p) throw 0; openEditor(null, p); toast("Card lido. Confira e adicione."); } catch { toast("Isso não é o .json de um personagem."); } };
+      pd.append(pf, pbn); bx.append(pd); b.append(bx);
     }
     const pk = el("div", "pick"), av = el("span", "av lg"); avatar(av, d); const pb = el("button", "btn quiet", d.av ? "Trocar foto" : "Escolher foto"); pb.type = "button"; pb.onclick = () => $("#f-av").click(); pk.append(av, pb); pk.id = "e-pick"; b.append(pk);
     b.append(field("Nome", "e-name", "text", d.name, {max:50}), field("Recado (aparece embaixo do nome)", "e-bio", "text", d.bio, {max:70, ph:"ex.: no estúdio, não ligo de volta"}),
@@ -466,18 +470,25 @@ function openSettings(){
     b.append(md);
     const th = el("div", "box"); th.append(el("h3", "", "Aparência"), segEl([["auto", "Automático"], ["light", "Claro"], ["dark", "Escuro"]], S.ix.theme || "auto", v => { S.ix.theme = v; applyTheme(); saveIx(); })); b.append(th);
     const bk = el("div", "box"); bk.append(el("h3", "", "Backup"), el("p", "hint", "Guarda todos os contatos e conversas num arquivo. A chave do modelo não entra."));
-    const r = el("div", "btns"); const d1 = el("button", "btn quiet", "Baixar backup"); d1.type = "button"; d1.onclick = backup; const d2 = el("button", "btn quiet", "Restaurar"); d2.type = "button"; d2.onclick = () => $("#f-bk").click(); r.append(d1, d2); bk.append(r); b.append(bk);
+    const r = el("div", "btns"); const d1 = el("button", "btn quiet", "Baixar backup"); d1.type = "button"; d1.onclick = backup; const d2 = el("button", "btn quiet", "Restaurar"); d2.type = "button"; d2.onclick = () => $("#f-bk").click(); const d3 = el("button", "btn quiet", "Copiar backup"); d3.type = "button"; d3.onclick = async () => { const data = await backupData(); try { await navigator.clipboard.writeText(data); toast("Backup copiado."); } catch { const t = $("#s-paste"); t.value = data; t.focus(); t.select(); toast("A cópia automática não funcionou. O backup está no campo abaixo: selecione tudo e copie."); } };
+    r.append(d1, d3, d2); bk.append(r);
+    bk.append(field("Ou cole aqui o conteúdo de um backup", "s-paste", "area", "", {rows:3}));
+    const d4 = el("button", "btn quiet", "Restaurar do texto colado"); d4.type = "button"; d4.onclick = () => { const t = $("#s-paste").value; if (!t.trim()) { toast("Cole o backup no campo."); return; } restoreText(t); }; bk.append(d4); b.append(bk);
   });
 }
-async function backup(){
+async function backupData(){
   const chats = []; for (const m of S.ix.contacts) { try { const c = await loadChat(m.id); if (c) chats.push(c); } catch {} }
-  const data = JSON.stringify({format:"prosa-v1", exported: Date.now(), me: S.ix.me, contacts: S.ix.contacts, chats});
-  const name = "prosa-backup.json";
-  try { if (S.downloads) await S.downloads.save({filename: name, data}); else { const a = el("a"); a.href = URL.createObjectURL(new Blob([data], {type:"application/json"})); a.download = name; document.body.append(a); a.click(); a.remove(); } } catch { toast("Não consegui baixar o backup."); }
+  return JSON.stringify({format:"prosa-v1", exported: Date.now(), me: S.ix.me, contacts: S.ix.contacts, chats});
 }
-async function restore(file){
+async function backup(){
+  const data = await backupData();
+  const name = "prosa-backup.json";
+  try { if (S.downloads) await S.downloads.save({filename: name, data}); else { const a = el("a"); a.href = URL.createObjectURL(new Blob([data], {type:"application/json"})); a.download = name; document.body.append(a); a.click(); a.remove(); } } catch (e) { if (!e || e.code !== "declined") toast("Não consegui baixar aqui. Use Copiar backup."); }
+}
+async function restore(file){ try { await restoreText(await file.text()); } catch { toast("Não consegui ler esse arquivo."); } }
+async function restoreText(text){
   try {
-    const j = JSON.parse(await file.text()); if (j.format !== "prosa-v1" || !Array.isArray(j.chats)) throw 0; let n = 0;
+    const j = JSON.parse(text); if (j.format !== "prosa-v1" || !Array.isArray(j.chats)) throw 0; let n = 0;
     for (const c of j.chats) { if (!c || !c.id || !c.name) continue; const m = (j.contacts || []).find(x => x.id === c.id) || {id:c.id, name:c.name}; const cur = meta(c.id);
       if (cur && (cur.lastAt || 0) >= (m.lastAt || 0)) continue; await S.store.setChat(c); CH.delete(c.id); S.ix.contacts = S.ix.contacts.filter(x => x.id !== c.id).concat([m]); n++; }
     if (!S.ix.me.name && j.me) S.ix.me = j.me;
