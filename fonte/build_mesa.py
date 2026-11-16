@@ -3,38 +3,9 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(os.path.join(BASE, 'saida'), exist_ok=True)
 import os
 import json, base64, re
-card = json.load(open(os.path.join(BASE, 'Tau_card_v6.json'), encoding='utf-8'))['data']
-guide = json.load(open(os.path.join(BASE, 'guia_suaili.json'), encoding='utf-8'))
 tpl = open(os.path.join(BASE, 'mesa.template.html'), encoding='utf-8').read()
 def b64(p): return "data:image/jpeg;base64," + base64.b64encode(open(p, 'rb').read()).decode()
 strip = lambda t: re.sub(r'\{\{original\}\}\s*', '', t).strip()
-
-# ---------- Tau ----------
-LABELS = [
-  ("Acampamento vazio", "Dia. Tau segue seu rastro até um acampamento que parece abandonado."),
-  ("Fogueira escondida (noite)", "Noite no manguezal. Tau vê um ponto de fogo escondido entre as raízes."),
-  ("Armadilha cortada", "Uma armadilha Namaru aparece com a corda cortada por uma lâmina de metal."),
-  ("Destroços na maré baixa", "A maré baixa mostra os destroços. Tau e dois guerreiros vão conferir."),
-]
-texts = [card['first_mes']] + card['alternate_greetings']
-assert len(texts) == len(LABELS)
-tau = {
-  "id": "tau", "name": "Tau", "role": "char",
-  "tagline": "Rastreador Namaru que ri de tudo, caça com arco e fala suaíli de verdade. Primeiro contato numa ilha isolada.",
-  "guide": guide, "trLang": "suaíli",
-  "portrait": b64(os.path.join(BASE, 'portrait.jpg')), "face": b64(os.path.join(BASE, 'avatar.jpg')),
-  "description": card['description'], "personality": card['personality'], "scenario": card['scenario'],
-  "rules": strip(card['system_prompt']) + " O acampamento citado na abertura é genérico: ajuste os detalhes ao equipamento da persona sem contradizer o que já foi narrado.",
-  "examples": card['mes_example'].replace('<START>\n', '---\n').lstrip('-\n ').strip(),
-  "post": strip(card['post_history_instructions']),
-  "openings": [{"id": f"o{i}", "label": l, "blurb": b, "text": t} for i, ((l, b), t) in enumerate(zip(LABELS, texts))],
-  "lore": [{"id": f"l{e['id']}", "name": e['comment'], "keys": e['keys'], "content": e['content'], "always": bool(e.get('constant')),
-            "order": e['insertion_order'], "pos": e['extensions']['position']} for e in card['character_book']['entries']],
-  "persona": {"name": "Alex", "pro": "ele",
-    "look": "Pele branca queimada de sol, cabelo curto, olhos claros; arranhões e hematomas do acidente.",
-    "bio": "Treinado em sobrevivência (curso militar de selva e mar): faz fogo, abrigo, purifica água, presta primeiros socorros e sinaliza. Calmo sob pressão, tenta não parecer uma ameaça. Não fala suaíli nem nenhuma língua de Mavéa.",
-    "extra": "Equipamento salvo: faca de metal, isqueiro, espelho de sinalização, kit pequeno de primeiros socorros, garrafa com filtro, pano laranja salvo dos destroços. Acidente: naufrágio de um barco pequeno, há cerca de três dias; único sobrevivente conhecido."},
-}
 
 # ---------- Mestre da Mesa ----------
 mestre = {
@@ -71,7 +42,7 @@ mestre = {
   ],
   "persona": {"name": "Alex", "pro": "ele", "look": "", "bio": "Alguém esperto e teimoso, sem treino especial; quem o jogador quiser ser.", "extra": ""},
 }
-js = json.dumps([tau, mestre], ensure_ascii=False).replace("</", "<\\/")
+js = json.dumps([mestre], ensure_ascii=False).replace("</", "<\\/")
 out = tpl.replace("__BUILTINS__", js).replace("__HOSTED_URL__", os.environ.get("HOSTED_URL", ""))
 assert "__BUILTINS__" not in out
 open(os.path.join(BASE, 'saida', 'mesa_rp.html'), 'w', encoding='utf-8').write(out)

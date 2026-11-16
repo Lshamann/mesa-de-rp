@@ -19,7 +19,7 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 ## O que já existe (até 15/11/2026)
 
 - Modelos: Claude (dentro do Claude) ou API (OpenRouter, Gemini, Groq, DeepSeek, Mistral, OpenAI, Ollama, LM Studio, personalizada), com medidor de uso e plano B quando o limite do Claude acaba.
-- Tau (v6): fala suaíli de verdade (sem tradução para o jogador), ri fácil, caça com arco; povo inspirado nos caçadores-coletores (partilha, mel com o pássaro-guia). Guia de suaíli escondido no painel Palavras. A ficha é gerada por `fonte/make_tau6.py` a partir da v5.
+- Tau: desde 16/11/2026 não vem mais dentro do app nem fica neste repositório. É uma ficha particular (com o guia de suaíli dentro) que o dono importa em Histórias. O único personagem de exemplo é o Mestre da Mesa.
 - Personagens: editor com IA, cards do SillyTavern, Chub, conversas .jsonl do SillyTavern, personagem a partir de imagem, elenco em grupo, teste antes de jogar e revisão da ficha.
 - Memória: resumo automático, estado da cena (com "quem sabe o quê"), lore aprendida, fichas de NPC com rotina, boatos, diário em capítulos.
 - Linha do tempo: Voltar, Regerar, trocar de versão, editar a última resposta e Ramificar levam o estado junto; "Recalcular do zero" para histórias antigas.
@@ -64,6 +64,7 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 
 ## Problemas conhecidos
 
+- `fonte/testes/test_tl.py`, `test_big.py` e `test_pro.py` esperam um personagem com id `tau`: rode-os numa build local que tenha a ficha (ela fica fora do repositório).
 - No app do Claude no celular a janela de escolher arquivo não abre: cards em .png não entram por lá (use o .json colado, ou o navegador, ou o site). Isso foi confirmado só em ambiente simulado; se algum botão ainda falhar, mande o relatório de Ajustes → Diagnóstico.
 - Pontos de volta só existem a partir da atualização de 07/11/2026; em histórias anteriores, use Memória → Recalcular do zero.
 - Ramos criados antes de 07/11/2026 não aparecem na árvore de Histórias.

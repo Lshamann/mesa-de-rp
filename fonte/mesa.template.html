@@ -997,7 +997,7 @@ function openStory(st){
   showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene(); SIMX.open = null; renderSimBar(); updateVocabChip();
   if (simOn(st) && !st.sim.ready && hasAI() && st.messages.some(m => m.role === "assistant")) simInit();
   if (st.messages.length <= 1) $("#log").scrollTop = 0; else toBottom();
-  if (!S.char) showBanner("O personagem desta história foi excluído. Você pode ler e exportar, mas não continuar."); else showBanner(hasAI() ? "" : noAIText());
+  if (!S.char) showBanner("O personagem desta história não está neste aparelho. Importe a ficha dele (Histórias → Escolher arquivo ou colar o .json) para continuar; até lá dá para ler e exportar."); else showBanner(hasAI() ? "" : noAIText());
   persist();
   if (S.char && hasAI()) $("#in").focus({preventScroll:true});
 }
