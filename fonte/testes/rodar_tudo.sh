@@ -5,10 +5,10 @@ cd "$(dirname "$0")/../.." || exit 1
 R=$(pwd)
 TEST_CHAR=$R/fonte/testes/fixtures/personagem_teste.json sh fonte/build.sh > /dev/null || exit 1
 fail=0
-for t in test_pro test_pins test_chars test_srs test_misc; do
+for t in test_pro test_pins test_chars test_srs test_misc test_batch2 test_places; do
   echo "== $t"
   out=$(timeout 600 python3 fonte/testes/$t.py 2>&1); echo "$out" | grep -v "^PASS" | tail -12
-  p=$(echo "$out" | grep -c "^PASS"); f=$(echo "$out" | grep -c "^FAIL\|Traceback\|FAILS: \[.\+\]")
+  p=$(echo "$out" | grep -c "^PASS"); f=$(echo "$out" | grep -c "^FAIL \|Traceback\|FAILS: \[.\+\]")
   echo "$t: $p ok, $f falhas"; [ "$f" -gt 0 ] && fail=1
 done
 echo "== crawl (auditoria de botões)"

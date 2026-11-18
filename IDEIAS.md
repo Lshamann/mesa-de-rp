@@ -26,6 +26,7 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - Personagens: etiquetas e busca na biblioteca, versões anteriores da ficha, mundos (lore compartilhada entre personagens), e o narrador faz a aparência de {{user}} ter consequência (estranha, compara, procura semelhança).
 - Idiomas: revisão espaçada das palavras salvas (Errei/Acertei; 1, 3, 7, 16 e 40 dias) e “Corrigir minha frase” com a IA.
 - Leitura e backup: tamanho e fonte da letra, espaço entre linhas, cor de destaque; lembrete de backup; livro em .epub (diário ou conversa).
+- 18/11/2026 (segunda leva): “Anteriormente…” ao voltar para uma história depois de 6 horas; ☆ marcar momentos e 🔎 buscar na história (inclui mensagens antigas); 🎲 dados (o narrador respeita o resultado); lixeira de 30 dias para histórias e personagens; 🎭 NPC vira personagem; 🗺️ lugares mantidos pelo anotador.
 - Linha do tempo: Voltar, Regerar, trocar de versão, editar a última resposta e Ramificar levam o estado junto; "Recalcular do zero" para histórias antigas.
 - Simulação: fome, sede, energia, higiene, necessidades, saúde, relógio, inventário realista.
 - Idiomas: tradução por IA, Google e offline (Bergamot); dicionário de palavras aprendidas em cena, com níveis e revisão.
@@ -54,13 +55,17 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - [ ] Sincronização entre celular e computador (e uma exclusão viajando).
 - [ ] Expressões do Tau e do Ousmane trocando na conversa.
 - [ ] O francês do Ousmane lido com voz francesa no "Ouvir".
+- [ ] Ousmane nota a aparência de quem joga (parente de pele clara: ele procura semelhança ou estranha?).
+- [ ] Dados com o Mestre da Mesa: resultado baixo complica de verdade?
+- [ ] “Anteriormente…” resume bem depois de um dia sem jogar?
+- [ ] Lugares: o anotador cria e atualiza sem inventar?
 
 ## Ideias para depois
 
 Feito em 18/11/2026 (saiu desta lista): ~~cena rápida~~ (o botão Continuar já existia), ~~tamanho e estilo da resposta~~ (Ajustes e Nota de cena já existiam), ~~resposta aparecendo aos poucos~~ (já existia), fatos fixos, agenda do mundo, aparência de {{user}} editável, etiquetas e busca, versões da ficha, mundos (lore compartilhada), repetição espaçada, corrigir minha frase, lembrete de backup, aparência da leitura, livro em ePub, testes automáticos no GitHub.
 
 - Revisão semanal agendada que só propõe melhorias (nunca publica sozinha); depende de a ferramenta de tarefas agendadas estar disponível na conversa.
-- Mapa de lugares visitados, com quem mora ou trabalha onde.
+- Mapa desenhado dos lugares (a lista de lugares já existe).
 - Exportar também em PDF (o ePub já existe).
 - Sincronização dentro do app do Claude: não dá por ora, porque o app não acessa a internet (só o Claude). Os dados já aparecem em todos os aparelhos da mesma conta do Claude; para levar ao site, use "Copiar tudo" e cole lá.
 - Gerar as imagens de expressão dentro do app, se surgir um gerador disponível.

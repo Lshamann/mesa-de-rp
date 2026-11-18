@@ -340,6 +340,13 @@ ol.steps a{color:var(--accent)}
 .composer .col{padding-block:10px 12px;display:flex;flex-direction:column;gap:9px;position:relative}
 .tray{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 @media (max-width:640px){.tray{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;margin-inline:-2px;padding-inline:2px}.tray::-webkit-scrollbar{display:none}.tray>*{flex:none}}
+.recap{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--surface)}
+.recap p{margin:0}
+.who .star{color:var(--ochre);margin-left:4px;letter-spacing:0}
+.msg.flash{outline:2px solid var(--accent);outline-offset:6px;border-radius:8px;transition:outline-color 1.6s}
+.fx{margin:4px 0 0;font-size:15px;line-height:1.5}
+.fx mark{background:var(--surface-2);color:var(--fg);border-bottom:2px solid var(--accent);padding:0 1px}
+.dicegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .bknote{border:1px solid var(--ochre);border-radius:12px;padding:12px 14px;margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
 .bknote p{margin:0;font-size:15px}
 .libsearch{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
@@ -397,6 +404,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
       <div class="tools">
         <button class="ib" id="b-stories" type="button" title="Histórias" aria-label="Histórias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V5.5"/></svg><span class="lbl">Histórias</span></button>
         <button class="ib" id="b-sim" type="button" title="Ficha" aria-label="Ficha do personagem" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg><span class="lbl">Ficha</span></button>
+        <button class="ib" id="b-find" type="button" title="Buscar e marcados" aria-label="Buscar na história e momentos marcados" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></button>
         <button class="ib" id="b-memory" type="button" title="Memória" aria-label="Memória" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span class="lbl">Memória</span></button>
         <button class="ib" id="b-models" type="button" title="Modelo" aria-label="Modelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg><span class="lbl">Modelo</span></button>
         <button class="ib" id="b-lock" type="button" title="Bloquear o app" aria-label="Bloquear o app" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lbl">Bloquear</span></button>
@@ -440,6 +448,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
           <button class="chip" type="button" id="b-ideas" title="Três sugestões do que fazer agora">💡 Ideias</button>
           <button class="chip" type="button" id="b-tr" aria-expanded="false" aria-controls="trmenu" title="Traduz as falas que você escreveu entre aspas">🌐 Traduzir ▾</button>
           <button class="chip" type="button" id="b-vocab" title="Palavras de outros idiomas que os personagens aprenderam nesta história" hidden>📖 Palavras</button>
+          <button class="chip" type="button" id="b-dice" title="Rolar dados; o resultado vai junto com a sua ação">🎲 Dados</button>
           <button class="chip" type="button" id="b-polish" title="Deixa sua ação mais viva e bem formatada, sem mudar o que você decidiu">✨ Melhorar</button>
           <button class="chip" type="button" id="b-cont" title="Deixa a cena seguir sem uma ação sua">Continuar</button>
           <span class="pop"><button class="chip" type="button" id="b-time" aria-expanded="false" aria-controls="timemenu">Avançar tempo ▾</button></span>
@@ -505,12 +514,14 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         </div>
         <div id="mem-extra" style="display:flex;flex-direction:column;gap:22px"></div>
       </div>
+      <div class="content" id="sh-find" hidden><div id="find-box" style="display:flex;flex-direction:column;gap:14px"></div></div>
       <div class="content" id="sh-look" hidden><div id="look-box" style="display:flex;flex-direction:column;gap:22px"></div></div>
       <div class="content" id="sh-diary" hidden><div id="diary-box" style="display:flex;flex-direction:column;gap:24px"></div></div>
       <div class="content" id="sh-vocab" hidden><div id="vocab-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
+        <div><h4>“Anteriormente…” ao voltar</h4><div class="seg" id="seg-recap"></div><p class="hint">Quando você volta para uma história depois de 6 horas ou mais, um resumo curto de onde parou (uma consulta rápida). Só você vê; não entra na conversa.</p></div>
         <div><h4>Lembrete de backup</h4><div class="seg" id="seg-bk"></div><p class="hint" id="bk-hint"></p></div>
         <div><h4>Diagnóstico</h4><div id="diag-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
         <div><h4>Login e bloqueio</h4><div id="lock-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
@@ -603,7 +614,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"serif", lh:"n", ac:"teal", bk:true, v:2};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"serif", lh:"n", ac:"teal", bk:true, recap:true, v:2};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -870,7 +881,7 @@ function header(st, ch, loreHead){
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, pins, mem, agenda, stateBlock(st), npcBlock(st), rumorBlock(st), simBlock(st), vocabBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, pins, mem, agenda, stateBlock(st), npcBlock(st), placesBlock(st), rumorBlock(st), simBlock(st), vocabBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -881,6 +892,8 @@ function tail(st, ch, loreTail){
   if (st.notes && st.notes.trim()) parts.push("Nota de cena do jogador: " + st.notes.trim());
   const sn = simTail(st); if (sn) parts.push(sn);
   const ad = agendaTail(st); if (ad) parts.push(ad);
+  const lu = [...st.messages].reverse().find(m => m.role === "user" && m.kind !== "cmd");
+  if (lu && /\[🎲 [^\]]+\]/.test(lu.text)) parts.push("Rolagem: a mensagem de " + n + " traz um dado rolado de verdade (" + (lu.text.match(/\[🎲 [^\]]+\]/g) || []).join(" ") + "). Respeite o resultado ao narrar a consequência da ação: resultado baixo falha ou complica, médio funciona com custo, alto dá certo; em d20, 20 é um sucesso marcante e 1 uma falha marcante. Não role de novo nem mude o número; descreva só o efeito, sem citar o dado.");
   if (loreTail.length) parts.push("Lore ativa:\n" + loreTail.map(e => "- " + sub(e.content, n, ch.name)).join("\n"));
   return "\n\n---\n" + parts.join("\n");
 }
@@ -958,7 +971,7 @@ function updateHeader(){
   else if (v === "editor") { title = "Editor"; sub_ = D && D.name ? D.name : "Novo personagem"; }
   if (v === "library") av.append(markSvg()); else if (ch) av.append(v === "chat" && S.story ? moodAvatar(ch, lastTauMsg(), "big") : avatarEl(ch, "big"));
   $("#h-title").textContent = title; $("#h-sub").textContent = sub_;
-  $("#b-memory").hidden = v !== "chat"; $("#b-sim").hidden = v !== "chat";
+  $("#b-memory").hidden = v !== "chat"; $("#b-sim").hidden = v !== "chat"; $("#b-find").hidden = v !== "chat";
 }
 function markSvg(){
   const d = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -969,7 +982,7 @@ function markSvg(){
 function updateComposer(){
   const ok = !!(hasAI() && S.char);
   $("#b-send").disabled = !ok; $("#in").disabled = !ok || S.busy;
-  $("#b-cont").disabled = !ok || S.busy; $("#b-tr").disabled = !ok || TRX.inBusy; $("#b-ideas").disabled = !ok || S.busy || AUX.ideas; $("#b-polish").disabled = !ok || AUX.polish; $("#b-time").disabled = !ok || S.busy;
+  $("#b-dice").disabled = !ok; $("#b-cont").disabled = !ok || S.busy; $("#b-tr").disabled = !ok || TRX.inBusy; $("#b-ideas").disabled = !ok || S.busy || AUX.ideas; $("#b-polish").disabled = !ok || AUX.polish; $("#b-time").disabled = !ok || S.busy;
 }
 
 /* ---------- biblioteca ---------- */
@@ -1122,6 +1135,7 @@ function newStory(ch, setup, o = {}){
     messages: [{id: rid(), role:"assistant", text, alts:[text], ai:0, lore:[]}], memory:"", notes:"", archived:0, archiveChunks:0, sim: (o.sim != null ? o.sim : prefs.sim === true) ? newSim() : undefined};
 }
 function openStory(st){
+  const away = Date.now() - (st.updated || Date.now()); S.recap = null;
   S.story = st; S.char = S.chars.get(st.charId) || null; S.index.lastId = st.id; S.old = null; S.error = null; S.editing = null;
   ckLoad(st); VOC.rev = null; VOC.gs = null; VOC.gq = ""; VOC.scRes = null; VOC.sct = ""; VOC.scp = "";
   $("#in").value = ""; draftLoad(st);
@@ -1131,6 +1145,115 @@ function openStory(st){
   if (!S.char) showBanner("O personagem desta história foi excluído ou não está neste aparelho. Se ele ainda existe, importe a ficha dele (Histórias → Escolher arquivo ou colar o .json) para continuar; até lá dá para ler e exportar."); else showBanner(hasAI() ? "" : noAIText());
   persist();
   if (S.char && hasAI()) $("#in").focus({preventScroll:true});
+  if (prefs.recap !== false && away > RECAP_GAP && st.messages.length >= 4 && S.char && hasAI()) makeRecap(st, false);
+}
+/* dados */
+function rollDice(spec){
+  const m = /^\s*(\d{0,2})\s*d\s*(\d{1,4})\s*(?:([+-])\s*(\d{1,3}))?\s*$/i.exec(spec || ""); if (!m) return null;
+  const n = Math.min(20, Math.max(1, Number(m[1] || 1))), sides = Number(m[2]), mod = m[3] ? (m[3] === "-" ? -1 : 1) * Number(m[4]) : 0;
+  if (sides < 2 || sides > 1000) return null;
+  const u = new Uint32Array(n); crypto.getRandomValues(u);
+  const rolls = [...u].map(x => 1 + (x % sides)), total = rolls.reduce((a, b) => a + b, 0) + mod;
+  const label = (n > 1 ? n : "") + "d" + sides + (mod ? (mod > 0 ? "+" : "") + mod : "");
+  const det = rolls.length > 1 || mod ? rolls.join("+") + (mod ? (mod > 0 ? "+" : "") + mod : "") + " = " + total : String(total);
+  return {label, total, rolls, sides, n, text: "[🎲 " + label + ": " + det + "]"};
+}
+function openDice(){
+  if ($("#in").disabled) { toast("Para rolar, a história precisa de um modelo ativo."); return; }
+  const o = ioOpen("dice", "🎲 Rolar dados", "O resultado entra na sua mensagem e o narrador respeita: valor alto ajuda, baixo complica. Escreva a ação junto, por exemplo: tento pular o muro.");
+  const g = el("div", "dicegrid");
+  ["d4", "d6", "d8", "d10", "d12", "d20", "d100", "2d6"].forEach(d => { const b = el("button", "btn ghost", d); b.type = "button"; b.addEventListener("click", () => doRoll(d)); g.append(b); });
+  const r = el("div", "send-row"); const inp = el("input"); inp.type = "text"; inp.id = "dice-x"; inp.className = "pin"; inp.placeholder = "Outro: 3d6+2"; inp.maxLength = 16; inp.setAttribute("aria-label", "Dados personalizados");
+  const go = el("button", "btn sm", "Rolar"); go.type = "button"; go.addEventListener("click", () => doRoll(inp.value)); inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); doRoll(inp.value); } });
+  r.append(inp, go); o.body.append(g, r);
+  o.btn("Fechar", ioClose);
+}
+function doRoll(spec){
+  const r = rollDice(spec); if (!r) { toast("Use o formato 2d6, d20 ou 3d6+2."); return; }
+  ioClose();
+  const ta = $("#in"); const v = ta.value.replace(/\s+$/, ""); ta.value = (v ? v + " " : "") + r.text + " "; autosize(); draftSave(); ta.focus();
+  const crit = r.n === 1 && r.sides === 20 ? (r.rolls[0] === 20 ? " · acerto crítico!" : r.rolls[0] === 1 ? " · falha crítica!" : "") : "";
+  toast("🎲 " + r.label + ": " + r.total + crit);
+}
+/* buscar na história e momentos marcados */
+const FIND = {q:"", sid:null, arc:null, onlyStar:false};
+async function findArc(st){
+  if (FIND.sid === st.id && FIND.arc) return FIND.arc;
+  let arc = S.old || null;
+  if (!arc) { arc = []; for (let n = 1; n <= (st.archiveChunks || 0); n++) { try { arc = arc.concat(await S.store.getArchive(st.id, n)); } catch {} } }
+  FIND.sid = st.id; FIND.arc = arc; return arc;
+}
+function renderFind(){
+  const box = $("#find-box"); if (!box || !S.story) return; box.textContent = "";
+  const st = S.story; if (FIND.sid !== st.id) { FIND.q = ""; FIND.arc = null; FIND.sid = st.id; }
+  const q = el("input"); q.type = "search"; q.id = "find-q"; q.className = "pin"; q.placeholder = "Buscar uma palavra ou frase na história"; q.value = FIND.q; q.autocomplete = "off"; q.setAttribute("aria-label", "Buscar na história");
+  const tg = el("div", "tagrow"); const ob = el("button", "chip" + (FIND.onlyStar ? " on" : ""), "★ Só marcados"); ob.type = "button"; ob.setAttribute("aria-pressed", String(FIND.onlyStar)); tg.append(ob);
+  const out = el("div"); out.id = "find-out";
+  box.append(q, tg, out);
+  const draw = async () => {
+    const term = vnorm(FIND.q = q.value), only = FIND.onlyStar;
+    out.textContent = "";
+    if (!term && !only) {
+      const stars = st.messages.map((m, i) => ({m, i, old:false})).filter(x => x.m.star);
+      out.append(el("h4", "", "★ Momentos marcados"));
+      if (!stars.length && !(st.archiveChunks)) { out.append(el("p", "hint", "Nenhum ainda. Toque em “☆ Marcar” embaixo de uma mensagem para guardar o momento aqui.")); return; }
+    }
+    const arc = st.archiveChunks ? await findArc(st) : [];
+    if (S.story !== st || sheetName !== "find") return;
+    const pool = arc.map(m => ({m, old:true})).concat(st.messages.map((m, i) => ({m, i, old:false})));
+    const hits = pool.filter(x => x.m && x.m.text && x.m.kind !== "cmd" && (!only && !term ? x.m.star : (!only || x.m.star) && (!term || vnorm(x.m.text).includes(term))));
+    if (term || only) out.append(el("p", "empty", hits.length ? hits.length + (hits.length === 1 ? " resultado" : " resultados") : "Nada encontrado."));
+    if (!hits.length) { if (!term && !only) out.append(el("p", "hint", "Nenhum ainda. Toque em “☆ Marcar” embaixo de uma mensagem para guardar o momento aqui.")); return; }
+    const ul = el("ul", "slist");
+    hits.slice(-80).reverse().forEach(x => {
+      const li = el("li"); const who = x.m.role === "assistant" ? (S.char ? S.char.name : st.charName) : st.setup.name;
+      li.append(el("b", "", (x.m.star ? "★ " : "") + who + (x.old ? " · antiga" : "")));
+      const p = el("p", "fx"); const t = x.m.text.replace(/\s+/g, " ");
+      if (term) { const nt = vnorm(t); const k = nt.indexOf(term); const a = Math.max(0, k - 70), b = Math.min(t.length, k + term.length + 110); p.append(document.createTextNode((a ? "…" : "") + t.slice(a, k))); const mk = el("mark", "", t.slice(k, k + term.length)); p.append(mk, document.createTextNode(t.slice(k + term.length, b) + (b < t.length ? "…" : ""))); }
+      else p.textContent = trunc(t, 220);
+      li.append(p);
+      const ac = el("div", "acts2"); const go = el("button", "btn ghost sm", "Ir até lá"); go.type = "button"; go.addEventListener("click", () => jumpTo(x.m.id, x.old)); ac.append(go); li.append(ac); ul.append(li);
+    });
+    out.append(ul);
+  };
+  let tm = null; q.addEventListener("input", () => { clearTimeout(tm); tm = setTimeout(draw, 160); });
+  ob.addEventListener("click", () => { FIND.onlyStar = !FIND.onlyStar; FIND.q = q.value; renderFind(); });
+  draw();
+  if (!FIND.q) setTimeout(() => { try { q.focus({preventScroll:true}); } catch {} }, 60);
+}
+async function jumpTo(mid, old){
+  closeSheet();
+  if (old && !S.old) { S.old = await findArc(S.story); renderLog(); }
+  const n = $('#msgs [data-mid="' + CSS.escape(mid) + '"]'); if (!n) { toast("Não achei essa mensagem na tela."); return; }
+  n.scrollIntoView({block: "center"}); n.classList.add("flash"); setTimeout(() => n.classList.remove("flash"), 1800);
+}
+/* "Anteriormente…": só para o jogador, não entra na conversa */
+const RECAP_GAP = 6 * 3600e3;
+function recapNode(){
+  const r = S.recap, d = el("div", "recap"); d.setAttribute("role", "status");
+  d.append(el("b", "", "Anteriormente…"));
+  d.append(r.busy ? el("p", "hint", "Relembrando onde você parou…") : el("p", "", r.text || ""));
+  const x = el("button", "btn ghost sm", "Fechar"); x.type = "button"; x.dataset.act = "recap-x"; d.append(x);
+  return d;
+}
+async function makeRecap(st, force){
+  const last = st.messages[st.messages.length - 1]; if (!last) return;
+  if (!force && st.recap && st.recap.at === last.id && st.recap.text) { S.recap = {id: st.id, text: st.recap.text}; renderLog(); return; }
+  if (!hasAI()) { toast("Escolha um modelo para relembrar a história."); return; }
+  S.recap = {id: st.id, busy: true}; renderLog();
+  const n = st.setup.name, c = S.char ? S.char.name : st.charName;
+  const msgs = st.messages.filter(m => m.kind !== "cmd").slice(-10).map(m => (m.role === "assistant" ? c : n) + ": " + m.text).join("\n\n");
+  const prompt = `Escreva um "Anteriormente…" curto para quem joga como ${n} relembrar onde parou nesta história de roleplay com ${c}. De 3 a 5 frases, em português do Brasil, no passado, falando com o jogador por "você". Diga onde ${n} está, com quem, o que estava acontecendo nas últimas cenas e o que ficou em aberto. Use só o que está abaixo: não invente nem antecipe nada. Sem título e sem lista.
+${st.memory ? "MEMÓRIA DA HISTÓRIA:\n" + trunc(st.memory, 2500) + "\n" : ""}${stateBlock(st) ? stateBlock(st) + "\n" : ""}
+ÚLTIMAS MENSAGENS:
+${trunc(msgs, 7000)}`;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:400});
+    const t = (r.text || "").trim().replace(/^anteriormente[.…:\s]*/i, "");
+    if (!t) throw new Error("vazio");
+    st.recap = {at: last.id, text: t.slice(0, 1200)}; persist();
+    if (S.story === st && S.recap && S.recap.id === st.id) { S.recap = {id: st.id, text: st.recap.text}; renderLog(); }
+  } catch { if (S.story === st) { S.recap = null; renderLog(); if (force) toast("Não consegui relembrar agora."); } }
 }
 
 /* ---------- conversa ---------- */
@@ -1138,9 +1261,10 @@ function msgNode(m, i){
   const st = S.story;
   if (m.role === "user" && m.kind === "cmd") return el("div", "msg cmd", "↳ " + (m.label || "Continuar"));
   const isTau = m.role === "assistant";
-  const art = el("article", "msg " + (isTau ? "tau" : "you")); art.dataset.i = i;
+  const art = el("article", "msg " + (isTau ? "tau" : "you") + (m.star ? " starred" : "")); art.dataset.i = i; if (m.id) art.dataset.mid = m.id;
   const who = el("div", "who");
   if (isTau) { who.append(moodAvatar(S.char || {name:st.charName}, m), document.createTextNode(S.char ? S.char.name : st.charName || "Narrador")); } else who.textContent = st.setup.name;
+  if (m.star) who.append(el("span", "star", "★"));
   art.append(who);
   if (S.editing === i) {
     const ta = el("textarea", "editor"); ta.value = m.text; ta.id = "editor"; art.append(ta);
@@ -1162,6 +1286,7 @@ function msgNode(m, i){
       sw.append(l, document.createTextNode((m.ai + 1) + "/" + m.alts.length), r); a.append(sw);
     }
     const ed = el("button", "", "Editar"); ed.dataset.act = "edit"; ed.dataset.i = i; a.append(ed);
+    if (i >= 0) { const sb = el("button", "", m.star ? "★ Marcado" : "☆ Marcar"); sb.dataset.act = "star"; sb.dataset.i = i; sb.title = "Guarda este momento em Buscar e marcados"; sb.setAttribute("aria-pressed", m.star ? "true" : "false"); a.append(sb); }
     if (isTau && i >= 0 && hasAI()) { const tb = el("button", "", m.tr ? (m.trHide ? "Mostrar tradução" : "Esconder tradução") : (TRX.busy === m.id ? "Traduzindo…" : "Traduzir")); tb.dataset.act = "tr-msg"; tb.dataset.i = i; a.append(tb); }
     if (i >= 0 && S.char) { const br = el("button", "", "Ramificar"); br.dataset.act = "branch"; br.dataset.i = i; br.title = "Cria uma história nova que segue daqui, sem mexer nesta"; a.append(br); }
     if (isTau && i >= 0 && window.speechSynthesis) { const sp = el("button", "", VOICE.on === i ? "Parar voz" : "Ouvir"); sp.dataset.act = "speak"; sp.dataset.i = i; a.append(sp); }
@@ -1215,6 +1340,7 @@ function renderLog(o = {}){
     if (o.liveAt === i && S.live) { box.append(S.live.node); return; }
     box.append(msgNode(m, i));
   });
+  if (S.recap && S.recap.id === st.id) box.append(recapNode());
   if (o.liveAt == null && S.live) box.append(S.live.node);
   if (S.error) box.append(errNode());
   if (stick) toBottom();
@@ -1321,7 +1447,7 @@ async function send(text, label){
   const img = !label ? S.pendingImg : null;
   if (!text && img) text = "[imagem]";
   if (!text || !S.story) return;
-  clearTimeout(S.draftT); LS.del("rp.draft");
+  clearTimeout(S.draftT); LS.del("rp.draft"); S.recap = null;
   const m = {id: rid(), role:"user", text};
   if (label) { m.kind = "cmd"; m.label = label; }
   if (img) {
@@ -1886,15 +2012,16 @@ async function backupJSON(){
 
 /* ---------- painéis ---------- */
 let sheetName = null, lastFocus = null;
-const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha", vocab:"Palavras", look:"Rosto e voz", diary:"Diário"};
+const SHEET_TITLES = {stories:"Histórias", memory:"Memória", settings:"Ajustes", models:"Modelo", sim:"Ficha", vocab:"Palavras", look:"Rosto e voz", diary:"Diário", find:"Buscar e marcados"};
 async function openSheet(name){
   if (name === "memory" && !S.story) { toast("Abra uma história para usar a memória."); return; }
   if (name === "sim" && !S.story) { toast("Abra uma história para ver a ficha."); return; }
   if (name === "vocab" && !S.story) { toast("Abra uma história para ver as palavras."); return; }
   if (name === "diary" && !S.story) { toast("Abra uma história para ver o diário."); return; }
+  if (name === "find" && !S.story) { toast("Abra uma história para buscar."); return; }
   if (name === "stories" && dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
   lastFocus = document.activeElement; sheetName = name;
-  ["stories", "memory", "settings", "models", "sim", "vocab", "look", "diary"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
+  ["stories", "memory", "settings", "models", "sim", "vocab", "look", "diary", "find"].forEach(n => { $("#sh-" + n).hidden = n !== name; });
   $("#sheet-title").textContent = SHEET_TITLES[name];
   $("#sheet").hidden = false; syncInert();
   if (name === "stories") renderStories();
@@ -1905,6 +2032,7 @@ async function openSheet(name){
   if (name === "vocab") renderVocab();
   if (name === "look") renderLook();
   if (name === "diary") renderDiary();
+  if (name === "find") renderFind();
   if (name === "settings") { renderSettings(); $("#notes").value = S.story ? S.story.notes || "" : ""; $("#notes").disabled = !S.story; }
   $("#b-close").focus();
 }
@@ -1928,6 +2056,7 @@ function renderSettings(){
   seg($("#seg-lang"), Object.entries(LANGS).map(([k, v]) => [k, v[0]]), prefs.lang, id => { prefs.lang = id; savePrefs(); });
   seg($("#seg-lore"), [["on", "Mostrar"], ["off", "Esconder"]], prefs.lore ? "on" : "off", id => { prefs.lore = id === "on"; savePrefs(); if (S.story && S.view === "chat") renderLog(); });
   const bkh = () => { const l = Number(LS.get("rp.lastbk") || 0); $("#bk-hint").textContent = "Avisa na biblioteca quando faz " + (bkLimit() / 864e5) + " dias sem backup" + (S.store && S.store.kind === "db" ? " (aqui no Claude os dados já ficam na sua conta, então o aviso é mais raro)" : "") + ". Último backup: " + (l ? fmtDT(l) : "nenhum ainda") + "."; };
+  seg($("#seg-recap"), [["on", "Ligado"], ["off", "Desligado"]], prefs.recap === false ? "off" : "on", id => { prefs.recap = id === "on"; savePrefs(); });
   seg($("#seg-bk"), [["on", "Ligado"], ["off", "Desligado"]], prefs.bk === false ? "off" : "on", id => { prefs.bk = id === "on"; savePrefs(); });
   bkh();
   seg($("#seg-fs"), [["p", "Pequena"], ["m", "Normal"], ["g", "Grande"], ["gg", "Enorme"]], prefs.fs, id => { prefs.fs = id; savePrefs(); applyTheme(); });
@@ -1982,6 +2111,7 @@ function renderStories(){
     (kids.get(s.id) || []).sort((x, y) => (x.updated || 0) - (y.updated || 0)).forEach(k => row(k, depth + 1));
   };
   roots.forEach(s => row(s, 0));
+  const old = $("#trash"); if (old) old.remove(); ul.parentElement.append(trashEl());
   $("#store-note").textContent = S.store && S.store.kind === "db" && !S.localNote ? "Suas histórias e personagens ficam salvos na sua conta, neste app: abrindo o link dentro do Claude em qualquer aparelho, eles aparecem." : S.sample ? "Suas histórias e personagens estão salvos só neste navegador. Baixe backups de vez em quando." : (IN_CLAUDE ? "Você abriu uma cópia fora do Claude: o que for salvo aqui fica só neste navegador e pode se perder. Para jogar e guardar tudo na sua conta, abra o link do app dentro do Claude." : standNote());
   const im = $("#imp-msg"); if (im) im.hidden = true;
   $("#b-diary").disabled = $("#b-exp-md").disabled = $("#b-exp-json").disabled = $("#b-copy").disabled = $("#b-copy-json").disabled = !S.story;
@@ -2007,14 +2137,61 @@ async function renameStory(meta, title){
     renderStories(); toast("História renomeada.");
   } catch { toast("Não consegui renomear agora."); }
 }
+/* lixeira: excluídos ficam 30 dias guardados neste aparelho */
+const TRASH_DAYS = 30;
+const trashOf = () => (S.index.trash = Array.isArray(S.index.trash) ? S.index.trash : []);
+async function trashPurge(all, only){
+  const now = Date.now(), keep = [];
+  for (const t of trashOf()) {
+    if (only ? t.id !== only : !all && now - t.at < TRASH_DAYS * 864e5) { keep.push(t); continue; }
+    try { if (t.kind === "story") await enqueue(() => S.store.delStory(t.id, (t.meta && t.meta.chunks) || 0)); else await enqueue(() => S.store.delChar(t.id)); } catch {}
+  }
+  if (keep.length !== trashOf().length) { S.index.trash = keep; try { await enqueue(() => S.store.setIndex(S.index)); } catch {} }
+}
+async function trashRestore(id){
+  const t = trashOf().find(x => x.id === id); if (!t) return;
+  S.index.gone = (S.index.gone || []).filter(x => x.id !== id);
+  try {
+    if (t.kind === "story") {
+      const st = await S.store.getStory(id); if (!st) throw new Error("sumiu");
+      st.updated = Date.now(); await enqueue(() => S.store.setStory(st));
+      S.index.stories = S.index.stories.filter(x => x.id !== id).concat([Object.assign({}, t.meta, {updated: st.updated})]);
+    } else {
+      const c0 = await S.store.getChar(id); if (!c0) throw new Error("sumiu");
+      const c = normChar(c0); c.updated = Date.now(); await enqueue(() => saveChar(c)); S.chars.set(c.id, c);
+    }
+    S.index.trash = trashOf().filter(x => x.id !== id);
+    await enqueue(() => S.store.setIndex(S.index));
+    toast((t.kind === "story" ? "História" : "Personagem") + " restaurado.");
+  } catch { S.index.trash = trashOf().filter(x => x.id !== id); try { await enqueue(() => S.store.setIndex(S.index)); } catch {} toast("Não deu para restaurar: os dados não estão mais neste aparelho."); }
+  renderStories(); if (S.view === "library") renderLibrary();
+}
+function trashEl(){
+  const list = trashOf(); const d = el("details", "adv"); d.id = "trash"; d.open = !!S.trashOpen; d.addEventListener("toggle", () => { S.trashOpen = d.open; });
+  d.append(el("summary", "", "🗑️ Lixeira (" + list.length + ")"));
+  const inn = el("div", "inner");
+  inn.append(el("p", "hint", "Histórias e personagens excluídos ficam aqui por " + TRASH_DAYS + " dias, só neste aparelho, e depois somem de vez."));
+  if (!list.length) inn.append(el("p", "empty", "Vazia."));
+  const ul = el("ul", "slist");
+  list.slice().sort((a, b) => b.at - a.at).forEach(t => {
+    const li = el("li"); const left = Math.max(0, Math.ceil((t.at + TRASH_DAYS * 864e5 - Date.now()) / 864e5));
+    li.append(el("b", "", (t.kind === "story" ? "📖 " : "🎭 ") + (t.name || "Sem nome")), el("small", "", "Excluído " + fmtDT(t.at) + " · some em " + left + (left === 1 ? " dia" : " dias")));
+    const ac = el("div", "acts2"); const r = el("button", "btn ghost sm", "Restaurar"); r.type = "button"; r.addEventListener("click", () => trashRestore(t.id));
+    const x = el("button", "btn ghost sm danger", "Apagar agora"); x.type = "button"; let armed = false;
+    x.addEventListener("click", async () => { if (!armed) { armed = true; x.textContent = "Confirmar: apagar de vez"; setTimeout(() => { armed = false; x.textContent = "Apagar agora"; }, 4000); return; } await trashPurge(false, t.id); renderStories(); });
+    ac.append(r, x); li.append(ac); ul.append(li);
+  });
+  if (list.length) inn.append(ul);
+  d.append(inn); return d;
+}
 async function deleteStory(meta){
-  try { await S.store.delStory(meta.id, meta.chunks || 0); } catch {}
+  trashOf().push({kind: "story", id: meta.id, name: meta.title, at: Date.now(), meta: clean(meta)}); S.index.trash = trashOf().slice(-60);
   markGone(meta.id, "story");
   S.index.stories = S.index.stories.filter(x => x.id !== meta.id);
   if (S.index.lastId === meta.id) S.index.lastId = null;
   try { await enqueue(() => S.store.setIndex(S.index)); } catch {}
   if (S.story && S.story.id === meta.id) { S.story = null; S.char = null; closeSheet(); showLibrary(); } else { renderStories(); if (S.view === "library") renderLibrary(); }
-  toast("História excluída.");
+  toast("História excluída. Ela fica 30 dias na Lixeira, em Histórias.");
 }
 async function fullMessages(){
   const st = S.story; let arc = [];
@@ -2264,11 +2441,11 @@ function bind(){
     else if (act === "export" && ch) saveFile(slug(ch.name) + ".json", JSON.stringify(charToCard(ch), null, 2));
     else if (act === "del" && ch && !ch.builtin) {
       if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Excluir"; }, 4000); return; }
-      try { await enqueue(() => S.store.delChar(ch.id)); } catch {}
+      trashOf().push({kind: "char", id: ch.id, name: ch.name, at: Date.now()}); S.index.trash = trashOf().slice(-60);
       markGone(ch.id, "char");
       S.chars.delete(ch.id); S.index.chars = S.index.chars.filter(x => x.id !== ch.id);
       try { await enqueue(() => S.store.setIndex(S.index)); } catch {}
-      renderLibrary(); toast("Personagem excluído. As histórias dele continuam na lista, só para leitura.");
+      renderLibrary(); toast("Personagem excluído (fica 30 dias na Lixeira, em Histórias). As histórias dele continuam na lista.");
     }
     else if (act === "bk-now") { const ok = await saveFile("mesa-de-rp-tudo-" + new Date().toISOString().slice(0, 10) + ".json", await allJSON()); if (ok || !$("#io").hidden) { bkMark(); if (S.view === "library") renderLibrary(); } }
     else if (act === "bk-later") { LS.set("rp.bksnooze", String(Date.now() + 3 * 864e5)); renderLibrary(); toast("Eu lembro de novo em 3 dias."); }
@@ -2346,6 +2523,8 @@ function bind(){
     });
   }
   $("#b-copy").addEventListener("click", async () => copyText(await transcript()));
+  $("#b-dice").addEventListener("click", openDice);
+  $("#b-find").addEventListener("click", () => openSheet("find"));
   $("#b-mem-save").addEventListener("click", () => { S.story.memory = $("#mem").value.trim(); persist(); toast("Memória salva."); });
   $("#b-mem-sum").addEventListener("click", async () => {
     if (S.busy) { toast("Espere a resposta terminar."); return; }
@@ -2381,6 +2560,8 @@ function bind(){
     const vwEl = e.target.closest(".vw"); if (vwEl && !e.target.closest("[data-act]")) { vocabTap(vwEl.textContent); return; }
     const b = e.target.closest("[data-act]"); if (!b || !S.story) return;
     const act = b.dataset.act, i = Number(b.dataset.i), st = S.story;
+    if (act === "star") { const m = st.messages[i]; if (m) { m.star = !m.star; persist(); renderLog(); toast(m.star ? "★ Momento marcado. Veja em Buscar e marcados." : "Marcação removida."); } return; }
+    if (act === "recap-x") { S.recap = null; renderLog(); return; }
     if (act === "edit") { S.editing = i; renderLog(); const t = $("#editor"); if (t) { t.focus(); t.style.height = Math.min(t.scrollHeight + 4, 360) + "px"; } }
     else if (act === "cancel-edit") { S.editing = null; renderLog(); }
     else if (act === "save-edit") {
@@ -3196,7 +3377,7 @@ function applyKeeperJSON(st, j, fresh){
   const have = new Set(allLoreNames(st));
   const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
   st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
-  if (npcOn() && j && typeof j === "object" && !Array.isArray(j)) { applyNpcs(st, j.npcs); if (Array.isArray(j.boatos)) applyRumors(st, j.boatos); }
+  if (npcOn() && j && typeof j === "object" && !Array.isArray(j)) { applyNpcs(st, j.npcs); applyPlaces(st, j.lugares); if (Array.isArray(j.boatos)) applyRumors(st, j.boatos); }
   st.keepN = 0; st.keepDue = false;
   renderScene();
 }
@@ -3254,7 +3435,7 @@ function agendaEl(st){
 function renderMemExtra(){
   const box = $("#mem-extra"); if (!box || !S.story) return;
   const st = S.story; box.textContent = "";
-  const dr = el("div", "actions"); const dbt = el("button", "btn ghost sm", "📜 Diário da história" + ((st.diary || []).length ? " · " + st.diary.length + (st.diary.length === 1 ? " capítulo" : " capítulos") : "")); dbt.type = "button"; dbt.dataset.px = "diary"; dr.append(dbt); box.append(dr);
+  const dr = el("div", "actions"); const rcb = el("button", "btn ghost sm", "⏪ Relembrar onde parei"); rcb.type = "button"; rcb.dataset.mx = "recap"; rcb.disabled = !hasAI() || st.messages.length < 2; dr.append(rcb); const dbt = el("button", "btn ghost sm", "📜 Diário da história" + ((st.diary || []).length ? " · " + st.diary.length + (st.diary.length === 1 ? " capítulo" : " capítulos") : "")); dbt.type = "button"; dbt.dataset.px = "diary"; dr.append(dbt); box.append(dr);
   box.append(youEl(st), pinsEl(st), agendaEl(st));
   const a = el("div"); a.append(el("h4", "", "Estado da cena"));
   const s = st.state || {};
@@ -3317,6 +3498,7 @@ function bindFeatures(){
   $("#mem-extra").addEventListener("click", async e => {
     const b = e.target.closest("[data-mx]"); if (!b || !S.story) return;
     const st = S.story, act = b.dataset.mx, i = Number(b.dataset.i);
+    if (act === "recap") { closeSheet(); makeRecap(st, true); return; }
     if (act === "you-save") { const u = st.setup; u.look = ($("#yo-look").value || "").trim(); u.bio = ($("#yo-bio").value || "").trim(); u.extra = ($("#yo-extra").value || "").trim(); persist(); toast("Salvo. O narrador já usa isso na próxima resposta."); return; }
     if (act === "pin-add") { const v = ($("#pin-new").value || "").trim().slice(0, 240); if (!v) { toast("Escreva o fato."); return; } st.pins = (st.pins || []).concat([{id: rid(), t: v}]).slice(0, PIN_MAX); persist(); renderMemExtra(); toast("Fixado."); return; }
     if (act === "pin-del") { (st.pins || []).splice(i, 1); persist(); renderMemExtra(); return; }
@@ -3881,6 +4063,7 @@ const CK_PARTS = {
   npcs: st => st.npcs || [],
   rumors: st => st.rumors || [],
   diary: st => st.diary || [],
+  places: st => st.places || [],
   simS: st => st.sim && st.sim.ready ? {clock: st.sim.clock, player: st.sim.player, npc: st.sim.npc, notes: st.sim.notes || []} : null,
   simI: st => st.sim && st.sim.ready ? st.sim.items || [] : null
 };
@@ -3897,6 +4080,7 @@ function ckApply(st, snap, pool){
   st.vocab = ckGet(pool, snap.vocab, []).map(v => Object.assign({}, v, {n: vn[v.id] || v.n || 1}));
   st.keepN = snap.keepN || 0; st.keepDue = !!snap.keepDue;
   st.npcs = ckGet(pool, snap.npcs, []); st.rumors = ckGet(pool, snap.rumors, []); st.diary = ckGet(pool, snap.diary, []);
+  if (snap.places !== undefined) st.places = ckGet(pool, snap.places, []);
   if (st.sim) {
     const s = ckGet(pool, snap.simS, null), it = ckGet(pool, snap.simI, null);
     if (s && it) { st.sim.clock = s.clock; st.sim.player = s.player; st.sim.npc = s.npc; st.sim.notes = s.notes || []; st.sim.items = it; st.sim.ready = true; }
@@ -3907,7 +4091,7 @@ function ckApply(st, snap, pool){
 /* decisões suas (lore aceita ou removida, palavra anotada ou apagada) valem em todos os pontos */
 function ckEditAll(part, fn){
   const d = part === "state" || part === "simS" || part === "simI" ? null : [];
-  for (const s of Object.values(CK.map)) s[part] = ckIntern(CK.pool, fn(ckGet(CK.pool, s[part], d)));
+  for (const s of Object.values(CK.map)) { if (part === "places" && s[part] === undefined) continue; s[part] = ckIntern(CK.pool, fn(ckGet(CK.pool, s[part], d))); }
   CK.dirty = true;
 }
 function ckBackfillSim(st){
@@ -4574,10 +4758,13 @@ function npcSpec(st){
   const rum = (st.rumors || []).map(r => "- " + r.fato + " | sabem: " + (r.sabem || []).join(", ") + " | pode chegar: " + (r.pode || []).join(", ") + (r.como ? " | por: " + r.como : "")).join("\n") || "(nenhum)";
   return {json: `,
  "npcs": [criar ou atualizar fichas de pessoas com nome que aparecem ou são citadas (não inclua ${n}${c ? " nem " + c : ""}): {"nome":"...","aparencia":"...","jeito":"como fala e age","rotina":"onde costuma estar e quando","sabe":"o que sabe de importante e o que NÃO sabe","acha":"o que pensa de ${n}"}],
+ "lugares": [criar ou atualizar lugares com nome ou importantes que aparecem ou são citados: {"nome":"...","tipo":"o que é","onde":"fica perto de quê ou como se chega","quem":"quem mora, trabalha ou costuma estar lá","visitado":true se ${n} esteve lá em cena,"notas":"..."}],
  "boatos": [lista completa e atualizada: {"fato":"...","sabem":["quem já sabe"],"pode_chegar":["quem pode ficar sabendo"],"como":"por quem ou por onde corre","distorcao":"como pode chegar torcido"}]`,
     rules: `Fichas atuais de NPCs:
 ${cur}
 NPCs: no máximo 3 por vez, só quem apareceu ou mudou agora; cada campo até 25 palavras ("sabe" até 40); deixe "" o que não mudou; não invente nada que não esteja nas mensagens.
+Lugares atuais: ${trunc((st.places || []).map(p => p.name + (p.tipo ? " (" + p.tipo + ")" : "")).join("; "), 1200) || "(nenhum)"}
+Lugares: no máximo 3 por vez, só os que apareceram ou mudaram agora; cada campo até 20 palavras; deixe "" o que não mudou; não invente.
 Boatos atuais:
 ${rum}
 Boatos: devolva a lista inteira (no máximo 6) só com fatos que podem correr de boca em boca e importam; quem viu ou ouviu em cena entra em "sabem"; quem ficou sabendo depois, em cena, passa de "pode_chegar" para "sabem"; tire os que já não importam; se não houver, [].`};
@@ -4600,6 +4787,52 @@ function applyNpcs(st, list){
     p.upd = Date.now(); npcs[i] = p;
   }
   st.npcs = npcs;
+}
+const PL_F = [["tipo", "O que é"], ["onde", "Onde fica"], ["quem", "Quem mora ou trabalha lá"], ["notas", "Notas"]];
+function applyPlaces(st, list){
+  if (!Array.isArray(list) || !list.length) return;
+  const pl = (st.places || []).slice();
+  for (const x of list.slice(0, 4)) {
+    if (!x || typeof x !== "object") continue;
+    const name = str(x.nome || x.name, 60); const k = vnorm(name); if (!k) continue;
+    let i = pl.findIndex(q => vnorm(q.name) === k);
+    if (i < 0) { if (pl.length >= 40) continue; pl.push({id: "l" + rid(), name, vis: false}); i = pl.length - 1; }
+    const p = Object.assign({}, pl[i]);
+    for (const [f] of PL_F) { const v = str(x[f], 200); if (v && v !== "—" && v !== "-") p[f] = v; }
+    if (x.visitado === true || x.visitado === "true" || x.visitado === "sim") p.vis = true;
+    p.upd = Date.now(); pl[i] = p;
+  }
+  st.places = pl;
+}
+function placesBlock(st){
+  const list = st.places || []; if (!list.length) return "";
+  const n = st.setup.name, hotText = st.messages.slice(-6).map(m => m.text).join("\n") + "\n" + ((st.state && st.state.lugar) || "");
+  const hot = list.filter(p => vhas(hotText, p.name)), rest = list.filter(p => !hot.includes(p));
+  const line = p => "- " + p.name + ": " + [p.tipo, p.onde && "fica: " + p.onde, p.quem && "quem: " + p.quem, p.notas, p.vis ? n + " já esteve lá" : n + " ainda não foi"].filter(Boolean).join("; ");
+  const out = ["LUGARES DA HISTÓRIA (mantenha a geografia, as distâncias e quem costuma estar em cada lugar)"].concat(hot.concat(rest).slice(0, 12).map(line));
+  if (list.length > 12) out.push("Outros lugares conhecidos: " + list.slice(12).map(p => p.name).join(", ") + ".");
+  return out.join("\n");
+}
+function placesEl(st){
+  const w = el("div"); w.append(el("h4", "", "🗺️ Lugares"));
+  const list = st.places || [];
+  if (!list.length) w.append(el("p", "hint", npcOn() ? "Quando a história cita um lugar com nome, o anotador guarda aqui o que é, onde fica, quem mora ou trabalha lá e se você já foi. O narrador consulta para a geografia não mudar." : "Liga junto com as fichas de NPC em Ajustes. Você ainda pode anotar lugares à mão."));
+  const ul = el("ul", "slist");
+  list.forEach(p => {
+    const li = el("li"); li.append(el("b", "", (p.vis ? "📍 " : "○ ") + p.name), el("small", "", [p.tipo, p.onde, p.quem && "quem: " + p.quem].filter(Boolean).join(" · ") || "sem detalhes ainda"));
+    if (p.notas) li.append(el("small", "", p.notas));
+    const ac = el("div", "acts2");
+    const v = el("button", "btn ghost sm", p.vis ? "Marcar como não visitado" : "Já estive lá"); v.type = "button"; v.dataset.px = "pl-vis"; v.dataset.id = p.id;
+    const d = el("button", "btn ghost sm danger", "Remover"); d.type = "button"; d.dataset.px = "pl-del"; d.dataset.id = p.id;
+    ac.append(v, d); li.append(ac); ul.append(li);
+  });
+  if (list.length) w.append(ul);
+  const add = el("div", "send-row"); add.style.marginTop = "10px";
+  const ni = el("input"); ni.type = "text"; ni.id = "pl-new"; ni.placeholder = "Nome do lugar"; ni.maxLength = 60; ni.className = "pin";
+  const nt = el("input"); nt.type = "text"; nt.id = "pl-tipo"; nt.placeholder = "O que é (opcional)"; nt.maxLength = 80; nt.className = "pin";
+  const nb = el("button", "btn ghost sm", "Adicionar"); nb.type = "button"; nb.dataset.px = "pl-add";
+  add.append(ni, nt, nb); w.append(add);
+  return w;
 }
 function applyRumors(st, list){
   st.rumors = list.filter(r => r && typeof r === "object" && str(r.fato, 300)).slice(0, 6).map(r => {
@@ -4639,7 +4872,8 @@ function peopleEl(box, st){
     const ac = el("div", "acts2");
     const sv = el("button", "btn sm", "Salvar"); sv.type = "button"; sv.dataset.px = "np-save"; sv.dataset.id = p.id;
     const rm = el("button", "btn ghost sm danger", "Remover"); rm.type = "button"; rm.dataset.px = "np-del"; rm.dataset.id = p.id;
-    ac.append(sv, rm); f.append(ac); d.append(f); li.append(d); ul.append(li);
+    const mk = el("button", "btn ghost sm", "🎭 Virar personagem"); mk.type = "button"; mk.dataset.px = "np-char"; mk.dataset.id = p.id; mk.title = "Cria uma ficha de personagem a partir destas anotações, para jogar com ele numa história própria";
+    ac.append(sv, mk, rm); f.append(ac); d.append(f); li.append(d); ul.append(li);
   });
   if (list.length) w.append(ul);
   const add = el("div", "send-row"); add.style.marginTop = "10px";
@@ -4660,6 +4894,7 @@ function peopleEl(box, st){
     r.append(ul2);
   }
   box.append(r);
+  box.append(placesEl(st));
 }
 function bindPeople(){
   $("#mem-extra").addEventListener("click", e => {
@@ -4680,6 +4915,29 @@ function bindPeople(){
       if ((st.npcs || []).some(p => vnorm(p.name) === vnorm(name))) { toast("Já existe uma ficha com esse nome."); return; }
       const p = {id: "p" + rid(), name: name.slice(0, 50), upd: Date.now()};
       st.npcs = (st.npcs || []).concat([p]); ckEditAll("npcs", a2 => a2.some(q => q.id === p.id) ? a2 : a2.concat([p])); persist(); renderMemExtra();
+    }
+    else if (a === "np-char") {
+      const p = (st.npcs || []).find(x => x.id === id); if (!p) return;
+      const u = st.setup.name, meta = S.char ? S.char.name : st.charName;
+      const swap = t => String(t || "").split(u).join("{{user}}");
+      closeSheet(); openEditor(null);
+      D.name = p.name; D.tagline = "Veio da história “" + st.title + "”";
+      D.description = [p.aparencia && "Aparência: " + p.aparencia, p.rotina && "Rotina: " + p.rotina, p.sabe && "O que sabe: " + swap(p.sabe), p.notas && swap(p.notas)].filter(Boolean).join("\n\n");
+      D.personality = swap(p.jeito || "");
+      D.scenario = "{{char}} conheceu {{user}} na história “" + st.title + "”, com " + meta + "." + (p.acha ? " O que {{char}} acha de {{user}}: " + swap(p.acha) + "." : "");
+      if (S.char && S.char.world) D.world = S.char.world;
+      if (S.char && S.char.tags) D.tags = S.char.tags.slice();
+      renderEditor(); updateHeader();
+      const idea = $("#e-idea"); if (idea) idea.value = "Complete a ficha de " + p.name + " a partir das anotações abaixo, que vieram de uma história já jogada: mantenha tudo o que está escrito, preencha o que falta (personalidade, regras de condução, exemplos de fala) e crie duas aberturas coerentes.";
+      toast("Ficha começada com as anotações de " + p.name + ". Toque em Aplicar mudança para a IA completar, ou edite à mão.");
+    }
+    else if (a === "pl-vis") { st.places = (st.places || []).map(x => x.id === id ? Object.assign({}, x, {vis: !x.vis}) : x); ckEditAll("places", a2 => a2.map(x => x.id === id ? Object.assign({}, x, {vis: !x.vis}) : x)); persist(); renderMemExtra(); }
+    else if (a === "pl-del") { st.places = (st.places || []).filter(x => x.id !== id); ckEditAll("places", a2 => a2.filter(x => x.id !== id)); persist(); renderMemExtra(); }
+    else if (a === "pl-add") {
+      const name = ($("#pl-new").value || "").trim().slice(0, 60); if (!name) { toast("Escreva o nome do lugar."); return; }
+      if ((st.places || []).some(x => vnorm(x.name) === vnorm(name))) { toast("Esse lugar já está na lista."); return; }
+      const p = {id: "l" + rid(), name, tipo: ($("#pl-tipo").value || "").trim().slice(0, 80), vis: false, upd: Date.now()};
+      st.places = (st.places || []).concat([p]); ckEditAll("places", a2 => a2.some(x => x.id === p.id) ? a2 : a2.concat([p])); persist(); renderMemExtra();
     }
     else if (a === "rm-del") { st.rumors = (st.rumors || []).filter(x => x.id !== id); ckEditAll("rumors", a2 => a2.filter(x => x.id !== id)); persist(); renderMemExtra(); }
     else if (a === "diary") openSheet("diary");
@@ -5374,6 +5632,7 @@ async function boot(){
   try { S.index = await loadIx(); }
   catch { S.store = mkLocalStore(); S.localNote = true; try { S.index = await loadIx(); } catch { S.index = {lastId:null, stories:[], chars:[]}; } }
   await loadChars();
+  setTimeout(() => { trashPurge(false).catch(() => {}); }, 4000);
   showLibrary(); refreshAI(); detectImages();
   if (S.simNews) setTimeout(() => toast("Novidade: a simulação agora vem desligada nas histórias novas. Para usar, ligue na tela de início ou na Ficha."), 1500);
   if (SYNC_OK && syncCfg() && syncCfg().auto !== false) setTimeout(() => { SY.lastPullTry = Date.now(); syncNow(false); }, 1200);
@@ -5382,7 +5641,7 @@ async function boot(){
 }
 boot();
 // Gancho só para os testes automáticos: aparece apenas se a página definir window.__MESA_TEST antes de carregar.
-if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme};
+if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON};
 })();
 </script>
 
