@@ -5,17 +5,17 @@ import os, json, shutil
 from playwright.sync_api import sync_playwright
 OUT=os.path.dirname(BASE); os.makedirs(OUT, exist_ok=True)
 frag=open(os.path.join(BASE, 'saida', 'mesa_rp.html'),encoding='utf8').read()
-reset=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#0f1511;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}'
+reset=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#0c0b10;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}'
 head=('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
  '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
- '<meta name="theme-color" content="#0f1511"><meta name="description" content="Roleplay plug-and-play com personagens, lorebook e memória.">'
+ '<meta name="theme-color" content="#0c0b10"><meta name="description" content="Roleplay plug-and-play com personagens, lorebook e memória.">'
  '<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">'
  '<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mesa de RP">'
  '<style>'+reset+'</style></head><body>\n')
 open(OUT+'/index.html','w',encoding='utf8').write(head+frag+'\n</body></html>')
 json.dump({"name":"Mesa de RP","short_name":"Mesa de RP","description":"Roleplay plug-and-play com personagens, lorebook e memória.",
   "lang":"pt-BR","start_url":"./","scope":"./","display":"standalone","orientation":"portrait",
-  "background_color":"#0f1511","theme_color":"#0f1511",
+  "background_color":"#0c0b10","theme_color":"#0c0b10",
   "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
            {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
            {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]},
@@ -44,8 +44,8 @@ self.importScripts = (...s) => _imp(...s.map(x => /^(https?:|blob:|data:)/.test(
 _imp(CDN + "translator-worker.js");
 ''')
 open(OUT+'/.nojekyll','w').write('')
-svg='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0f1511"/>
-<g transform="translate(256 256) scale(9) translate(-16 -16)" color="#53b9ad"><rect x="3" y="3" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10.5" cy="10.5" r="2" fill="currentColor"/><circle cx="16" cy="16" r="2" fill="currentColor"/><circle cx="21.5" cy="21.5" r="2" fill="currentColor"/><circle cx="21.5" cy="10.5" r="2" fill="#d9a04f"/><circle cx="10.5" cy="21.5" r="2" fill="#d9a04f"/></g></svg>'''
+svg='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0c0b10"/>
+<g transform="translate(256 256) scale(9) translate(-16 -16)" color="#b9a3ff"><rect x="3" y="3" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10.5" cy="10.5" r="2" fill="currentColor"/><circle cx="16" cy="16" r="2" fill="currentColor"/><circle cx="21.5" cy="21.5" r="2" fill="currentColor"/><circle cx="21.5" cy="10.5" r="2" fill="#d9a04f"/><circle cx="10.5" cy="21.5" r="2" fill="#d9a04f"/></g></svg>'''
 with sync_playwright() as p:
     b=p.chromium.launch()
     for n in (192,512):

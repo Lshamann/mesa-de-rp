@@ -1,40 +1,40 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f1511"><meta name="description" content="Roleplay plug-and-play com personagens, lorebook e memória."><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mesa de RP"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#0f1511;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0c0b10"><meta name="description" content="Roleplay plug-and-play com personagens, lorebook e memória."><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mesa de RP"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#0c0b10;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Mesa de RP</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=Spline+Sans+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap">
 <style>
 :root{
   /* Layout: cabeçalho fino com costura tracejada; uma coluna por vez (biblioteca larga, o resto estreito); painéis deslizam por cima. */
-  --bg:#0f1511; --surface:#162019; --surface-2:#1d2a21; --line:#2a3a2e;
-  --fg:#ebe6d9; --nar:#c8ccbd; --muted:#a6ad9e; --faint:#8a9485;
-  --accent:#53b9ad; --accent-ink:#0a1411; --ochre:#d9a04f; --danger:#ee8a73;
-  --scrim:rgba(5,8,6,.6);
-  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
-  --f-body:"Newsreader",Georgia,"Times New Roman",serif;
-  --f-mono:"Spline Sans Mono",ui-monospace,Menlo,Consolas,monospace;
+  --bg:#0c0b10; --surface:#15131c; --surface-2:#1f1c29; --line:#2c2938;
+  --fg:#f1effa; --nar:#cdc8de; --muted:#a8a3bc; --faint:#8f8aa6;
+  --accent:#b9a3ff; --accent-ink:#120c24; --ochre:#ffb86b; --danger:#ff9b8f;
+  --scrim:rgba(4,3,8,.66);
+  --f-display:"Space Grotesk","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
-    --bg:#e9ece2; --surface:#f4f5ee; --surface-2:#dfe4d5; --line:#c2cab6;
-    --fg:#18201a; --nar:#2f3a2d; --muted:#4f5a4b; --faint:#667160;
-    --accent:#14706a; --accent-ink:#f2fbf8; --ochre:#8c5a12; --danger:#a8402c;
-    --scrim:rgba(30,40,30,.45);
+    --bg:#f6f5fb; --surface:#ffffff; --surface-2:#ecebf4; --line:#dad7e6;
+    --fg:#16141d; --nar:#3a3550; --muted:#57526b; --faint:#666180;
+    --accent:#6c3fc0; --accent-ink:#ffffff; --ochre:#93560a; --danger:#b3261e;
+    --scrim:rgba(20,16,36,.42);
     color-scheme:light;
   }
 }
 :root[data-theme="light"]{
-  --bg:#e9ece2; --surface:#f4f5ee; --surface-2:#dfe4d5; --line:#c2cab6;
-  --fg:#18201a; --nar:#2f3a2d; --muted:#4f5a4b; --faint:#667160;
-  --accent:#14706a; --accent-ink:#f2fbf8; --ochre:#8c5a12; --danger:#a8402c;
-  --scrim:rgba(30,40,30,.45);
+  --bg:#f6f5fb; --surface:#ffffff; --surface-2:#ecebf4; --line:#dad7e6;
+  --fg:#16141d; --nar:#3a3550; --muted:#57526b; --faint:#666180;
+  --accent:#6c3fc0; --accent-ink:#ffffff; --ochre:#93560a; --danger:#b3261e;
+  --scrim:rgba(20,16,36,.42);
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#0f1511; --surface:#162019; --surface-2:#1d2a21; --line:#2a3a2e;
-  --fg:#ebe6d9; --nar:#c8ccbd; --muted:#a6ad9e; --faint:#8a9485;
-  --accent:#53b9ad; --accent-ink:#0a1411; --ochre:#d9a04f; --danger:#ee8a73;
-  --scrim:rgba(5,8,6,.6);
+  --bg:#0c0b10; --surface:#15131c; --surface-2:#1f1c29; --line:#2c2938;
+  --fg:#f1effa; --nar:#cdc8de; --muted:#a8a3bc; --faint:#8f8aa6;
+  --accent:#b9a3ff; --accent-ink:#120c24; --ochre:#ffb86b; --danger:#ff9b8f;
+  --scrim:rgba(4,3,8,.66);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -391,6 +391,84 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
 #models-box{display:flex;flex-direction:column;gap:22px}
 #models-box .slist small{overflow-wrap:anywhere}
 #b-model{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ===== visual Noite (18/11/2026): quase preto, violeta, balões e caixa de mensagem flutuante ===== */
+body{font-size:16px;line-height:1.55}
+.ib{min-width:42px;height:42px;justify-content:center;border-radius:999px;background:var(--surface-2);color:var(--fg);padding:0 12px;font:500 13px/1 var(--f-body)}
+.ib:hover{background:var(--line)}
+.sect>h3{font:700 18px/1.2 var(--f-display);letter-spacing:-.01em;text-transform:none;color:var(--fg)}
+.panel h4{font:600 14px/1.3 var(--f-body);letter-spacing:0;text-transform:none;color:var(--fg)}
+.who{font:600 12.5px/1 var(--f-body);letter-spacing:0;text-transform:none;color:var(--muted)}
+.pc .meta,.cont small,.newcard small,.scene,.simbar,.acts,.badge{font-family:var(--f-body);letter-spacing:0;text-transform:none}
+details.adv>summary{font:600 14px/1.3 var(--f-body);letter-spacing:0;text-transform:none;color:var(--accent)}
+.btn{border-radius:14px;font:600 15px/1 var(--f-body)}
+.btn.sm{border-radius:999px;font-size:13.5px}
+.btn.ghost{background:var(--surface-2);border-color:transparent}
+.btn.ghost:hover{border-color:var(--line);background:var(--line)}
+.btn.danger{border-color:var(--danger)}
+.chip{border:0;background:var(--surface-2);color:var(--fg);font:500 13px/1 var(--f-body);letter-spacing:0;text-transform:none;border-radius:999px;padding:9px 13px}
+.chip:hover{background:var(--line);color:var(--fg)}
+.chip.on{background:var(--fg);color:var(--bg)}
+.badge{border:0;background:var(--surface-2);font-size:11.5px;font-weight:600}
+.badge.ex{background:transparent;border:1px solid var(--ochre)}
+.hero h2{font:700 clamp(26px,6vw,34px)/1.08 var(--f-display);letter-spacing:-.02em}
+.cont{border:0;background:var(--surface-2);border-radius:22px;padding:14px}
+.cont b{font:600 16px/1.3 var(--f-body)}
+.cont small{font-size:13px;color:var(--muted)}
+.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.pc{border:0;border-radius:24px;background:var(--surface)}
+.tile{aspect-ratio:4/5;max-height:none;font-family:var(--f-display);font-weight:700}
+.pc h3{font:700 19px/1.2 var(--f-display);letter-spacing:-.01em}
+.pc p{font-size:14px}
+.pc .links{gap:4px 12px}
+.newcard{border:1.5px dashed var(--line);border-radius:24px}
+.recent{display:flex;flex-direction:column;gap:2px}
+.recent button{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-radius:16px;padding:9px 6px;text-align:left;color:var(--fg)}
+.recent button:hover{background:var(--surface)}
+.recent .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.recent b{font:600 15.5px/1.3 var(--f-body)}
+.recent .ex{font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent .when{flex:none;font-size:12px;color:var(--faint)}
+#msgs{gap:16px}
+.msg.tau,.msg.you{display:flex;flex-direction:column}
+.msg.tau{align-items:flex-start}
+.msg.you{align-items:flex-end}
+.msg.tau .body{background:var(--surface-2);border-radius:20px 20px 20px 6px;padding:11px 15px;max-width:min(94%,640px)}
+.msg.you .body{background:var(--accent);color:var(--accent-ink);border:0;border-radius:20px 20px 6px 20px;padding:11px 15px;max-width:min(86%,560px)}
+.msg.you .body .nar{color:inherit;opacity:.82}
+.msg.you .body .fala{color:inherit}
+.msg.you .body .cnote{color:inherit;border-color:currentColor}
+.msg.live .body{background:var(--surface-2);border-radius:20px 20px 20px 6px;padding:11px 15px}
+.msg .trbox{border-radius:16px}
+.acts{gap:4px;margin-top:6px}
+.acts>button{border:0;background:transparent;color:var(--muted);font:500 12.5px/1 var(--f-body);padding:9px 10px}
+.acts>button:hover{background:var(--surface-2);color:var(--fg)}
+.acts .sw{border:0;background:var(--surface-2)}
+.msg.cmd{align-self:center;background:var(--surface);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--muted)}
+.recap{border:0;background:var(--surface);border-radius:20px}
+.scene{background:var(--surface);border-bottom:0;font-size:12.5px}
+.simbar{border-bottom:0;font-size:11.5px}
+.composer{border-top:0;background:var(--bg)}
+.composer .col{background:var(--surface-2);border:1px solid var(--line);border-radius:26px;padding:10px;margin-block:4px max(10px,env(safe-area-inset-bottom,0px))}
+.tray{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tray::-webkit-scrollbar{display:none}
+.tray .chip,.tray .pop{flex:none}
+.composer .chip{background:var(--surface)}
+.composer .chip:hover{background:var(--line)}
+#in{background:transparent;border:0;border-radius:14px;font:400 16px/1.5 var(--f-body);padding:10px 8px}
+#in:focus-visible{outline:none;background:var(--surface)}
+#b-send,#b-stop{border-radius:999px}
+.panel{border-left:0}
+.panel>header{border-bottom:0}
+.field input[type=text],.field textarea,.field select,.pin{border-radius:14px;font-family:var(--f-body)}
+.seam{border-top:1px solid var(--line);opacity:1}
+.bt h1{font:700 18px/1.15 var(--f-display)}
+.bt small{font:500 12.5px/1.2 var(--f-body);letter-spacing:0;text-transform:none;color:var(--muted)}
+.bar{gap:6px}
+.bar .ib{min-width:38px;height:38px;padding:0 10px}
+.bar .ib svg{width:17px;height:17px}
+@media (max-width:420px){#app[data-view="chat"] .bar .ib{min-width:34px;height:34px;padding:0 8px}#app[data-view="chat"] .bar{gap:4px}}
+.msg.cmd{border:0;font:500 12.5px/1 var(--f-body);letter-spacing:0}
 </style>
 
 <div id="app" data-view="library">
@@ -616,7 +694,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"serif", lh:"n", ac:"teal", bk:true, recap:true, real:"real", offscreen:true, v:2};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"sans", lh:"n", ac:"teal", bk:true, recap:true, real:"real", offscreen:true, v:3};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -629,12 +707,14 @@ function loadPrefs(){
     Object.assign(prefs, saved);
     /* v2: a simulação passou a vir desligada; quem tinha o padrão antigo ligado volta a desligado uma vez */
     if ((saved.v || 0) < 2) { if (saved.sim !== false) S.simNews = true; prefs.sim = false; prefs.v = 2; savePrefs(); }
+    /* v3: visual Noite; quem estava no padrão antigo (serifa, verde-água) passa para o novo */
+    if ((saved.v || 0) < 3) { if (!saved.rf || saved.rf === "serif") prefs.rf = "sans"; if (prefs.ac === "violeta") prefs.ac = "teal"; S.lookNews = true; prefs.v = 3; savePrefs(); }
   }
 }
 function savePrefs(){ LS.set("rp.prefs", JSON.stringify(prefs)); }
 const FS = {p:15.5, m:17, g:19, gg:21.5}, LHS = {n:1.6, f:1.85};
-const RFS = {serif:'"Newsreader",Georgia,"Times New Roman",serif', sans:'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif'};
-const ACC = {ambar:["#e0a24a", "#1a1206", "#a35f00", "#fff8ec"], rosa:["#e58aa6", "#1c0c12", "#a8305a", "#fff1f5"], azul:["#6aa7e8", "#07131f", "#1f5fa8", "#f1f7ff"], violeta:["#b394ee", "#120a22", "#6c3fc0", "#f6f1ff"]};
+const RFS = {serif:'"Newsreader",Georgia,"Times New Roman",serif', sans:'"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif'};
+const ACC = {verde:["#53b9ad", "#0a1411", "#14706a", "#f2fbf8"], ambar:["#e0a24a", "#1a1206", "#a35f00", "#fff8ec"], rosa:["#e58aa6", "#1c0c12", "#a8305a", "#fff1f5"], azul:["#6aa7e8", "#07131f", "#1f5fa8", "#f1f7ff"]};
 function applyTheme(){
   const r = document.documentElement; if (prefs.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", prefs.theme);
   const st = r.style, dark = prefs.theme === "dark" || (prefs.theme === "auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
@@ -704,6 +784,11 @@ function freeCkSpace(keepId){
   if (!n && LS.get(mine)) { LS.del(mine); CK.map = {}; CK.pool = {}; n++; }
   return n > 0;
 }
+function lastLine(st){
+  const m = [...(st.messages || [])].reverse().find(x => x && x.text && x.kind !== "cmd"); if (!m) return "";
+  const who = m.role === "assistant" ? (st.charName || "") : (st.setup && st.setup.name) || "";
+  return trunc((who ? who + ": " : "") + m.text.replace(/\*/g, "").replace(/\s+/g, " ").trim(), 110);
+}
 async function fallbackToLocal(){
   S.store = mkLocalStore(); S.localNote = true;
   toast("Não consegui salvar na nuvem. Salvando só neste navegador.");
@@ -715,7 +800,7 @@ async function flush(retried){
   try {
     await S.store.setStory(st);
     const ix = S.index;
-    const meta = {id:st.id, title:st.title, updated:st.updated, count:st.archived + st.messages.length, chunks:st.archiveChunks, charId:st.charId, charName:st.charName, parent: st.parent ? st.parent.id : null, from: st.parent ? st.parent.from : ""};
+    const meta = {id:st.id, title:st.title, updated:st.updated, count:st.archived + st.messages.length, chunks:st.archiveChunks, charId:st.charId, charName:st.charName, parent: st.parent ? st.parent.id : null, from: st.parent ? st.parent.from : "", last: lastLine(st)};
     const i = ix.stories.findIndex(x => x.id === st.id);
     if (i >= 0) ix.stories[i] = meta; else ix.stories.push(meta);
     ix.lastId = st.id;
@@ -1058,6 +1143,12 @@ function renderLibrary(){
     const t = el("div", "t"); t.append(el("b", "", last.title), el("small", "", "Continuar · " + (last.count || 0) + " mensagens · " + fmtDate(last.updated)));
     const b = el("button", "btn sm", "Continuar"); b.dataset.act = "resume"; b.dataset.id = last.id;
     c.append(t, b); box.append(c);
+    const more = [...S.index.stories].sort((a, b2) => b2.updated - a.updated).slice(1, 4);
+    if (more.length) {
+      const rc = el("div", "recent"); rc.setAttribute("aria-label", "Outras histórias recentes");
+      more.forEach(m => { const bt = el("button"); bt.type = "button"; bt.dataset.act = "resume"; bt.dataset.id = m.id; const t2 = el("span", "t"); t2.append(el("b", "", m.title), el("span", "ex", m.last || ((m.charName || "") + " · " + (m.count || 0) + " mensagens"))); bt.append(avatarEl(S.chars.get(m.charId) || {name: m.charName || "?"}), t2, el("span", "when", fmtDate(m.updated))); rc.append(bt); });
+      box.append(rc);
+    }
   }
   const bk = bkInfo();
   if (bk) {
@@ -2087,7 +2178,7 @@ function renderSettings(){
   seg($("#seg-fs"), [["p", "Pequena"], ["m", "Normal"], ["g", "Grande"], ["gg", "Enorme"]], prefs.fs, id => { prefs.fs = id; savePrefs(); applyTheme(); });
   seg($("#seg-rf"), [["serif", "Com serifa"], ["sans", "Sem serifa"]], prefs.rf, id => { prefs.rf = id; savePrefs(); applyTheme(); });
   seg($("#seg-lh"), [["n", "Normal"], ["f", "Folgado"]], prefs.lh, id => { prefs.lh = id; savePrefs(); applyTheme(); });
-  seg($("#seg-ac"), [["teal", "Verde-água"], ["ambar", "Âmbar"], ["rosa", "Rosa"], ["azul", "Azul"], ["violeta", "Violeta"]], prefs.ac, id => { prefs.ac = id; savePrefs(); applyTheme(); });
+  seg($("#seg-ac"), [["teal", "Violeta"], ["verde", "Verde-água"], ["ambar", "Âmbar"], ["rosa", "Rosa"], ["azul", "Azul"]], prefs.ac, id => { prefs.ac = id; savePrefs(); applyTheme(); });
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
   seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim === true ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
@@ -5476,7 +5567,7 @@ function bindTry(){
 }
 
 /* ---------- modelos e API (cópia fora do Claude) ---------- */
-const FONTS_URL = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=Spline+Sans+Mono:wght@400..600&display=swap";
+const FONTS_URL = "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap";
 const PRESETS = [
   {id:"openrouter", label:"OpenRouter", base:"https://openrouter.ai/api/v1", help:"Um cadastro só dá acesso a dezenas de modelos, e alguns têm versão gratuita (em Buscar modelos, marque “Só gratuitos”: são os que terminam em :free). Chave em openrouter.ai/keys."},
   {id:"gemini", label:"Google Gemini (AI Studio)", base:"https://generativelanguage.googleapis.com/v1beta/openai", help:"Chave em aistudio.google.com/apikey. Costuma ter cota gratuita diária; confira os limites no site."},
@@ -5816,6 +5907,7 @@ async function boot(){
   await loadChars();
   setTimeout(() => { trashPurge(false).catch(() => {}); }, 4000);
   showLibrary(); refreshAI(); detectImages();
+  if (S.lookNews && !S.simNews) setTimeout(() => toast("Visual novo: Noite. Letra, cor e tema mudam em Ajustes → Aparência da leitura."), 1500);
   if (S.simNews) setTimeout(() => toast("Novidade: a simulação agora vem desligada nas histórias novas. Para usar, ligue na tela de início ou na Ficha."), 1500);
   if (SYNC_OK && syncCfg() && syncCfg().auto !== false) setTimeout(() => { SY.lastPullTry = Date.now(); syncNow(false); }, 1200);
   if (!IN_CLAUDE && location.hash === "#importar") { try { history.replaceState(null, "", location.pathname + location.search); } catch {} openSheet("stories"); impMsg("Toque em “Colar e importar” para trazer o que você copiou na versão do Claude."); }

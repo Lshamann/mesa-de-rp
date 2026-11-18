@@ -44,8 +44,8 @@ with sync_playwright() as p:
     pg.click('#seg-fs >> text=Enorme'); pg.click('#seg-ac >> text=Rosa'); pg.click('#seg-lh >> text=Folgado'); pg.click('#seg-rf >> text=Sem serifa'); pg.wait_for_timeout(150)
     st = pg.evaluate("() => { const s = document.documentElement.style; return [s.getPropertyValue('--read-fs'), s.getPropertyValue('--read-lh'), s.getPropertyValue('--accent'), getComputedStyle(document.querySelector('#look-demo')).fontSize, getComputedStyle(document.querySelector('#look-demo')).fontFamily]; }")
     ok(st[0] == '21.5px' and st[1] == '1.85' and st[2].startswith('#') and st[3] == '21.5px' and 'system-ui' in st[4], 'letra, espaçamento, cor e fonte aplicados: %s' % st)
-    pg.click('#seg-ac >> text=Verde-água'); pg.wait_for_timeout(100)
-    ok(pg.evaluate("document.documentElement.style.getPropertyValue('--accent')") == '', 'voltar ao verde-água remove o ajuste')
+    pg.click('#seg-ac >> text=Violeta'); pg.wait_for_timeout(100)
+    ok(pg.evaluate("document.documentElement.style.getPropertyValue('--accent')") == '', 'voltar ao violeta (padrão) remove o ajuste')
     pg.reload(); pg.wait_for_timeout(900)
     ok(pg.evaluate("document.documentElement.style.getPropertyValue('--read-fs')") == '21.5px', 'preferência de aparência persiste')
     # ---- Sobre você

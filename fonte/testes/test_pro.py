@@ -19,7 +19,7 @@ with sync_playwright() as p:
     load(); pg.evaluate("sessionStorage.clear(); localStorage.clear(); localStorage.setItem('rp.prefs', JSON.stringify({theme:'auto', sim:true}))"); load()
     pg.wait_for_timeout(1700)
     pr = pg.evaluate("JSON.parse(localStorage.getItem('rp.prefs'))")
-    ok('migração: simulação desligada e aviso único', pr.get('sim') is False and pr.get('v') == 2 and 'simulação agora vem desligada' in pg.inner_text('#toast'), pr)
+    ok('migração: simulação desligada e aviso único', pr.get('sim') is False and pr.get('v') == 3 and pr.get('rf') == 'sans' and 'simulação agora vem desligada' in pg.inner_text('#toast'), pr)
     load(); ok('aviso não repete', 'simulação agora' not in (pg.inner_text('#toast') if pg.is_visible('#toast') else ''))
     # 1. início rápido sem simulação
     pg.locator('[data-act=quick][data-id=tau]').click(); pg.wait_for_timeout(1600)
