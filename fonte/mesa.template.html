@@ -2342,17 +2342,29 @@ async function allJSON(){
   return JSON.stringify({format:"mesa-rp-all-v1", exported: Date.now(), chars, stories, me: me || "", personas, imgs, gone: S.index.gone || [], looks: S.index.looks || {}});
 }
 async function importAllObj(j, o = {}){
-  let nc = 0, ns = 0, skip = 0, fail = 0;
+  let nc = 0, ns = 0, skip = 0, fail = 0, repl = 0;
   if (Array.isArray(j.gone)) await applyGone(j.gone);
   if (j.looks && typeof j.looks === "object") { const cur = S.index.looks || {}; S.index.looks = Object.assign({}, cur); for (const [k, v] of Object.entries(j.looks)) if (v && typeof v === "object" && (!cur[k] || (v.upd || 0) > (cur[k].upd || 0))) S.index.looks[k] = v; }
   if (typeof j.me === "string" && j.me && !LS.get("rp.me")) LS.set("rp.me", j.me);
   if (j.imgs && typeof j.imgs === "object") for (const [id, d] of Object.entries(j.imgs)) { if (typeof d === "string" && d.startsWith("data:image/")) { try { await enqueue(() => S.store.setImg(id, d)); IMGS.set(id, d); } catch {} } }
   if (j.personas && typeof j.personas === "object") Object.entries(j.personas).forEach(([id, p]) => { if (typeof p === "string" && !LS.get("rp.persona." + id)) LS.set("rp.persona." + id, p); });
   for (const c0 of (Array.isArray(j.chars) ? j.chars : [])) {
-    if (!c0 || !c0.id || !c0.name || isGone(c0.id, c0.updated)) continue;
+    if (!c0 || !c0.id || !c0.name) continue;
+    const manual = !o.quiet;
+    if (isGone(c0.id, c0.updated)) {
+      /* importar à mão um personagem que foi excluído aqui: a pessoa quer ele de volta */
+      if (!manual) continue;
+      S.index.gone = (S.index.gone || []).filter(x => x.id !== c0.id); S.index.trash = trashOf().filter(x => x.id !== c0.id);
+    }
     const c = normChar(c0); delete c.builtin; const cur = S.chars.get(c.id);
     if (cur && cur.builtin) continue;
-    if (cur && (cur.updated || 0) >= (c.updated || 0)) { skip++; continue; }
+    if (cur && (cur.updated || 0) >= (c.updated || 0)) {
+      /* à mão: se a ficha do arquivo é diferente, ela entra e a atual vira uma versão anterior */
+      const sig = x => JSON.stringify(Object.assign({}, clean(x), {updated: 0, created: 0, hist: []}));
+      if (!manual || sig(cur) === sig(c)) { skip++; continue; }
+      c.updated = Date.now(); repl++;
+    }
+    if (cur && manual) histPush(cur, c);
     if (await enqueue(() => saveChar(c))) { S.chars.set(c.id, c); nc++; } else fail++;
   }
   for (const it of (Array.isArray(j.stories) ? j.stories : [])) {
@@ -2381,7 +2393,7 @@ async function importAllObj(j, o = {}){
   const parts = [];
   if (nc) parts.push(nc + (nc === 1 ? " personagem" : " personagens"));
   if (ns) parts.push(ns + (ns === 1 ? " história" : " histórias"));
-  if (!o.quiet) impMsg((parts.length ? "Importado: " + parts.join(" e ") + "." : "Nada novo para importar.") + (skip ? " " + skip + " já estavam aqui iguais ou mais novos." : "") + (fail ? " " + fail + " não couberam ou deram erro." : ""));
+  if (!o.quiet) impMsg((parts.length ? "Importado: " + parts.join(" e ") + "." : "Nada novo para importar.") + (repl ? " " + (repl === 1 ? "Um personagem que já existia foi atualizado; a ficha anterior ficou em Editar → Versões anteriores da ficha." : repl + " personagens que já existiam foram atualizados; as fichas anteriores ficaram em Editar → Versões anteriores da ficha.") : "") + (skip ? " " + skip + " já estavam aqui iguais ou mais novos." : "") + (fail ? " " + fail + " não couberam ou deram erro." : ""));
   return {nc, ns};
 }
 /* ---------- caixa de copiar, colar e trazer arquivo (quando o ambiente bloqueia o caminho normal) ---------- */
