@@ -73,6 +73,8 @@ with sync_playwright() as p:
             except Exception as e: r = {'mut': 1, 'fx': [], 'errs': ['EVAL ' + str(e)[:80]], 'saved': 0, 'calls': 0, 'toast': ''}
             bad = errs + r['errs']
             dead = r['mut'] == 0 and not r['fx'] and not r['saved'] and not r['calls']
+            # sem efeito de propósito: logo já na biblioteca, e Enviar com a caixa vazia (só foca o campo)
+            if dead and ((name == 'biblioteca' and it['id'] == 'b-home') or it['txt'].strip() == 'Enviar'): dead = False
             fileonly = any(x.startswith('file:') for x in r['fx']) and r['mut'] <= 2 and not r['toast']
             if bad or dead or fileonly:
                 why = ('ERRO ' + ' | '.join(bad)) if bad else ('MORTO (nada acontece)' if dead else 'SÓ ABRE SELETOR DE ARQUIVO (sem alternativa visível)')

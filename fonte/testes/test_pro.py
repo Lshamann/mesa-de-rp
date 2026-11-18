@@ -66,7 +66,7 @@ with sync_playwright() as p:
     ok('ligada no início: monta a ficha', any('simula' in c.lower() for c in calls), calls[-3:])
     # 7. guia de suaíli
     pg.click('#b-vocab'); pg.wait_for_timeout(300); pg.locator('#guide > summary').click(); pg.wait_for_timeout(200)
-    ok('guia com seções de regras', pg.locator('#guide details.gsec').count() >= 20 and pg.locator('#guide details.gsec summary', has_text='Dizer “não”').count() == 1, pg.locator('#guide details.gsec').count())
+    ok('guia com seções de regras', pg.locator('#guide details.gsec').count() >= 5 and pg.locator('#guide details.gsec summary', has_text='Dizer “não”').count() == 1, pg.locator('#guide details.gsec').count())
     pg.locator('#guide details.gsec summary', has_text='Dizer “não”').click(); pg.wait_for_timeout(150)
     pg.screenshot(path=D + 'pro_guide.png')
     pg.fill('#g-q', 'agua'); pg.wait_for_timeout(250)

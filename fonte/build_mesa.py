@@ -42,7 +42,11 @@ mestre = {
   ],
   "persona": {"name": "Alex", "pro": "ele", "look": "", "bio": "Alguém esperto e teimoso, sem treino especial; quem o jogador quiser ser.", "extra": ""},
 }
-js = json.dumps([mestre], ensure_ascii=False).replace("</", "<\\/")
+# Só para testes: TEST_CHAR=arquivo.json (um personagem) entra como exemplo embutido. A build de verdade não leva nenhum.
+extra = []
+if os.environ.get("TEST_CHAR"):
+    extra = [json.load(open(os.environ["TEST_CHAR"], encoding="utf-8"))]
+js = json.dumps(extra + [mestre], ensure_ascii=False).replace("</", "<\\/")
 out = tpl.replace("__BUILTINS__", js).replace("__HOSTED_URL__", os.environ.get("HOSTED_URL", ""))
 assert "__BUILTINS__" not in out
 open(os.path.join(BASE, 'saida', 'mesa_rp.html'), 'w', encoding='utf-8').write(out)

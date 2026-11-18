@@ -22,6 +22,10 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - Tau: desde 16/11/2026 não vem mais dentro do app nem fica neste repositório. É uma ficha particular (com o guia de suaíli dentro) que o dono importa em Histórias. O único personagem de exemplo é o Mestre da Mesa.
 - Personagens: editor com IA, cards do SillyTavern, Chub, conversas .jsonl do SillyTavern, personagem a partir de imagem, elenco em grupo, teste antes de jogar e revisão da ficha.
 - Memória: resumo automático, estado da cena (com "quem sabe o quê"), lore aprendida, fichas de NPC com rotina, boatos, diário em capítulos.
+  Desde 18/11/2026 também: fatos fixos, agenda do mundo e “Sobre você” (aparência de {{user}}, editável durante a história).
+- Personagens: etiquetas e busca na biblioteca, versões anteriores da ficha, mundos (lore compartilhada entre personagens), e o narrador faz a aparência de {{user}} ter consequência (estranha, compara, procura semelhança).
+- Idiomas: revisão espaçada das palavras salvas (Errei/Acertei; 1, 3, 7, 16 e 40 dias) e “Corrigir minha frase” com a IA.
+- Leitura e backup: tamanho e fonte da letra, espaço entre linhas, cor de destaque; lembrete de backup; livro em .epub (diário ou conversa).
 - Linha do tempo: Voltar, Regerar, trocar de versão, editar a última resposta e Ramificar levam o estado junto; "Recalcular do zero" para histórias antigas.
 - Simulação: fome, sede, energia, higiene, necessidades, saúde, relógio, inventário realista.
 - Idiomas: tradução por IA, Google e offline (Bergamot); dicionário de palavras aprendidas em cena, com níveis e revisão.
@@ -53,18 +57,18 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 
 ## Ideias para depois
 
+Feito em 18/11/2026 (saiu desta lista): ~~cena rápida~~ (o botão Continuar já existia), ~~tamanho e estilo da resposta~~ (Ajustes e Nota de cena já existiam), ~~resposta aparecendo aos poucos~~ (já existia), fatos fixos, agenda do mundo, aparência de {{user}} editável, etiquetas e busca, versões da ficha, mundos (lore compartilhada), repetição espaçada, corrigir minha frase, lembrete de backup, aparência da leitura, livro em ePub, testes automáticos no GitHub.
+
 - Revisão semanal agendada que só propõe melhorias (nunca publica sozinha); depende de a ferramenta de tarefas agendadas estar disponível na conversa.
-- Agenda do mundo: eventos com data (festa na sexta, barco que chega no dia 5), clima e estações.
 - Mapa de lugares visitados, com quem mora ou trabalha onde.
-- Exportar o diário como PDF ou ePub, com o retrato do personagem.
-- Lorebook compartilhado entre personagens do mesmo mundo.
-- Levar a sincronização para o app do Claude (hoje: "Copiar tudo" e colar no site).
-- Rodar os testes automaticamente no GitHub a cada mudança.
+- Exportar também em PDF (o ePub já existe).
+- Sincronização dentro do app do Claude: não dá por ora, porque o app não acessa a internet (só o Claude). Os dados já aparecem em todos os aparelhos da mesma conta do Claude; para levar ao site, use "Copiar tudo" e cole lá.
 - Gerar as imagens de expressão dentro do app, se surgir um gerador disponível.
+- Agenda: avisar o narrador também sem simulação, com um relógio simples da história.
 
 ## Problemas conhecidos
 
-- `fonte/testes/test_tl.py`, `test_big.py` e `test_pro.py` esperam um personagem com id `tau`: rode-os numa build local que tenha a ficha (ela fica fora do repositório).
+- Os testes que dependem de servidor falso (`test_tl.py`, `test_big.py`) ainda esperam um personagem com id `tau`: use `TEST_CHAR=fonte/testes/fixtures/personagem_teste.json sh fonte/build.sh` antes de rodá-los. Os outros rodam com `sh fonte/testes/rodar_tudo.sh` (e o GitHub roda isso sozinho a cada envio).
 - No app do Claude no celular a janela de escolher arquivo não abre: cards em .png não entram por lá (use o .json colado, ou o navegador, ou o site). Isso foi confirmado só em ambiente simulado; se algum botão ainda falhar, mande o relatório de Ajustes → Diagnóstico.
 - Pontos de volta só existem a partir da atualização de 07/11/2026; em histórias anteriores, use Memória → Recalcular do zero.
 - Ramos criados antes de 07/11/2026 não aparecem na árvore de Histórias.

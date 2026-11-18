@@ -175,6 +175,7 @@ details.adv .inner{display:flex;flex-direction:column;gap:14px;padding-bottom:16
 .msg{max-width:100%}
 .who{display:flex;align-items:center;gap:8px;font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
 .msg.tau .who .mini{width:20px;height:20px}
+.body{font-family:var(--read-ff,var(--f-body));font-size:var(--read-fs,17px);line-height:var(--read-lh,1.6)}
 .body p{margin:0 0 .85em;overflow-wrap:anywhere}
 .body p:last-child{margin-bottom:0}
 .nar{font-style:italic;color:var(--nar)}
@@ -218,6 +219,7 @@ html.locked #app>:not(#lock),html.veil #app>:not(#lock){visibility:hidden}
 .vlist .vw-w{font:700 17px/1.3 var(--f-display);color:var(--fg);overflow-wrap:anywhere;min-width:0}
 .vlist .vm{margin:0;font:400 15px/1.45 var(--f-body);color:var(--nar)}
 .vlist small{font:400 12px/1.4 var(--f-mono);color:var(--faint)}
+.slist .acts2{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .vlist .acts2{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
 .vlv{flex:none;font:600 10.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:4px 7px}
 .vlv.l0{color:var(--ochre)}.vlv.l1{color:var(--accent)}.vlv.l2{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
@@ -338,6 +340,13 @@ ol.steps a{color:var(--accent)}
 .composer .col{padding-block:10px 12px;display:flex;flex-direction:column;gap:9px;position:relative}
 .tray{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 @media (max-width:640px){.tray{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;margin-inline:-2px;padding-inline:2px}.tray::-webkit-scrollbar{display:none}.tray>*{flex:none}}
+.bknote{border:1px solid var(--ochre);border-radius:12px;padding:12px 14px;margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
+.bknote p{margin:0;font-size:15px}
+.libsearch{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px}
+.chip.on{border-color:var(--accent);color:var(--fg);background:var(--surface-2)}
+.badge.tg{color:var(--muted)}
+#ed-body.isworld .wk0{display:none}
 .chip{border:1px solid var(--line);background:none;border-radius:999px;padding:7px 12px;font:500 12px/1 var(--f-mono);color:var(--muted)}
 .chip:hover{border-color:var(--accent);color:var(--fg)}
 .chip[disabled]{opacity:.4;cursor:default}
@@ -465,6 +474,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
             <button class="btn ghost sm" type="button" id="b-copy-json">Copiar backup</button>
             <button class="btn ghost sm" type="button" id="b-copy">Copiar texto</button>
             <button class="btn ghost sm" type="button" id="b-diary">📜 Diário</button>
+            <button class="btn ghost sm" type="button" id="b-epub">Baixar como livro (.epub)</button>
           </div>
           <p class="hint">O backup guarda a história inteira, as mensagens antigas, o personagem, as palavras aprendidas e os pontos de volta do estado. “Copiar backup” serve quando o download não funciona: cole o texto em outro aparelho.</p>
         </div>
@@ -501,6 +511,7 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
       <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
+        <div><h4>Lembrete de backup</h4><div class="seg" id="seg-bk"></div><p class="hint" id="bk-hint"></p></div>
         <div><h4>Diagnóstico</h4><div id="diag-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
         <div><h4>Login e bloqueio</h4><div id="lock-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
         <div id="sec-sync"><h4>Sincronizar e proteger</h4><div id="sync-box" style="display:flex;flex-direction:column;gap:12px"></div></div>
@@ -520,6 +531,13 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
         <div><h4>Tradutor offline</h4><div id="bmt-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
         <div><h4>Uso</h4><p class="hint" id="usage" style="margin:0"></p></div>
         <div><h4>Tema</h4><div class="seg" id="seg-theme"></div></div>
+        <div><h4>Aparência da leitura</h4>
+          <p class="hint" style="margin-top:0">Tamanho da letra</p><div class="seg" id="seg-fs"></div>
+          <p class="hint">Fonte</p><div class="seg" id="seg-rf"></div>
+          <p class="hint">Espaço entre linhas</p><div class="seg" id="seg-lh"></div>
+          <p class="hint">Cor de destaque</p><div class="seg" id="seg-ac"></div>
+          <div class="body" id="look-demo" style="margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:12px 14px"><p><em class="nar">A maré baixou e deixou conchas por toda a praia.</em> “Karibu,” disse ele, rindo.</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -585,7 +603,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, v:2};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"serif", lh:"n", ac:"teal", bk:true, v:2};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -601,7 +619,17 @@ function loadPrefs(){
   }
 }
 function savePrefs(){ LS.set("rp.prefs", JSON.stringify(prefs)); }
-function applyTheme(){ const r = document.documentElement; if (prefs.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", prefs.theme); }
+const FS = {p:15.5, m:17, g:19, gg:21.5}, LHS = {n:1.6, f:1.85};
+const RFS = {serif:'"Newsreader",Georgia,"Times New Roman",serif', sans:'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif'};
+const ACC = {ambar:["#e0a24a", "#1a1206", "#a35f00", "#fff8ec"], rosa:["#e58aa6", "#1c0c12", "#a8305a", "#fff1f5"], azul:["#6aa7e8", "#07131f", "#1f5fa8", "#f1f7ff"], violeta:["#b394ee", "#120a22", "#6c3fc0", "#f6f1ff"]};
+function applyTheme(){
+  const r = document.documentElement; if (prefs.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", prefs.theme);
+  const st = r.style, dark = prefs.theme === "dark" || (prefs.theme === "auto" && !(window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches));
+  st.setProperty("--read-fs", (FS[prefs.fs] || 17) + "px"); st.setProperty("--read-lh", String(LHS[prefs.lh] || 1.6)); st.setProperty("--read-ff", RFS[prefs.rf] || RFS.serif);
+  const a = ACC[prefs.ac];
+  if (a) { st.setProperty("--accent", dark ? a[0] : a[2]); st.setProperty("--accent-ink", dark ? a[1] : a[3]); } else { st.removeProperty("--accent"); st.removeProperty("--accent-ink"); }
+}
+try { const mq = window.matchMedia && matchMedia("(prefers-color-scheme: light)"); if (mq && mq.addEventListener) mq.addEventListener("change", () => { if (prefs.theme === "auto" && prefs.ac !== "teal") applyTheme(); }); } catch {}
 
 /* ---------- armazenamento ---------- */
 function mkLocalStore(){
@@ -709,12 +737,39 @@ function normChar(c){
   const b = blankChar(); const o = Object.assign(b, c || {});
   o.persona = Object.assign({}, GENERIC_PERSONA, o.persona || {});
   o.openings = (o.openings || []).map((x, i) => ({id: x.id || "o" + i, label: x.label || "Abertura " + (i + 1), blurb: x.blurb || "", text: x.text || ""}));
+  o.tags = Array.isArray(o.tags) ? parseTags(o.tags.join(",")) : []; o.world = typeof o.world === "string" ? o.world : "";
+  o.hist = (Array.isArray(o.hist) ? o.hist : []).filter(x => x && x.d && typeof x.d === "object").slice(0, HIST_MAX);
   o.lore = (o.lore || []).map((e, i) => ({id: e.id || "l" + i, name: e.name || "Entrada " + (i + 1), keys: Array.isArray(e.keys) ? e.keys : [], content: e.content || "", always: !!e.always, order: Number(e.order) || 100, pos: e.pos === 1 ? 1 : 0}));
   return o;
 }
+/* etiquetas, mundos (lore compartilhada) e versões da ficha */
+const TAG_MAX = 8, HIST_MAX = 6;
+const parseTags = t => [...new Set(String(t || "").split(/[,;]/).map(x => x.trim().replace(/\s+/g, " ").slice(0, 24)).filter(Boolean))].slice(0, TAG_MAX);
+function worldOf(ch){ const w = ch && ch.world ? S.chars.get(ch.world) : null; return w && w.role === "world" ? w : null; }
+function worldLore(ch){ const w = worldOf(ch); return w ? (w.lore || []).filter(e => e && e.content).map(e => Object.assign({}, e, {id: "w" + w.id + ":" + e.id})) : []; }
+function loreAll(st, ch){
+  const seen = new Set(), out = [];
+  const add = list => list.forEach(e => out.push(e));
+  add(ch.lore || []);
+  [ch, ...castChars(st)].forEach(c => { const w = worldOf(c); if (w && !seen.has(w.id)) { seen.add(w.id); add(worldLore(c)); } });
+  add(st.slore || []); castChars(st).forEach(c => add(c.lore || []));
+  return out;
+}
+const HIST_FIELDS = ["name", "role", "tagline", "description", "personality", "scenario", "rules", "examples", "post", "openings", "lore", "persona", "tags", "world"];
+function snapChar(c){ const o = {}; HIST_FIELDS.forEach(k => { if (c[k] !== undefined) o[k] = c[k]; }); return clean(o); }
+function histPush(prev, out){
+  if (!prev || prev.builtin) return;
+  const a = JSON.stringify(snapChar(prev)), b = JSON.stringify(snapChar(out)); if (a === b) return;
+  const h = (prev.hist || []).slice(); if (h.length && JSON.stringify(h[0].d) === a) { out.hist = h.slice(0, HIST_MAX); return; }
+  h.unshift({t: prev.updated || Date.now(), d: snapChar(prev)}); out.hist = h.slice(0, HIST_MAX);
+  while (out.hist.length > 1 && bytes(JSON.stringify(out)) > DOC_LIMIT) out.hist.pop();
+  if (bytes(JSON.stringify(out)) > DOC_LIMIT) out.hist = [];
+}
+function fmtDT(t){ const d = new Date(t); return isNaN(d) ? "" : d.toLocaleDateString("pt-BR", {day:"2-digit", month:"2-digit"}) + " " + d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}); }
+const LIB = {q:"", tag:""};
 function allChars(){
-  const mine = [...S.chars.values()].filter(c => !c.builtin).sort((a, b) => (b.updated || 0) - (a.updated || 0));
-  return {mine, examples: BUILTINS.map(b => S.chars.get(b.id)).filter(Boolean)};
+  const sorted = [...S.chars.values()].filter(c => !c.builtin).sort((a, b) => (b.updated || 0) - (a.updated || 0));
+  return {mine: sorted.filter(c => c.role !== "world"), worlds: sorted.filter(c => c.role === "world"), examples: BUILTINS.map(b => S.chars.get(b.id)).filter(c => c && c.role !== "world")};
 }
 async function loadChars(){
   S.chars = new Map();
@@ -764,6 +819,33 @@ function matchLore(ch, scan){
 
 /* ---------- prompt ---------- */
 const sub = (t, user, cname) => String(t || "").replace(/\{\{user\}\}/gi, user).replace(/\{\{char\}\}/gi, cname).replace(/\{\{original\}\}\s*/gi, "");
+/* fatos fixos e agenda do mundo (decisões do jogador; ficam fora dos pontos de volta) */
+const PIN_MAX = 30, AG_MAX = 24;
+function pinsBlock(st){
+  const p = (st.pins || []).filter(x => x && x.t); if (!p.length) return "";
+  return "FATOS FIXOS (o jogador os marcou como verdade da história: nunca os contradiga, nem os esqueça)\n" + p.map(x => "- " + x.t).join("\n");
+}
+function agClock(st){ return st.sim && st.sim.ready && st.sim.clock ? st.sim.clock : null; }
+function agMin(a){ if (a.day == null) return null; const m = /^(\d{1,2}):(\d{2})$/.exec(a.hm || ""); return a.day * 1440 + (m ? Number(m[1]) * 60 + Number(m[2]) : 0); }
+function agState(st, a){
+  const c = agClock(st), at = agMin(a); if (!c || at == null) return "";
+  const now = c.day * 1440 + Math.round(c.min), d = at - now;
+  if (a.hm ? d < -120 : a.day < c.day) return "passou";
+  if (a.hm ? d <= 0 : a.day === c.day) return "agora";
+  const days = a.day - c.day;
+  return d < 1440 && a.day === c.day ? "hoje" : days === 1 ? "amanhã" : "em " + days + " dias";
+}
+function agWhen(a){ return [a.day != null ? "dia " + a.day : "", a.hm || ""].filter(Boolean).join(" às ") || "sem data"; }
+function agendaBlock(st){
+  const l = (st.agenda || []).filter(a => a && a.t && !a.done); if (!l.length) return "";
+  const c = agClock(st);
+  return "AGENDA DO MUNDO (combinados e eventos marcados" + (c ? "; agora é " + clockText(c) : "") + "). Só aconteçam quando a hora chegar, nunca antes; se a hora chegou ou passou e " + st.setup.name + " não foi, o evento acontece (ou foi perdido) sem esperar por ele.\n" +
+    l.map(a => { const g = agState(st, a); return "- " + a.t + " (" + agWhen(a) + (g ? "; " + (g === "agora" ? "É AGORA" : g === "passou" ? "JÁ PASSOU" : g) : "") + ")"; }).join("\n");
+}
+function agendaTail(st){
+  const due = (st.agenda || []).filter(a => a && a.t && !a.done && ["agora", "passou"].includes(agState(st, a)));
+  return due.length ? "Agenda: " + due.map(a => a.t + (agState(st, a) === "agora" ? " (é agora)" : " (já passou)")).join("; ") + ". Faça isso acontecer na cena, de forma natural." : "";
+}
 function header(st, ch, loreHead){
   const u = st.setup, n = u.name, c = ch.name, S_ = t => sub(t, n, c);
   const lang = (LANGS[prefs.lang] || LANGS.pt)[1];
@@ -778,15 +860,17 @@ function header(st, ch, loreHead){
 - Cada resposta avança um passo da cena: não resolva a trama em um turno, deixe espaço para ${n}.
 - Continuidade: lembre corpo, ferimentos, itens, roupas, hora do dia, clima, lugar e o que cada personagem sabe e não sabe. Personagens têm objetivos próprios e vida fora da cena; reagem na medida do que acontece.
 - Conhecimento é local: cada personagem só sabe o que viu, ouviu ou ficou sabendo por alguém, em cena. Você, como narrador, sabe tudo; eles não. Uma conversa de ${n} com uma pessoa não chega a quem não estava lá, a menos que haja um caminho plausível (alguém que estava presente conta depois, e isso leva tempo, chega pela metade ou distorcido). Fofoca de vila existe, mas precisa de quem viu e de tempo para correr. Na dúvida, o personagem não sabe: não deixe ninguém citar, insinuar ou reagir a algo que não presenciou nem lhe contaram.
+- Aparência e identidade têm consequência: quem vê ${n} pela primeira vez nota o que há de visível (idade, traços, cor da pele e do cabelo, roupa, marcas, sotaque) e compara com o que esperava ou com o que ${n} diz ser (parentesco, origem, profissão). Se bate, a pessoa percebe e comenta de leve; se não bate, estranha, olha de novo, procura semelhança (e às vezes acha, às vezes não), faz uma pergunta ou guarda a dúvida. Reaja do jeito de cada personagem e na medida do que está em jogo: quem ama não interroga, quem tem algo a perder confere. Não vire interrogatório nem aceite tudo sem notar; e uma alegação sem prova só vira certeza com algo concreto (documento, história que se confirma, alguém que reconheça).
 - Romance e cenas íntimas só entre adultos, com consentimento claro e participação recíproca.`;
   const examples = (ch.examples || "").trim() ? "EXEMPLOS DE VOZ E FORMATO (não repita o conteúdo)\n" + S_(ch.examples.replace(/<START>\s*/gi, "---\n")) : "";
   const persona = [`JOGADOR (persona; vale mais que qualquer aparência ou nome "padrão" citado na ficha)`, `Nome: ${n} (${PRO[u.pro] || PRO.ele})`,
     u.look ? `Aparência: ${u.look}` : "", u.bio ? `Quem é e o que sabe fazer: ${u.bio}` : "", u.extra ? `Itens e notas: ${u.extra}` : ""].filter(Boolean).join("\n");
   const lore = loreHead.length ? "LORE ATIVA (consulta; vale como fato do mundo)\n" + loreHead.map(e => "- " + S_(e.content)).join("\n") : "";
+  const pins = pinsBlock(st), agenda = agendaBlock(st);
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
   return [intro, how, ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, mem, stateBlock(st), npcBlock(st), rumorBlock(st), simBlock(st), vocabBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, pins, mem, agenda, stateBlock(st), npcBlock(st), rumorBlock(st), simBlock(st), vocabBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -796,13 +880,14 @@ function tail(st, ch, loreTail){
   if (ch.post && ch.post.trim()) parts.push(sub(ch.post, n, ch.name));
   if (st.notes && st.notes.trim()) parts.push("Nota de cena do jogador: " + st.notes.trim());
   const sn = simTail(st); if (sn) parts.push(sn);
+  const ad = agendaTail(st); if (ad) parts.push(ad);
   if (loreTail.length) parts.push("Lore ativa:\n" + loreTail.map(e => "- " + sub(e.content, n, ch.name)).join("\n"));
   return "\n\n---\n" + parts.join("\n");
 }
 function buildTurns(st, ch, upto){
   const msgs = st.messages.slice(0, upto);
   const scan = msgs.slice(-4).map(m => m.text).join("\n");
-  const lore = matchLore({lore: (ch.lore || []).concat(st.slore || [], ...castChars(st).map(x => x.lore || []))}, scan);
+  const lore = matchLore({lore: loreAll(st, ch)}, scan);
   let turns = [{role:"user", content: header(st, ch, lore.filter(e => e.pos !== 1))}];
   const lastIdx = msgs.length - 1; let imgId = null;
   msgs.forEach((m, k) => {
@@ -896,20 +981,34 @@ function charCard(ch){
   bd.append(el("h3", "", ch.name));
   const meta = el("div", "meta");
   if (ch.builtin) meta.append(el("span", "badge ex", "Exemplo"));
-  meta.append(el("span", "badge", ch.role === "narrator" ? "Narrador" : "Personagem"));
+  meta.append(el("span", "badge", ch.role === "narrator" ? "Narrador" : ch.role === "world" ? "Mundo" : "Personagem"));
+  const wd = worldOf(ch); if (wd) meta.append(el("span", "badge", "🌍 " + wd.name));
+  if (ch.role === "world") meta.append(el("span", "badge", (ch.lore || []).length + ((ch.lore || []).length === 1 ? " entrada" : " entradas")));
+  (ch.tags || []).slice(0, 3).forEach(t => meta.append(el("span", "badge tg", "#" + t)));
   const k = storyCount(ch.id); if (k) meta.append(el("span", "badge", k + (k === 1 ? " história" : " histórias")));
   bd.append(meta);
   if (ch.tagline) bd.append(el("p", "", ch.tagline));
   const go = el("div", "go");
-  const play = el("button", "btn sm", "Jogar"); play.dataset.act = "quick"; play.dataset.id = ch.id; go.append(play);
+  const isW = ch.role === "world";
+  if (!isW) { const play = el("button", "btn sm", "Jogar"); play.dataset.act = "quick"; play.dataset.id = ch.id; go.append(play); }
   const links = el("div", "links");
   const add = (label, act, cls) => { const b = el("button", "txt" + (cls ? " " + cls : ""), label); b.dataset.act = act; b.dataset.id = ch.id; links.append(b); return b; };
-  add("Escolher início", "play"); add("Me surpreenda", "surprise"); add("Rosto e voz", "look");
+  if (!isW) { add("Escolher início", "play"); add("Me surpreenda", "surprise"); add("Rosto e voz", "look"); }
   if (!ch.builtin) add("Editar", "edit");
-  add("Duplicar", "dup"); add("Baixar", "export");
+  add("Duplicar", "dup"); if (!isW) add("Baixar", "export");
   if (!ch.builtin) add("Excluir", "del", "danger");
   go.append(links); bd.append(go); card.append(bd);
   return card;
+}
+/* lembrete de backup */
+const bkLimit = () => (S.store && S.store.kind === "db" ? 30 : 7) * 864e5;
+function bkMark(){ LS.set("rp.lastbk", String(Date.now())); LS.del("rp.bksnooze"); }
+function bkInfo(){
+  if (prefs.bk === false || !S.index.stories.length) return null;
+  if (!LS.get("rp.bkfirst")) LS.set("rp.bkfirst", String(Date.now()));
+  const last = Number(LS.get("rp.lastbk") || 0), first = Number(LS.get("rp.bkfirst") || Date.now()), sn = Number(LS.get("rp.bksnooze") || 0), now = Date.now();
+  if (sn > now || now - Math.max(last, first) < bkLimit()) return null;
+  return {last, days: Math.floor((now - (last || first)) / 864e5)};
 }
 function renderLibrary(){
   const box = $("#lib"); box.textContent = "";
@@ -924,25 +1023,56 @@ function renderLibrary(){
     const b = el("button", "btn sm", "Continuar"); b.dataset.act = "resume"; b.dataset.id = last.id;
     c.append(t, b); box.append(c);
   }
+  const bk = bkInfo();
+  if (bk) {
+    const n = el("div", "bknote"); n.setAttribute("role", "status");
+    n.append(el("p", "", bk.last ? "Faz " + bk.days + (bk.days === 1 ? " dia" : " dias") + " que você não salva um backup das suas histórias." : "Você ainda não salvou um backup das suas histórias" + (bk.days > 0 ? " (usa o app há " + bk.days + (bk.days === 1 ? " dia" : " dias") + ")" : "") + "."));
+    const a2 = el("div", "actions"); const b1 = el("button", "btn sm", "Salvar backup agora"); b1.dataset.act = "bk-now"; const b2 = el("button", "btn ghost sm", "Lembrar depois"); b2.dataset.act = "bk-later"; a2.append(b1, b2); n.append(a2); box.append(n);
+  }
   const acts = el("div", "actions");
   const mk = el("button", "btn", "Criar personagem"); mk.dataset.act = "new";
   const im = el("button", "btn ghost", "Importar card ou backup"); im.dataset.act = "import";
-  acts.append(mk, im);
+  const mw = el("button", "btn ghost", "Criar mundo"); mw.dataset.act = "new-world"; mw.title = "Lore compartilhada entre vários personagens";
+  acts.append(mk, im, mw);
   const cb = el("div", "field"); cb.id = "chub-box"; cb.hidden = true;
   if (!IN_CLAUDE) { const l = el("label", "", "Link do personagem no Chub"); l.htmlFor = "chub-url"; const i = el("input"); i.type = "text"; i.id = "chub-url"; i.placeholder = "https://chub.ai/characters/autor/nome"; i.autocomplete = "off"; const g = el("button", "btn sm", "Importar"); g.dataset.act = "chub-go"; g.style.alignSelf = "flex-start"; cb.append(l, i, g); }
   if (!IN_CLAUDE) { const ch2 = el("button", "btn ghost", "Importar do Chub"); ch2.dataset.act = "chub"; acts.append(ch2); }
   if (installEvt) { const ins = el("button", "btn ghost", "Instalar na tela inicial"); ins.dataset.act = "install"; acts.append(ins); }
   box.append(acts); if (!IN_CLAUDE) box.append(cb);
-  const {mine, examples} = allChars();
-  const sec = (title, list, withNew) => {
+  const {mine, examples, worlds} = allChars();
+  const tagsAll = {}; mine.concat(examples).forEach(c => (c.tags || []).forEach(t => { tagsAll[t] = (tagsAll[t] || 0) + 1; }));
+  const tagList = Object.entries(tagsAll).sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).slice(0, 14).map(x => x[0]);
+  if (LIB.tag && !tagsAll[LIB.tag]) LIB.tag = "";
+  const filt = list => { const q = vnorm(LIB.q.trim()); return list.filter(c => (!LIB.tag || (c.tags || []).includes(LIB.tag)) && (!q || vnorm([c.name, c.tagline, (c.tags || []).join(" ")].join(" ")).includes(q))); };
+  const filtering = () => !!(LIB.q.trim() || LIB.tag);
+  const sec = (title, list, withNew, gid) => {
     const s = el("div", "sect"); s.append(el("h3", "", title));
-    const g = el("div", "grid");
-    if (withNew) { const n = el("button", "newcard"); n.dataset.act = "new"; n.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>'; n.append(document.createTextNode("Novo personagem"), el("small", "", "Do zero ou com a ajuda da IA")); g.append(n); }
-    list.forEach(c => g.append(charCard(c)));
+    const g = el("div", "grid"); g.id = gid;
     s.append(g); return s;
   };
-  box.append(sec("Seus personagens", mine, true));
-  box.append(sec("Exemplos para jogar ou duplicar", examples, false));
+  const fill = () => {
+    const gm = $("#g-mine"), ge = $("#g-ex"); if (!gm || !ge) return;
+    gm.textContent = ""; ge.textContent = "";
+    if (!filtering()) { const n = el("button", "newcard"); n.dataset.act = "new"; n.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Novo personagem</span>'; gm.append(n); }
+    const fm = filt(mine), fe = filt(examples);
+    fm.forEach(c => gm.append(charCard(c))); fe.forEach(c => ge.append(charCard(c)));
+    if (filtering() && !fm.length && !fe.length) gm.append(el("p", "empty", "Nenhum personagem com esse filtro."));
+    ge.parentElement.hidden = !fe.length;
+    const em = $("#lib-empty"); if (em) em.hidden = mine.length > 0 || filtering();
+  };
+  if (mine.length + examples.length > 6 || LIB.q || LIB.tag) {
+    const sr = el("div", "libsearch"); const q = el("input"); q.type = "search"; q.id = "lib-q"; q.className = "pin"; q.placeholder = "Buscar por nome, frase ou etiqueta"; q.value = LIB.q; q.setAttribute("aria-label", "Buscar personagens"); q.autocomplete = "off";
+    q.addEventListener("input", () => { LIB.q = q.value; fill(); });
+    sr.append(q);
+    if (tagList.length) { const tg = el("div", "tagrow"); tagList.forEach(t => { const b = el("button", "chip" + (LIB.tag === t ? " on" : ""), "#" + t); b.type = "button"; b.setAttribute("aria-pressed", LIB.tag === t ? "true" : "false"); b.addEventListener("click", () => { LIB.tag = LIB.tag === t ? "" : t; renderLibrary(); }); tg.append(b); }); sr.append(tg); }
+    box.append(sr);
+  }
+  const mineSec = sec("Seus personagens", mine, true, "g-mine");
+  const emp = el("p", "hint", "Ainda não tem personagens seus. Importe uma ficha (.json ou .png) ou um backup em “Importar card ou backup”, ou toque em Novo personagem."); emp.id = "lib-empty"; mineSec.insertBefore(emp, mineSec.lastChild);
+  box.append(mineSec);
+  if (worlds.length) { const ws = el("div", "sect"); ws.append(el("h3", "", "Mundos (lore compartilhada)")); ws.append(el("p", "hint", "Um mundo guarda lugares, facções e regras usados por vários personagens. Escolha o mundo na ficha do personagem.")); const wg = el("div", "grid"); worlds.forEach(w => wg.append(charCard(w))); ws.append(wg); box.append(ws); }
+  box.append(sec("Exemplos para jogar ou duplicar", examples, false, "g-ex"));
+  fill();
 }
 
 /* ---------- criar história ---------- */
@@ -993,12 +1123,12 @@ function newStory(ch, setup, o = {}){
 }
 function openStory(st){
   S.story = st; S.char = S.chars.get(st.charId) || null; S.index.lastId = st.id; S.old = null; S.error = null; S.editing = null;
-  ckLoad(st); VOC.rev = null; VOC.gs = null; VOC.gq = "";
+  ckLoad(st); VOC.rev = null; VOC.gs = null; VOC.gq = ""; VOC.scRes = null; VOC.sct = ""; VOC.scp = "";
   $("#in").value = ""; draftLoad(st);
   showView("chat"); renderLog(); $("#ideas").hidden = true; renderScene(); SIMX.open = null; renderSimBar(); updateVocabChip();
   if (simOn(st) && !st.sim.ready && hasAI() && st.messages.some(m => m.role === "assistant")) simInit();
   if (st.messages.length <= 1) $("#log").scrollTop = 0; else toBottom();
-  if (!S.char) showBanner("O personagem desta história não está neste aparelho. Importe a ficha dele (Histórias → Escolher arquivo ou colar o .json) para continuar; até lá dá para ler e exportar."); else showBanner(hasAI() ? "" : noAIText());
+  if (!S.char) showBanner("O personagem desta história foi excluído ou não está neste aparelho. Se ele ainda existe, importe a ficha dele (Histórias → Escolher arquivo ou colar o .json) para continuar; até lá dá para ler e exportar."); else showBanner(hasAI() ? "" : noAIText());
   persist();
   if (S.char && hasAI()) $("#in").focus({preventScroll:true});
 }
@@ -1043,7 +1173,7 @@ function msgNode(m, i){
   }
   if (isTau && m.tr && !m.trHide) { const tb = el("div", "trbox"); tb.innerHTML = fmt(m.tr); art.append(tb); }
   if (isTau && prefs.lore && m.lore && m.lore.length && S.char) {
-    const pool = S.char.lore.concat(st.slore || [], ...castChars(st).map(x => x.lore || [])); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
+    const pool = loreAll(st, S.char); const names = m.lore.map(id => (pool.find(e => e.id === id) || {}).name).filter(Boolean);
     if (names.length) { const tg = el("div", "tag clip", "Lore: " + names.map(x => sub(x, st.setup.name, S.char.name)).join(" · ")); tg.title = "Toque para ver tudo"; tg.onclick = () => tg.classList.toggle("clip"); art.append(tg); }
   }
   return art;
@@ -1296,13 +1426,19 @@ function aiBoxEl(){
 function renderEditor(keepAI){
   const body = $("#ed-body"); body.textContent = "";
   const keepIdea = $("#e-idea") ? $("#e-idea").value : "";
-  body.append(aiBoxEl()); if (keepIdea && $("#e-idea")) $("#e-idea").value = keepIdea;
+  const isW = D.role === "world"; body.classList.toggle("isworld", isW);
+  if (!isW) { body.append(aiBoxEl()); if (keepIdea && $("#e-idea")) $("#e-idea").value = keepIdea; }
   /* básico */
   const s1 = el("div", "sect"); s1.append(el("h3", "", "Básico"));
   const r = el("div", "row");
   r.append(fieldEl("Nome", "e-name", "input", D.name, {max:80, ph:"Como o personagem se chama"}));
-  r.append(fieldEl("Papel", "e-role", "select", D.role, {options:[["char", "Personagem (uma pessoa na história)"], ["narrator", "Narrador (conduz a aventura e todos os NPCs)"]]}));
+  r.append(fieldEl("Papel", "e-role", "select", D.role, {options:[["char", "Personagem (uma pessoa na história)"], ["narrator", "Narrador (conduz a aventura e todos os NPCs)"], ["world", "Mundo (só lore compartilhada entre personagens)"]]}));
   s1.append(r);
+  if (!isW) {
+    s1.append(fieldEl("Etiquetas", "e-tags", "input", (D.tags || []).join(", "), {max:200, ph:"ex.: fantasia, romance, mistério", help:"Separe por vírgula. Servem para filtrar a biblioteca."}));
+    const ws = [...S.chars.values()].filter(c => c.role === "world" && c.id !== D.id);
+    if (ws.length) s1.append(fieldEl("Mundo", "e-world", "select", D.world || "", {options:[["", "Nenhum"]].concat(ws.map(w => [w.id, w.name])), help:"A lore do mundo entra na conversa junto com a lore deste personagem."}));
+  } else s1.append(el("p", "note", "Um mundo não é jogado: ele só guarda a lorebook abaixo (lugares, facções, regras). Nas fichas dos personagens, escolha este mundo no campo Mundo."));
   s1.append(fieldEl("Frase de apresentação", "e-tag", "input", D.tagline, {max:140, ph:"Uma linha que vende o personagem na biblioteca", help:"Aparece no cartão da biblioteca."}));
   const pr = el("div", "portrait-row"); pr.append(tileEl(D));
   const pa = el("div", "actions");
@@ -1312,14 +1448,14 @@ function renderEditor(keepAI){
   pr.append(pa); s1.append(pr);
   body.append(s1);
   /* ficha */
-  const s2 = el("div", "sect"); s2.append(el("h3", "", "Ficha"));
+  const s2 = el("div", "sect wk0"); s2.append(el("h3", "", "Ficha"));
   s2.append(fieldEl("Descrição", "e-desc", "textarea", D.description, {rows:8, help:"Quem é: aparência, idade, origem, o que quer e teme, como fala, hábitos e defeitos. Use {{user}} para o jogador e {{char}} para o personagem."}));
   s2.append(fieldEl("Personalidade", "e-pers", "textarea", D.personality, {rows:4, help:"Traços, contradições, como reage sob pressão e como muda quando confia."}));
   s2.append(fieldEl("Cenário", "e-scen", "textarea", D.scenario, {rows:5, help:"Situação inicial, o que está em jogo, quem mais existe e o que o mundo faz sem o jogador."}));
   s2.append(fieldEl("Regras de condução", "e-rules", "textarea", D.rules, {rows:5, help:"Como a IA deve conduzir: ritmo, o que nunca fazer, limites de conhecimento, como lidar com recusas."}));
   body.append(s2);
   /* aberturas */
-  const s3 = el("div", "sect"); s3.append(el("h3", "", "Aberturas (primeira mensagem)"));
+  const s3 = el("div", "sect wk0"); s3.append(el("h3", "", "Aberturas (primeira mensagem)"));
   D.openings.forEach((o, i) => {
     const c = el("div", "rowcard"); c.dataset.i = i; c.className = "rowcard op-row";
     const t = el("div", "top2"); t.append(fieldEl("Título", "op-l-" + i, "input", o.label, {max:50}));
@@ -1353,9 +1489,16 @@ function renderEditor(keepAI){
   const il = el("button", "btn ghost sm", "Importar lorebook (.json)"); il.type = "button"; il.dataset.act = "imp-lore";
   la.append(al, gl, il); s4.append(la);
   body.append(s4);
-  body.append(tryEl());
+  if (!isW) body.append(tryEl());
+  /* versões anteriores */
+  if (!D.isNew && (D.hist || []).length) {
+    const hd = el("details", "adv"); hd.append(el("summary", "", "Versões anteriores da ficha (" + D.hist.length + ")"));
+    const hi = el("div", "inner"); hi.append(el("p", "note", "O app guarda as últimas versões a cada vez que você salva. Restaurar carrega a versão aqui no editor; só vale depois de você tocar em Salvar personagem. Retrato e guia não mudam."));
+    const ul = el("ul", "slist"); D.hist.forEach((h, i) => { const li = el("li"); li.append(el("b", "", fmtDT(h.t)), el("small", "", ((h.d.description || "").length + (h.d.scenario || "").length) + " caracteres de ficha · " + (h.d.openings || []).length + " aberturas · " + (h.d.lore || []).length + " entradas de lore")); const ac = el("div", "acts2"); const b = el("button", "btn ghost sm", "Restaurar esta versão"); b.type = "button"; b.dataset.act = "hist-restore"; b.dataset.i = i; ac.append(b); li.append(ac); ul.append(li); });
+    hi.append(ul); hd.append(hi); body.append(hd);
+  }
   /* avançado */
-  const adv = el("details", "adv"); adv.append(el("summary", "", "Avançado: exemplos de fala, lembrete e jogador padrão"));
+  const adv = el("details", "adv wk0"); adv.append(el("summary", "", "Avançado: exemplos de fala, lembrete e jogador padrão"));
   const inner = el("div", "inner");
   inner.append(fieldEl("Exemplos de fala", "e-ex", "textarea", D.examples, {rows:7, help:"Trocas curtas no formato {{user}}: ... e {{char}}: ..., separadas por uma linha com ---."}));
   inner.append(fieldEl("Lembrete a cada resposta", "e-post", "textarea", D.post, {rows:3, help:"Opcional. Vai junto da sua última mensagem em todas as respostas; use para o que o narrador mais esquece."}));
@@ -1365,12 +1508,14 @@ function renderEditor(keepAI){
   inner.append(fieldEl("Jogador padrão: aparência", "e-plook", "textarea", D.persona.look, {rows:2}), fieldEl("Jogador padrão: quem é e o que sabe fazer", "e-pbio", "textarea", D.persona.bio, {rows:3}), fieldEl("Jogador padrão: itens e notas", "e-pextra", "textarea", D.persona.extra, {rows:3}));
   adv.append(inner); body.append(adv);
   if (adv && (D.examples || D.post)) adv.open = true;
-  $("#e-export").disabled = !D.name;
+  $("#e-export").disabled = !D.name || isW;
+  const rs = $("#e-role"); if (rs) rs.onchange = () => rerender();
 }
 function collectDraft(){
   if (!D || !$("#e-name")) return;
   const v = id => { const n = $("#" + id); return n ? n.value : ""; };
-  D.name = v("e-name").trim(); D.role = v("e-role") === "narrator" ? "narrator" : "char"; D.tagline = v("e-tag").trim();
+  D.name = v("e-name").trim(); D.role = ({narrator: "narrator", world: "world"})[v("e-role")] || "char"; D.tagline = v("e-tag").trim();
+  if ($("#e-tags")) D.tags = parseTags(v("e-tags")); if ($("#e-world")) D.world = v("e-world");
   D.description = v("e-desc").trim(); D.personality = v("e-pers").trim(); D.scenario = v("e-scen").trim(); D.rules = v("e-rules").trim();
   D.examples = v("e-ex").trim(); D.post = v("e-post").trim();
   D.persona = {name: v("e-pn").trim() || "Alex", pro: v("e-ppro") || "ele", look: v("e-plook").trim(), bio: v("e-pbio").trim(), extra: v("e-pextra").trim()};
@@ -1382,10 +1527,14 @@ function rerender(){ const y = $("#ed-scroll").scrollTop; collectDraft(); render
 async function saveDraft(){
   collectDraft();
   if (!D.name) { toast("Dê um nome ao personagem."); $("#e-name").focus(); return; }
-  if (!D.description && !D.scenario) { toast("Preencha pelo menos a descrição ou o cenário."); $("#e-desc").focus(); return; }
+  const isW = D.role === "world";
+  if (!isW && !D.description && !D.scenario) { toast("Preencha pelo menos a descrição ou o cenário."); $("#e-desc").focus(); return; }
   D.openings = D.openings.filter(o => o.text); D.lore = D.lore.filter(e => e.content);
-  if (!D.openings.length) { toast("Adicione pelo menos uma abertura (a primeira mensagem da cena)."); rerender(); return; }
+  if (isW && !D.lore.length) { toast("Um mundo precisa de pelo menos uma entrada de lorebook."); rerender(); return; }
+  if (!isW && !D.openings.length) { toast("Adicione pelo menos uma abertura (a primeira mensagem da cena)."); rerender(); return; }
   const out = normChar(Object.assign({}, D)); delete out.isNew; delete out.builtin; out.updated = Date.now();
+  if (isW) { out.world = ""; out.openings = []; }
+  if (!D.isNew) histPush(S.chars.get(out.id), out);
   if (bytes(JSON.stringify(out)) > DOC_LIMIT) { toast("A ficha ficou grande demais para salvar. Reduza o lorebook ou a imagem."); return; }
   const btn = $("#e-save"); btn.disabled = true;
   const ok = await enqueue(() => saveChar(out));
@@ -1571,7 +1720,7 @@ function cardToChar(j){
   c.description = str(d.description || d.char_persona, 12000); c.personality = str(d.personality, 6000); c.scenario = str(d.scenario || d.world_scenario, 8000);
   c.rules = str(String(d.system_prompt || "").replace(/\{\{original\}\}\s*/gi, ""), 8000); c.post = str(String(d.post_history_instructions || "").replace(/\{\{original\}\}\s*/gi, ""), 4000);
   c.examples = str(String(d.mes_example || d.example_dialogue || "").replace(/<START>\s*/gi, "---\n").replace(/^---\n/, ""), 8000);
-  const tags = Array.isArray(d.tags) ? d.tags.join(", ") : "";
+  const tags = Array.isArray(d.tags) ? d.tags.join(", ") : ""; c.tags = Array.isArray(d.tags) ? parseTags(d.tags.filter(x => typeof x === "string").join(",")) : [];
   c.tagline = trunc(str(d.creator_notes, 400).split(/\n/)[0] || tags, 110);
   const greets = [d.first_mes || d.char_greeting, ...(Array.isArray(d.alternate_greetings) ? d.alternate_greetings : [])].filter(g => typeof g === "string" && g.trim());
   c.openings = greets.map((g, i) => ({id:"o" + rid() + i, label: "Abertura " + (i + 1), blurb:"", text: str(g, 4000)}));
@@ -1591,28 +1740,29 @@ function charToCard(ch){
     insertion_order:e.order || 100, enabled:true, position: e.pos === 1 ? "after_char" : "before_char", extensions:{position: e.pos === 1 ? 1 : 0, depth:4, probability:100, useProbability:true}}));
   const g = ch.openings.map(o => o.text);
   const data = {name:ch.name, description:ch.description, personality:ch.personality, scenario:ch.scenario, first_mes:g[0] || "", mes_example:mes,
-    creator_notes:ch.tagline || "", system_prompt:ch.rules || "", post_history_instructions:ch.post || "", alternate_greetings:g.slice(1), tags:[], creator:"Mesa de RP", character_version:"1.0",
+    creator_notes:ch.tagline || "", system_prompt:ch.rules || "", post_history_instructions:ch.post || "", alternate_greetings:g.slice(1), tags:(ch.tags || []).slice(), creator:"Mesa de RP", character_version:"1.0",
     extensions:{mesa_rp:{role:ch.role, tagline:ch.tagline || "", persona:ch.persona, openings:ch.openings.map(o => ({label:o.label, blurb:o.blurb || ""}))}}, character_book:{name:ch.name, description:"", scan_depth:4, token_budget:1200, recursive_scanning:false, extensions:{}, entries}};
   return {spec:"chara_card_v2", spec_version:"2.0", name:data.name, description:data.description, personality:data.personality, scenario:data.scenario, first_mes:data.first_mes, mes_example:data.mes_example, data};
 }
 async function saveFile(filename, data){
+  const bin = typeof data !== "string";
   if (!S.downloads) {
-    if (IN_CLAUDE) { copyDialog(data, "Este ambiente não permite baixar arquivos."); return false; }
+    if (IN_CLAUDE) { if (bin) toast("Este ambiente não permite baixar arquivos. Use a versão em texto (.md) e copie."); else copyDialog(data, "Este ambiente não permite baixar arquivos."); return false; }
     try {
-      const type = /\.json$/i.test(filename) ? "application/json" : /\.html?$/i.test(filename) ? "text/html" : "text/markdown";
+      const type = /\.json$/i.test(filename) ? "application/json" : /\.html?$/i.test(filename) ? "text/html" : /\.epub$/i.test(filename) ? "application/epub+zip" : "text/markdown";
       const url = URL.createObjectURL(new Blob([data], {type: type + ";charset=utf-8"}));
       const a = document.createElement("a"); a.href = url; a.download = filename; a.rel = "noopener"; a.style.display = "none";
       lockExempt(30000); document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60000);
       toast("Baixado: " + filename + " (fica na pasta Downloads).");
       return true;
-    } catch { copyDialog(data, "Não consegui baixar aqui."); return false; }
+    } catch { if (bin) toast("Não consegui baixar aqui."); else copyDialog(data, "Não consegui baixar aqui."); return false; }
   }
   try { await S.downloads.save({filename, data}); toast("Arquivo pronto."); return true; }
   catch (e) {
     if (e && e.code === "declined") return false;
     if (e && e.code === "rate_limited") { toast("Já existe um pedido de download aberto. Responda a ele e tente de novo."); return false; }
-    copyDialog(data, "Não consegui baixar o arquivo aqui."); return false;
+    if (bin) toast("Não consegui baixar o arquivo aqui."); else copyDialog(data, "Não consegui baixar o arquivo aqui."); return false;
   }
 }
 function detectKind(j){
@@ -1720,7 +1870,7 @@ async function importBackupObj(j){
   if (j.character && j.character.id && !S.chars.has(j.character.id)) { const c = normChar(j.character); c.updated = now; if (await enqueue(() => saveChar(c))) S.chars.set(c.id, c); }
   st.charId = st.charId || (j.character && j.character.id) || "";
   st.charName = st.charName || (S.chars.get(st.charId) || {}).name || (j.character && j.character.name) || "";
-  st.title = st.title || "História importada"; st.memory = st.memory || ""; st.notes = st.notes || ""; st.created = st.created || now;
+  st.title = st.title || "História importada"; st.memory = st.memory || ""; st.notes = st.notes || ""; cleanExtras(st); st.created = st.created || now;
   st.id = rid(); let n = 0;
   for (const ch of chunkBySize(arc, 150000)) { n += 1; await S.store.setArchive(st.id, n, ch); }
   st.archiveChunks = n; st.archived = arc.length;
@@ -1777,6 +1927,13 @@ function renderSettings(){
   seg($("#seg-len"), Object.entries(LENGTHS).map(([k, v]) => [k, v.label]), prefs.length, id => { prefs.length = id; savePrefs(); });
   seg($("#seg-lang"), Object.entries(LANGS).map(([k, v]) => [k, v[0]]), prefs.lang, id => { prefs.lang = id; savePrefs(); });
   seg($("#seg-lore"), [["on", "Mostrar"], ["off", "Esconder"]], prefs.lore ? "on" : "off", id => { prefs.lore = id === "on"; savePrefs(); if (S.story && S.view === "chat") renderLog(); });
+  const bkh = () => { const l = Number(LS.get("rp.lastbk") || 0); $("#bk-hint").textContent = "Avisa na biblioteca quando faz " + (bkLimit() / 864e5) + " dias sem backup" + (S.store && S.store.kind === "db" ? " (aqui no Claude os dados já ficam na sua conta, então o aviso é mais raro)" : "") + ". Último backup: " + (l ? fmtDT(l) : "nenhum ainda") + "."; };
+  seg($("#seg-bk"), [["on", "Ligado"], ["off", "Desligado"]], prefs.bk === false ? "off" : "on", id => { prefs.bk = id === "on"; savePrefs(); });
+  bkh();
+  seg($("#seg-fs"), [["p", "Pequena"], ["m", "Normal"], ["g", "Grande"], ["gg", "Enorme"]], prefs.fs, id => { prefs.fs = id; savePrefs(); applyTheme(); });
+  seg($("#seg-rf"), [["serif", "Com serifa"], ["sans", "Sem serifa"]], prefs.rf, id => { prefs.rf = id; savePrefs(); applyTheme(); });
+  seg($("#seg-lh"), [["n", "Normal"], ["f", "Folgado"]], prefs.lh, id => { prefs.lh = id; savePrefs(); applyTheme(); });
+  seg($("#seg-ac"), [["teal", "Verde-água"], ["ambar", "Âmbar"], ["rosa", "Rosa"], ["azul", "Azul"], ["violeta", "Violeta"]], prefs.ac, id => { prefs.ac = id; savePrefs(); applyTheme(); });
   seg($("#seg-theme"), [["auto", "Automático"], ["dark", "Escuro"], ["light", "Claro"]], prefs.theme, id => { prefs.theme = id; savePrefs(); applyTheme(); });
   seg($("#seg-sim"), [["on", "Ligada"], ["off", "Desligada"]], prefs.sim === true ? "on" : "off", id => { prefs.sim = id === "on"; savePrefs(); });
   seg($("#seg-keeper"), [["on", "Ligado"], ["off", "Desligado"]], prefs.keeper !== false ? "on" : "off", id => { prefs.keeper = id === "on"; savePrefs(); });
@@ -1916,7 +2073,7 @@ async function importAllObj(j, o = {}){
       let n = 0; for (const ch of chunkBySize(arc, 150000)) { n += 1; const k = n; await enqueue(() => S.store.setArchive(st.id, k, ch)); }
       const sp = st.setup || {};
       st.setup = {name: sp.name || "Jogador", pro: sp.pro || "ele", look: sp.look || "", bio: sp.bio || "", extra: sp.extra || ""};
-      st.archiveChunks = n; st.archived = arc.length; st.memory = st.memory || ""; st.notes = st.notes || ""; st.title = st.title || "História importada";
+      st.archiveChunks = n; st.archived = arc.length; st.memory = st.memory || ""; st.notes = st.notes || ""; cleanExtras(st); st.title = st.title || "História importada";
       st.updated = st.updated || Date.now(); st.charName = st.charName || (S.chars.get(st.charId) || {}).name || "";
       await enqueue(() => S.store.setStory(st));
       if (it.ck && typeof it.ck.data === "string") { const ckv = {v:2, data: it.ck.data}; try { await enqueue(() => S.store.setCk(st.id, ckv)); } catch {} }
@@ -2096,13 +2253,14 @@ function bind(){
     const b = e.target.closest("[data-act]"); if (!b) return;
     const act = b.dataset.act, id = b.dataset.id, ch = id ? S.chars.get(id) : null;
     if (act === "new") openEditor(null);
+    else if (act === "new-world") { openEditor(null); D.role = "world"; D.openings = []; renderEditor(); }
     else if (act === "import") pickFile($("#f-card"), "");
     else if (act === "play" && ch) showSetup(ch);
     else if (act === "quick" && ch) quickStart(ch);
     else if (act === "surprise" && ch) surpriseStart(ch);
     else if (act === "look" && ch) { LOOKX.id = ch.id; openSheet("look"); }
     else if (act === "edit" && ch && !ch.builtin) openEditor(ch);
-    else if (act === "dup" && ch) { const c = normChar(clean(ch)); delete c.builtin; c.name = ch.name + " (cópia)"; openEditor(null); D = Object.assign(c, {id: rid(), isNew:true}); renderEditor(); updateHeader(); }
+    else if (act === "dup" && ch) { const c = normChar(clean(ch)); delete c.builtin; c.hist = []; c.name = ch.name + " (cópia)"; openEditor(null); D = Object.assign(c, {id: rid(), isNew:true}); renderEditor(); updateHeader(); }
     else if (act === "export" && ch) saveFile(slug(ch.name) + ".json", JSON.stringify(charToCard(ch), null, 2));
     else if (act === "del" && ch && !ch.builtin) {
       if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Excluir"; }, 4000); return; }
@@ -2112,6 +2270,8 @@ function bind(){
       try { await enqueue(() => S.store.setIndex(S.index)); } catch {}
       renderLibrary(); toast("Personagem excluído. As histórias dele continuam na lista, só para leitura.");
     }
+    else if (act === "bk-now") { const ok = await saveFile("mesa-de-rp-tudo-" + new Date().toISOString().slice(0, 10) + ".json", await allJSON()); if (ok || !$("#io").hidden) { bkMark(); if (S.view === "library") renderLibrary(); } }
+    else if (act === "bk-later") { LS.set("rp.bksnooze", String(Date.now() + 3 * 864e5)); renderLibrary(); toast("Eu lembro de novo em 3 dias."); }
     else if (act === "resume") loadStory(id);
     else if (act === "chub") { const box = $("#chub-box"); if (box) { box.hidden = !box.hidden; if (!box.hidden) $("#chub-url").focus(); } }
     else if (act === "chub-go") importChub(($("#chub-url") || {}).value);
@@ -2131,6 +2291,7 @@ function bind(){
     else if (act === "add-op") { collectDraft(); D.openings.push({id:"o" + rid(), label:"Abertura " + (D.openings.length + 1), blurb:"", text:""}); rerender(); }
     else if (act === "rm-op") { collectDraft(); D.openings.splice(i, 1); rerender(); }
     else if (act === "add-lo") { collectDraft(); D.lore.push({id:"l" + rid(), name:"Nova entrada", keys:[], content:"", always:false, order:100, pos:0}); rerender(); }
+    else if (act === "hist-restore") { const h = (D.hist || [])[i]; if (h) { collectDraft(); const keep = {portrait: D.portrait, face: D.face, guide: D.guide, hist: D.hist, isNew: D.isNew, id: D.id, created: D.created, trLang: D.trLang}; D = normChar(Object.assign({}, clean(h.d), keep)); renderEditor(); toast("Versão de " + fmtDT(h.t) + " carregada. Toque em Salvar personagem para confirmar."); } }
     else if (act === "rm-lo") { collectDraft(); D.lore.splice(i, 1); rerender(); }
     else if (act === "pick-img") pickFile($("#f-img"), "image/*");
     else if (act === "rm-img") { collectDraft(); D.portrait = ""; D.face = ""; rerender(); }
@@ -2171,10 +2332,11 @@ function bind(){
   $("#f-import").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) importFile(f); });
   $("#b-paste").addEventListener("click", async () => { const t = $("#paste").value; if (!t.trim()) { impMsg("Cole o conteúdo do backup no campo acima."); return; } if (await importText(t)) $("#paste").value = ""; });
   $("#b-exp-md").addEventListener("click", async () => saveFile("mesa-de-rp-" + slug(S.char ? S.char.name : S.story.charName) + ".md", await transcript()));
-  $("#b-exp-json").addEventListener("click", async () => saveFile("mesa-de-rp-" + slug(S.story.charName) + "-backup.json", await backupJSON()));
-  $("#b-copy-json").addEventListener("click", async () => copyText(await backupJSON()));
-  $("#b-all-json").addEventListener("click", async () => saveFile("mesa-de-rp-tudo-" + new Date().toISOString().slice(0, 10) + ".json", await allJSON()));
-  $("#b-all-copy").addEventListener("click", async () => copyText(await allJSON()));
+  $("#b-exp-json").addEventListener("click", async () => { const ok = await saveFile("mesa-de-rp-" + slug(S.story.charName) + "-backup.json", await backupJSON()); if (ok || !$("#io").hidden) bkMark(); });
+  $("#b-copy-json").addEventListener("click", async () => { copyText(await backupJSON()); bkMark(); });
+  $("#b-epub").addEventListener("click", () => { if (S.story) saveEpub(S.story); });
+  $("#b-all-json").addEventListener("click", async () => { const ok = await saveFile("mesa-de-rp-tudo-" + new Date().toISOString().slice(0, 10) + ".json", await allJSON()); if (ok || !$("#io").hidden) bkMark(); });
+  $("#b-all-copy").addEventListener("click", async () => { copyText(await allJSON()); bkMark(); });
   if (!IN_CLAUDE && navigator.clipboard && navigator.clipboard.readText) {
     $("#b-clip").hidden = false;
     $("#b-clip").addEventListener("click", async () => {
@@ -2447,7 +2609,7 @@ function castEl(st){
   w.append(el("p", "hint", "Principal: " + (main ? main.name : st.charName) + ". Adicione outros personagens da sua biblioteca para cenas em grupo; o narrador interpreta todos."));
   const cs = castChars(st);
   if (cs.length) { const ul = el("ul", "slist"); cs.forEach(c => { const li = el("li"); const h = el("div", "h"); h.append(avatarEl(c), el("b", "", c.name)); li.append(h); const ac = el("div", "acts2"); const r = el("button", "btn ghost sm danger", "Tirar do elenco"); r.type = "button"; r.dataset.mx = "cast-del"; r.dataset.id = c.id; ac.append(r); li.append(ac); ul.append(li); }); w.append(ul); }
-  const opts = [...S.chars.values()].filter(c => c.id !== st.charId && c.role !== "narrator" && !(st.cast || []).includes(c.id));
+  const opts = [...S.chars.values()].filter(c => c.id !== st.charId && c.role !== "narrator" && c.role !== "world" && !(st.cast || []).includes(c.id));
   if (opts.length) {
     const sel = el("select"); sel.id = "cast-pick"; sel.style.cssText = "width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:400 16px/1.4 var(--f-body)";
     opts.forEach(c => { const o = el("option", "", c.name); o.value = c.id; sel.append(o); });
@@ -2992,7 +3154,7 @@ function renderScene(){
 }
 function allLoreNames(st){
   const ch = S.char || {lore:[]};
-  return [...(ch.lore || []), ...(st.slore || []), ...(st.sloreSug || [])].map(e => (e.name || "").toLowerCase().trim()).concat((st.sloreSkip || []).map(x => String(x).toLowerCase().trim())).filter(Boolean);
+  return [...(ch.lore || []), ...worldLore(ch), ...(st.slore || []), ...(st.sloreSug || [])].map(e => (e.name || "").toLowerCase().trim()).concat((st.sloreSkip || []).map(x => String(x).toLowerCase().trim())).filter(Boolean);
 }
 async function keeper(force, o = {}){
   const st = S.story; if (!st || !S.char || !hasAI() || AUX.keeping) return false;
@@ -3055,10 +3217,45 @@ function afterReply(){
     if (simReady) st.keepDue = true; else keeper(false);
   } else if (vh) vocabStep();
 }
+function cleanExtras(st){
+  st.pins = (Array.isArray(st.pins) ? st.pins : []).filter(x => x && typeof x.t === "string" && x.t.trim()).slice(0, PIN_MAX).map(x => ({id: String(x.id || rid()), t: x.t.slice(0, 240)}));
+  st.agenda = (Array.isArray(st.agenda) ? st.agenda : []).filter(x => x && typeof x.t === "string" && x.t.trim()).slice(0, AG_MAX).map(x => ({id: String(x.id || rid()), t: x.t.slice(0, 140), day: Number(x.day) > 0 ? Math.floor(Number(x.day)) : null, hm: /^\d{1,2}:\d{2}$/.test(x.hm || "") ? x.hm : "", done: !!x.done}));
+}
+function youEl(st){
+  const u = st.setup, w = el("div"); w.append(el("h4", "", "🧍 Sobre " + u.name));
+  w.append(el("p", "hint", "A aparência e o que o narrador sabe sobre " + u.name + ". Já entra em toda resposta desde o começo da história; mude aqui se algo mudou (cabelo cortado, cicatriz nova, roupa diferente)."));
+  [["Aparência", "yo-look", u.look, 2], ["Quem é e o que sabe fazer", "yo-bio", u.bio, 3], ["Itens e notas", "yo-extra", u.extra, 2]].forEach(([l, id, v, r]) => w.append(fieldEl(l, id, "textarea", v || "", {rows:r, max:1500})));
+  const ac = el("div", "actions"); const b = el("button", "btn sm", "Salvar"); b.type = "button"; b.dataset.mx = "you-save"; ac.append(b); w.append(ac);
+  return w;
+}
+function pinsEl(st){
+  const w = el("div"); w.append(el("h4", "", "📌 Fatos fixos"));
+  w.append(el("p", "hint", "Coisas que são verdade na história e que o narrador nunca pode esquecer nem contradizer (nome da irmã, uma cicatriz, uma promessa). Ao contrário da memória, o resumo automático não mexe aqui."));
+  const ul = el("ul", "slist");
+  (st.pins || []).forEach((p, i) => { const li = el("li"); li.append(el("p", "", p.t)); li.lastChild.style.margin = "0"; const ac = el("div", "acts2"); const d = el("button", "btn ghost sm danger", "Remover"); d.type = "button"; d.dataset.mx = "pin-del"; d.dataset.i = i; ac.append(d); li.append(ac); ul.append(li); });
+  if (ul.children.length) w.append(ul);
+  const row = el("div", "send-row"); const inp = el("input"); inp.type = "text"; inp.id = "pin-new"; inp.className = "pin"; inp.maxLength = 240; inp.placeholder = "Ex.: A irmã do Alex se chama Marta"; inp.setAttribute("aria-label", "Novo fato fixo");
+  const b = el("button", "btn sm", "Fixar"); b.type = "button"; b.dataset.mx = "pin-add"; b.disabled = (st.pins || []).length >= PIN_MAX; row.append(inp, b); w.append(row);
+  return w;
+}
+function agendaEl(st){
+  const w = el("div"); w.append(el("h4", "", "🗓️ Agenda do mundo"));
+  const c = agClock(st);
+  w.append(el("p", "hint", c ? "Eventos marcados com dia e hora. O narrador sabe que agora é " + clockText(c) + " e faz cada evento acontecer na hora certa." : "Eventos marcados (festa na sexta, barco que chega no dia 5). Ligue a simulação para o app contar o tempo e avisar o narrador quando a hora chegar; sem ela, o narrador só vê a lista e decide pelo andar da história."));
+  const ul = el("ul", "slist");
+  (st.agenda || []).forEach((a, i) => { const g = agState(st, a); const li = el("li"); if (a.done) li.style.opacity = ".55"; li.append(el("b", "", (a.done ? "✓ " : "") + a.t), el("small", "", agWhen(a) + (g && !a.done ? " · " + g : "")));
+    const ac = el("div", "acts2"); const d1 = el("button", "btn ghost sm", a.done ? "Reabrir" : "Feito"); d1.type = "button"; d1.dataset.mx = "ag-done"; d1.dataset.i = i; const d2 = el("button", "btn ghost sm danger", "Remover"); d2.type = "button"; d2.dataset.mx = "ag-del"; d2.dataset.i = i; ac.append(d1, d2); li.append(ac); ul.append(li); });
+  if (ul.children.length) w.append(ul);
+  const r1 = el("div", "send-row"); const t = el("input"); t.type = "text"; t.id = "ag-t"; t.className = "pin"; t.maxLength = 140; t.placeholder = "O que acontece (ex.: Festa na casa do Beto)"; t.setAttribute("aria-label", "Evento");
+  const r2 = el("div", "send-row"); const d = el("input"); d.type = "number"; d.id = "ag-d"; d.className = "pin"; d.min = 1; d.max = 9999; d.placeholder = c ? "Dia (hoje é " + c.day + ")" : "Dia (opcional)"; d.setAttribute("aria-label", "Dia"); const h = el("input"); h.type = "time"; h.id = "ag-h"; h.className = "pin"; h.setAttribute("aria-label", "Hora");
+  const b = el("button", "btn sm", "Marcar"); b.type = "button"; b.dataset.mx = "ag-add"; b.disabled = (st.agenda || []).length >= AG_MAX; r2.append(d, h, b); w.append(r1.appendChild(t) && r1, r2);
+  return w;
+}
 function renderMemExtra(){
   const box = $("#mem-extra"); if (!box || !S.story) return;
   const st = S.story; box.textContent = "";
   const dr = el("div", "actions"); const dbt = el("button", "btn ghost sm", "📜 Diário da história" + ((st.diary || []).length ? " · " + st.diary.length + (st.diary.length === 1 ? " capítulo" : " capítulos") : "")); dbt.type = "button"; dbt.dataset.px = "diary"; dr.append(dbt); box.append(dr);
+  box.append(youEl(st), pinsEl(st), agendaEl(st));
   const a = el("div"); a.append(el("h4", "", "Estado da cena"));
   const s = st.state || {};
   STATE_FIELDS.forEach(([k, i, l]) => {
@@ -3120,6 +3317,12 @@ function bindFeatures(){
   $("#mem-extra").addEventListener("click", async e => {
     const b = e.target.closest("[data-mx]"); if (!b || !S.story) return;
     const st = S.story, act = b.dataset.mx, i = Number(b.dataset.i);
+    if (act === "you-save") { const u = st.setup; u.look = ($("#yo-look").value || "").trim(); u.bio = ($("#yo-bio").value || "").trim(); u.extra = ($("#yo-extra").value || "").trim(); persist(); toast("Salvo. O narrador já usa isso na próxima resposta."); return; }
+    if (act === "pin-add") { const v = ($("#pin-new").value || "").trim().slice(0, 240); if (!v) { toast("Escreva o fato."); return; } st.pins = (st.pins || []).concat([{id: rid(), t: v}]).slice(0, PIN_MAX); persist(); renderMemExtra(); toast("Fixado."); return; }
+    if (act === "pin-del") { (st.pins || []).splice(i, 1); persist(); renderMemExtra(); return; }
+    if (act === "ag-add") { const t = ($("#ag-t").value || "").trim().slice(0, 140); if (!t) { toast("Diga o que acontece."); return; } const dv = parseInt($("#ag-d").value, 10); st.agenda = (st.agenda || []).concat([{id: rid(), t, day: dv > 0 ? dv : null, hm: $("#ag-h").value || "", done: false}]).slice(0, AG_MAX); persist(); renderMemExtra(); toast("Marcado na agenda."); return; }
+    if (act === "ag-del") { (st.agenda || []).splice(i, 1); persist(); renderMemExtra(); return; }
+    if (act === "ag-done") { const a = (st.agenda || [])[i]; if (a) a.done = !a.done; persist(); renderMemExtra(); return; }
     if (act === "st-save") { const s = {}; STATE_FIELDS.forEach(([k]) => { s[k] = ($("#st-" + k).value || "").trim(); }); st.state = s; CK.epoch++; ckMark(st); renderScene(); toast("Estado salvo."); }
     else if (act === "st-redo") {
       if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar: refazer do zero"; return; }
@@ -3946,17 +4149,72 @@ function updateVocabChip(){
 }
 
 /* painel Palavras */
+function scLang(st){
+  if (S.char && S.char.guide) return S.char.trLang || "suaíli";
+  const c = {}; vocabOf(st).forEach(v => { if (v.lang) c[v.lang] = (c[v.lang] || 0) + 1; });
+  return Object.entries(c).sort((a, b) => b[1] - a[1]).map(x => x[0])[0] || "";
+}
+function sentenceEl(st){
+  const lang = scLang(st); const w = el("details", "adv"); w.id = "sc"; w.open = !!VOC.scOpen; w.addEventListener("toggle", () => { VOC.scOpen = w.open; });
+  w.append(el("summary", "", "✍️ Corrigir minha frase"));
+  const inn = el("div", "inner");
+  if (!lang) { inn.append(el("p", "hint", "Aprenda algumas palavras de outro idioma na história primeiro; aí você pode escrever frases e pedir correção.")); w.append(inn); return w; }
+  inn.append(el("p", "hint", "Escreva uma frase em " + lang + " e a IA diz o que está certo, corrige o que errou e explica a regra. Ela também pode errar: confira com o guia."));
+  inn.append(fieldEl("Sua frase em " + lang, "sc-t", "textarea", VOC.sct || "", {rows:2, max:300}), fieldEl("O que queria dizer (em português, opcional)", "sc-p", "input", VOC.scp || "", {max:200}));
+  const ac = el("div", "actions"); const b = el("button", "btn sm", VOC.scBusy ? "Corrigindo…" : "Corrigir"); b.type = "button"; b.dataset.vx = "chk"; b.disabled = VOC.scBusy || !hasAI(); ac.append(b); inn.append(ac);
+  if (!hasAI()) inn.append(el("p", "hint", "Escolha um modelo em Modelo para usar a correção."));
+  const r = VOC.scRes;
+  if (r) {
+    const o = el("div", "vcard"); o.id = "sc-out";
+    if (r.err) o.append(el("p", "hint", r.err));
+    else {
+      o.append(el("b", "", r.ok ? "✅ Está certo" : "Versão corrigida"));
+      if (r.corrigida) { const l = el("p", "vm", r.corrigida); l.style.fontWeight = "600"; o.append(l); }
+      if (r.pt) o.append(el("small", "", "= " + r.pt));
+      (r.erros || []).forEach(e => { const x = el("p", "hint", (e.errado ? "“" + e.errado + "” → “" + (e.certo || "") + "”. " : "") + (e.regra || "")); o.append(x); });
+      if (r.dica) o.append(el("small", "", "Dica: " + r.dica));
+      if (r.corrigida) { const u = el("button", "btn ghost sm", "Usar na mensagem"); u.type = "button"; u.dataset.vx = "gw"; u.dataset.w = r.corrigida; o.append(u); }
+    }
+    inn.append(o);
+  }
+  w.append(inn); return w;
+}
+async function checkSentence(){
+  const st = S.story; if (!st || VOC.scBusy || !hasAI()) return;
+  const lang = scLang(st), t = ($("#sc-t").value || "").trim(), pt = ($("#sc-p").value || "").trim(); VOC.sct = t; VOC.scp = pt;
+  if (!t) { toast("Escreva a frase primeiro."); return; }
+  const G = S.char && S.char.guide;
+  const rules = G && Array.isArray(G.sections) ? G.sections.filter(x => x.ref && x.h && x.h !== "Pronúncia").map(x => x.h + (x.note ? ": " + x.note : "") + "\n" + (x.rows || []).slice(0, 12).map(r => "  " + r[0] + " = " + r[1]).join("\n")).join("\n").slice(0, 5000) : "";
+  const prompt = `Você é professor de ${lang} para um brasileiro iniciante, simpático e direto. Corrija a frase que o aluno escreveu em ${lang}.
+${rules ? "REGRAS QUE O ALUNO ESTÁ ESTUDANDO (use-as para explicar):\n" + rules + "\n" : ""}
+FRASE DO ALUNO: ${t}
+${pt ? "O QUE ELE QUERIA DIZER (em português): " + pt : ""}
+
+Responda SOMENTE com um objeto JSON: {"ok":true ou false,"corrigida":"a frase certa em ${lang}","pt":"tradução da frase corrigida em português","erros":[{"errado":"trecho errado","certo":"trecho certo","regra":"explicação curta em português da regra"}],"dica":"uma dica curta para a próxima frase"}
+Se a frase já está certa, use ok=true e erros=[]. Não elogie sem motivo e, se não tiver certeza de algum ponto, diga isso na dica.`;
+  VOC.scBusy = true; VOC.scRes = null; renderVocab();
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:700});
+    const j = parseJSON(r.text);
+    if (!j || typeof j !== "object" || typeof j.corrigida !== "string") throw new Error("json");
+    VOC.scRes = {ok: j.ok === true, corrigida: j.corrigida.slice(0, 300), pt: typeof j.pt === "string" ? j.pt.slice(0, 300) : "", dica: typeof j.dica === "string" ? j.dica.slice(0, 300) : "",
+      erros: (Array.isArray(j.erros) ? j.erros : []).slice(0, 6).filter(e => e && typeof e === "object").map(e => ({errado: String(e.errado || "").slice(0, 120), certo: String(e.certo || "").slice(0, 120), regra: String(e.regra || "").slice(0, 300)}))};
+  } catch { VOC.scRes = {err: "Não consegui corrigir agora. Tente de novo em instantes."}; }
+  VOC.scBusy = false; VOC.scOpen = true; if (S.story === st) renderVocab();
+}
 function renderVocab(){
   const box = $("#vocab-box"); if (!box) return; box.textContent = "";
   const st = S.story; if (!st) return;
   const list = vocabOf(st), me = st.setup.name;
-  if (VOC.rev && VOC.rev.ids.length) { renderReview(box, st); return; }
+  if (VOC.rev && (VOC.rev.ids.length || VOC.rev.i === 0)) { if (!VOC.rev.ids.length) { box.append(el("p", "empty", "Nada para revisar agora.")); const ac0 = el("div", "actions"); const b0 = el("button", "btn sm", "Voltar"); b0.type = "button"; b0.dataset.vx = "rev-end"; ac0.append(b0); box.append(ac0); return; } renderReview(box, st); return; }
   const top = el("div");
   if (list.length) {
     const dom = list.filter(v => vLevel(v) === 2).length;
     top.append(el("p", "empty", list.length + (list.length === 1 ? " palavra" : " palavras") + " · " + dom + (dom === 1 ? " dominada" : " dominadas")));
     const ac = el("div", "actions"); ac.style.marginTop = "10px";
-    const rv = el("button", "btn sm", "Revisar"); rv.type = "button"; rv.dataset.vx = "rev"; ac.append(rv); top.append(ac);
+    const nd = srsCount(st);
+    const rv = el("button", "btn sm", nd ? "Revisar hoje (" + nd + ")" : "Nada para revisar hoje"); rv.type = "button"; rv.dataset.vx = "rev"; rv.disabled = !nd; ac.append(rv);
+    const ra = el("button", "btn ghost sm", "Treinar todas"); ra.type = "button"; ra.dataset.vx = "rev-all"; ac.append(ra); top.append(ac);
   } else top.append(el("p", "empty", "Nenhuma palavra ainda."));
   top.append(el("p", "hint", vocabOn()
     ? "Quando alguém ensina ou explica uma palavra de outro idioma na cena, ela entra aqui sozinha. O narrador passa a respeitar o que cada um entende: o resto da fala continua sem tradução. Quanto mais a palavra aparece, mais o personagem domina. Na conversa, toque numa palavra sublinhada para ver o significado."
@@ -3990,6 +4248,7 @@ function renderVocab(){
     q.addEventListener("input", draw); draw();
     gd.append(gi); box.append(gd);
   }
+  box.append(sentenceEl(st));
   const by = new Map(); list.forEach(v => { const k = v.who || me; if (!by.has(k)) by.set(k, []); by.get(k).push(v); });
   const order = [...by.keys()].sort((a, b) => (vnorm(b) === vnorm(me)) - (vnorm(a) === vnorm(me)));
   for (const who of order) {
@@ -4020,24 +4279,48 @@ function renderVocab(){
   inner.append(el("p", "hint", "Palavras anotadas ou removidas à mão valem na história inteira, mesmo se você voltar mensagens."));
   add.append(inner); box.append(add);
 }
-function startReview(st){
+const SRS_DAYS = [0, 1, 3, 7, 16, 40];
+const srsDue = (v, now) => !v.due || v.due <= now;
+function srsCount(st){ const n = Date.now(); return vocabOf(st).filter(v => srsDue(v, n)).length; }
+function startReview(st, all){
   const sh = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const list = vocabOf(st);
-  VOC.rev = {ids: [0, 1, 2].flatMap(l => sh(list.filter(v => vLevel(v) === l))).map(v => v.id), i: 0, show: false};
+  const list = vocabOf(st), now = Date.now();
+  const pool = all ? list : list.filter(v => srsDue(v, now));
+  const ids = [0, 1, 2].flatMap(l => sh(pool.filter(v => vLevel(v) === l))).map(v => v.id);
+  VOC.rev = {ids, i: 0, show: false, all: !!all, ok: 0, bad: 0, again: new Set(), dir: "fw"};
+  revDir(st);
+}
+function revDir(st){ const r = VOC.rev, v = r && vocabOf(st).find(x => x.id === r.ids[r.i]); r.dir = v && (v.box || 0) >= 2 && Math.random() < .5 ? "bw" : "fw"; }
+function srsGrade(st, v, good){
+  const now = Date.now();
+  v.box = good ? Math.min(SRS_DAYS.length - 1, (v.box || 0) + 1) : 0;
+  v.due = good ? now + SRS_DAYS[v.box] * 864e5 : now + 10 * 6e4;
+  v.rv = now;
+  const w = v.w, who = v.who, box = v.box, due = v.due, rv = v.rv;
+  ckEditAll("vocab", a => a.map(x => vsame(x, w, who) ? Object.assign({}, x, {box, due, rv}) : x));
+  persist();
 }
 function renderReview(box, st){
-  const r = VOC.rev, v = vocabOf(st).find(x => x.id === r.ids[r.i]);
-  if (!v) { VOC.rev = null; renderVocab(); return; }
+  const r = VOC.rev;
+  if (r.i >= r.ids.length) {
+    const c = el("div", "vcard"); c.append(el("b", "", "Revisão concluída"), el("p", "vm", r.ok + (r.ok === 1 ? " acerto" : " acertos") + " e " + r.bad + (r.bad === 1 ? " erro" : " erros") + "."));
+    const nx = vocabOf(st).filter(v => v.due && v.due > Date.now()).map(v => v.due).sort((a, b) => a - b)[0];
+    c.append(el("small", "", nx ? "A próxima palavra volta a aparecer " + fmtDT(nx) + ". As que você acertou voltam em intervalos cada vez maiores." : "Quando você errar, a palavra volta em poucos minutos."));
+    box.append(c); const ac = el("div", "actions"); const b = el("button", "btn sm", "Fechar"); b.type = "button"; b.dataset.vx = "rev-end"; ac.append(b); box.append(ac); return;
+  }
+  const v = vocabOf(st).find(x => x.id === r.ids[r.i]);
+  if (!v) { r.i++; renderVocab(); return; }
   const card = el("div", "vcard");
-  card.append(el("small", "", [v.lang, v.who, VLEV[vLevel(v)]].filter(Boolean).join(" · ")), el("b", "", v.w));
-  if (r.show) { card.append(el("p", "vm", v.m)); if (v.how) card.append(el("small", "", v.how)); }
-  else card.append(el("p", "hint", "Lembra o que significa?"));
+  card.append(el("small", "", [v.lang, v.who, VLEV[vLevel(v)]].filter(Boolean).join(" · ")));
+  if (r.dir === "bw") { card.append(el("p", "hint", "Como se diz em " + (v.lang || "outro idioma") + "?"), el("b", "", v.m)); if (r.show) card.append(el("p", "vm", v.w)); }
+  else { card.append(el("b", "", v.w)); if (r.show) { card.append(el("p", "vm", v.m)); if (v.how) card.append(el("small", "", v.how)); } else card.append(el("p", "hint", "Lembra o que significa?")); }
   box.append(card);
   const ac = el("div", "actions");
   const mk = (t, a, cls) => { const b = el("button", cls, t); b.type = "button"; b.dataset.vx = a; ac.append(b); };
-  if (!r.show) mk("Mostrar significado", "show", "btn sm"); else mk(r.i + 1 < r.ids.length ? "Próxima" : "Recomeçar", "next", "btn sm");
+  if (!r.show) mk(r.dir === "bw" ? "Mostrar a palavra" : "Mostrar significado", "show", "btn sm");
+  else { mk("Errei", "bad", "btn ghost sm"); mk("Acertei", "ok", "btn sm"); }
   mk("Sair da revisão", "rev-end", "btn ghost sm");
-  box.append(ac, el("p", "hint", (r.i + 1) + " de " + r.ids.length + ". As palavras novas aparecem primeiro."));
+  box.append(ac, el("p", "hint", (Math.min(r.i + 1, r.ids.length)) + " de " + r.ids.length + (r.all ? ". Treino livre: não muda a agenda das palavras." : ". Quem você acerta volta em 1, 3, 7, 16 e 40 dias; quem você erra volta em minutos.")));
 }
 function bindVocab(){
   $("#b-vocab").addEventListener("click", () => openSheet("vocab"));
@@ -4065,9 +4348,15 @@ function bindVocab(){
       ckEditAll("vocab", a => a.some(x => vsame(x, w, who)) ? a : a.concat([nv]));
       persist(); renderVocab(); updateVocabChip(); softRenderLog(); toast("Anotada: " + w + ".");
     }
-    else if (act === "rev") { startReview(st); renderVocab(); }
+    else if (act === "rev") { startReview(st, false); renderVocab(); }
+    else if (act === "rev-all") { startReview(st, true); renderVocab(); }
     else if (act === "show" && VOC.rev) { VOC.rev.show = true; renderVocab(); }
-    else if (act === "next" && VOC.rev) { VOC.rev.i = (VOC.rev.i + 1) % VOC.rev.ids.length; VOC.rev.show = false; renderVocab(); }
+    else if ((act === "ok" || act === "bad") && VOC.rev) {
+      const r = VOC.rev, cur = vocabOf(st).find(x => x.id === r.ids[r.i]);
+      if (cur) { if (act === "ok") r.ok++; else { r.bad++; if (!r.again.has(cur.id)) { r.again.add(cur.id); r.ids.push(cur.id); } } if (!r.all) srsGrade(st, cur, act === "ok"); }
+      r.i++; r.show = false; if (r.i < r.ids.length) revDir(st); renderVocab();
+    }
+    else if (act === "chk") checkSentence();
     else if (act === "rev-end") { VOC.rev = null; renderVocab(); }
   });
 }
@@ -4180,6 +4469,7 @@ async function syncNow(manual, o = {}){
     }
     syncSet(Object.assign(syncCfg() || {}, c, {err:""}));
     const got = pulled && (pulled.ns || pulled.nc) ? "Chegou do outro aparelho: " + [pulled.ns ? pulled.ns + (pulled.ns === 1 ? " história" : " histórias") : "", pulled.nc ? pulled.nc + (pulled.nc === 1 ? " personagem" : " personagens") : ""].filter(Boolean).join(" e ") + "." : "";
+    bkMark();
     if (got) { toast("☁️ " + got); if (S.view === "library") renderLibrary(); }
     else if (manual) toast("☁️ Tudo sincronizado.");
     return true;
@@ -4429,6 +4719,57 @@ Responda SOMENTE com JSON: {"titulo":"...","texto":"..."}`;
   } catch { if (force) toast("Não consegui escrever o capítulo agora."); return false; }
   finally { DIA.busy = false; if (sheetName === "diary") renderDiary(); }
 }
+/* livro em ePub (zip sem compressão, escrito à mão) */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8){ let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files){
+  const enc = new TextEncoder(), out = [], cen = []; let off = 0;
+  const u16 = n => [n & 255, (n >> 8) & 255], u32 = n => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255];
+  files.forEach(f => {
+    const nm = enc.encode(f.name), data = typeof f.data === "string" ? enc.encode(f.data) : f.data, crc = crc32(data);
+    const common = [...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nm.length), ...u16(0)];
+    out.push(new Uint8Array([0x50, 0x4b, 3, 4, ...common]), nm, data);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...common, ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), nm);
+    off += 30 + nm.length + data.length;
+  });
+  const cdSize = cen.reduce((a, b) => a + b.length, 0);
+  const all = out.concat(cen, [new Uint8Array([0x50, 0x4b, 5, 6, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(cdSize), ...u32(off), 0, 0])]);
+  const buf = new Uint8Array(all.reduce((a, b) => a + b.length, 0)); let p = 0; all.forEach(b => { buf.set(b, p); p += b.length; });
+  return buf;
+}
+const xesc = t => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+function xhtmlText(t){
+  return String(t || "").replace(/\r/g, "").trim().split(/\n{2,}/).filter(Boolean).map(p => "<p>" + xesc(p).replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+?)\*/g, "<em>$1</em>").replace(/\n/g, "<br/>") + "</p>").join("\n");
+}
+function bookChapters(st){
+  if ((st.diary || []).length) return st.diary.map(c => ({title: "Capítulo " + c.n + " · " + c.title, html: xhtmlText(c.text)}));
+  const who = st.setup.name, cn = S.char ? S.char.name : st.charName, ch = [];
+  const ms = st.messages.filter(m => m && m.text && m.kind !== "cmd");
+  for (let i = 0; i < ms.length; i += 14) ch.push({title: "Parte " + (ch.length + 1), html: ms.slice(i, i + 14).map(m => m.role === "assistant" ? xhtmlText(m.text) : "<p class=\"vc\"><strong>" + xesc(who) + ":</strong> " + xesc(m.text).replace(/\*([^*]+?)\*/g, "<em>$1</em>").replace(/\n/g, "<br/>") + "</p>").join("\n")});
+  return ch;
+}
+function buildEpub(st){
+  const cn = S.char ? S.char.name : st.charName || "Narrador", title = st.title || "História", chs = bookChapters(st); if (!chs.length) return null;
+  const uid = "urn:uuid:" + (crypto.randomUUID ? crypto.randomUUID() : rid() + rid() + rid()), now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  const lang = /^[a-z]{2}$/.test(prefs.lang || "") ? (prefs.lang === "pt" ? "pt-BR" : prefs.lang) : "pt-BR";
+  const head = (t) => '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="' + lang + '" xml:lang="' + lang + '"><head><meta charset="utf-8"/><title>' + xesc(t) + '</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body>';
+  const files = [{name: "mimetype", data: "application/epub+zip"}, {name: "META-INF/container.xml", data: '<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>'}];
+  let cover = null; const pm = S.char && /^data:image\/(jpeg|png);base64,(.+)$/.exec(S.char.portrait || "");
+  if (pm) { try { const bin = atob(pm[2]); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); cover = {name: "cover." + (pm[1] === "png" ? "png" : "jpg"), type: "image/" + pm[1], data: u8}; } catch {} }
+  files.push({name: "OEBPS/style.css", data: "body{font-family:Georgia,serif;line-height:1.5;margin:5%}h1,h2{font-family:sans-serif;line-height:1.2}p{margin:0 0 .8em;text-align:justify}.vc{margin-left:1em}.t{text-align:center;margin-top:20%}.t img{max-width:70%;max-height:50%}.t p{text-align:center}"});
+  files.push({name: "OEBPS/titulo.xhtml", data: head(title) + '<div class="t">' + (cover ? '<p><img src="' + cover.name + '" alt=""/></p>' : "") + "<h1>" + xesc(title) + "</h1><p>" + xesc(cn) + " · " + xesc(fmtDate(Date.now())) + "</p><p><small>Feito na Mesa de RP</small></p></div></body></html>"});
+  chs.forEach((c, i) => files.push({name: "OEBPS/cap" + (i + 1) + ".xhtml", data: head(c.title) + "<h2>" + xesc(c.title) + "</h2>\n" + c.html + "</body></html>"}));
+  files.push({name: "OEBPS/nav.xhtml", data: head("Sumário") + '<nav epub:type="toc"><h2>Sumário</h2><ol>' + chs.map((c, i) => '<li><a href="cap' + (i + 1) + '.xhtml">' + xesc(c.title) + "</a></li>").join("") + "</ol></nav></body></html>"});
+  if (cover) files.push({name: "OEBPS/" + cover.name, data: cover.data});
+  files.push({name: "OEBPS/content.opf", data: '<?xml version="1.0" encoding="UTF-8"?>\n<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bid" xml:lang="' + lang + '"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="bid">' + uid + "</dc:identifier><dc:title>" + xesc(title) + "</dc:title><dc:creator>" + xesc(cn) + "</dc:creator><dc:language>" + lang + '</dc:language><meta property="dcterms:modified">' + now + "</meta>" + (cover ? '<meta name="cover" content="cover"/>' : "") + "</metadata><manifest>" +
+    '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/><item id="css" href="style.css" media-type="text/css"/><item id="titulo" href="titulo.xhtml" media-type="application/xhtml+xml"/>' + (cover ? '<item id="cover" href="' + cover.name + '" media-type="' + cover.type + '" properties="cover-image"/>' : "") +
+    chs.map((c, i) => '<item id="cap' + (i + 1) + '" href="cap' + (i + 1) + '.xhtml" media-type="application/xhtml+xml"/>').join("") + '</manifest><spine><itemref idref="titulo"/>' + chs.map((c, i) => '<itemref idref="cap' + (i + 1) + '"/>').join("") + "</spine></package>"});
+  return zipStore(files);
+}
+async function saveEpub(st){
+  const z = buildEpub(st); if (!z) { toast("Ainda não há texto para virar livro."); return; }
+  await saveFile("livro-" + slug(st.title) + ".epub", z);
+}
 function diaryMd(st){
   const c = S.char ? S.char.name : st.charName;
   return ["# " + st.title, "", "_" + c + " · diário da história · " + fmtDate(Date.now()) + "_", ""].concat(...(st.diary || []).map(ch => ["## Capítulo " + ch.n + " · " + ch.title, "", ch.text, ""])).join("\n");
@@ -4441,8 +4782,9 @@ function renderDiary(){
   top.append(el("p", "hint", (prefs.diary !== false ? "A cada " + DIA.every + " mensagens, o app escreve um capítulo com título e resumo do que aconteceu (uma consulta). " : "O diário automático está desligado em Ajustes. ") + "Voltar e Ramificar levam o diário junto, como o resto do estado."));
   const ac = el("div", "actions"); ac.style.marginTop = "10px";
   const w = el("button", "btn sm", DIA.busy ? "Escrevendo…" : "Escrever capítulo agora"); w.type = "button"; w.dataset.dx = "write"; w.disabled = DIA.busy || !hasAI();
-  const dl = el("button", "btn ghost sm", "Baixar como livro (.md)"); dl.type = "button"; dl.dataset.dx = "dl"; dl.disabled = !list.length;
-  ac.append(w, dl);
+  const dl = el("button", "btn ghost sm", "Baixar como texto (.md)"); dl.type = "button"; dl.dataset.dx = "dl"; dl.disabled = !list.length;
+  const de = el("button", "btn ghost sm", "Baixar como livro (.epub)"); de.type = "button"; de.dataset.dx = "epub"; de.disabled = !list.length;
+  ac.append(w, dl, de);
   if (list.length) { const rm = el("button", "btn ghost sm danger", "Apagar último capítulo"); rm.type = "button"; rm.dataset.dx = "pop"; ac.append(rm); }
   top.append(ac); box.append(top);
   if (!list.length) { box.append(el("p", "empty", "Nenhum capítulo ainda.")); return; }
@@ -4452,6 +4794,7 @@ function bindDiary(){
   $("#diary-box").addEventListener("click", async e => {
     const b = e.target.closest("[data-dx]"); if (!b || !S.story) return; const st = S.story;
     if (b.dataset.dx === "write") writeChapter(true);
+    else if (b.dataset.dx === "epub") saveEpub(st);
     else if (b.dataset.dx === "dl") saveFile("diario-" + slug(st.title) + ".md", diaryMd(st));
     else if (b.dataset.dx === "pop") {
       if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar"; return; }
@@ -5038,6 +5381,8 @@ async function boot(){
   if (!IN_CLAUDE && !LS_OK) toast("Este navegador não está guardando dados desta página: o que você fizer some ao fechar. Veja as dicas em Modelo.");
 }
 boot();
+// Gancho só para os testes automáticos: aparece apenas se a página definir window.__MESA_TEST antes de carregar.
+if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme};
 })();
 </script>
 
