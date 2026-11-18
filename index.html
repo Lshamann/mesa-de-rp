@@ -521,6 +521,8 @@ textarea.big{width:100%;min-height:200px;resize:vertical;background:var(--surfac
       <div class="content" id="sh-sim" hidden><div id="sim-box" style="display:flex;flex-direction:column;gap:18px"></div></div>
       <div class="content" id="sh-models" hidden><div id="models-box"></div></div>
       <div class="content" id="sh-settings" hidden>
+        <div><h4>Nível de realismo</h4><div class="seg" id="seg-real"></div><p class="hint">Vale para todas as histórias, a não ser que você escolha outro em Memória → Realismo desta história. Leve: aventura de cinema. Realista: consequência na medida. Cru: o mundo não protege você.</p></div>
+        <div><h4>O mundo anda sem você</h4><div class="seg" id="seg-off"></div><p class="hint">Quando o tempo passa (dormir, viajar, Avançar tempo), uma consulta curta decide o que aconteceu longe de você. Fica em Memória → Enquanto isso.</p></div>
         <div><h4>“Anteriormente…” ao voltar</h4><div class="seg" id="seg-recap"></div><p class="hint">Quando você volta para uma história depois de 6 horas ou mais, um resumo curto de onde parou (uma consulta rápida). Só você vê; não entra na conversa.</p></div>
         <div><h4>Lembrete de backup</h4><div class="seg" id="seg-bk"></div><p class="hint" id="bk-hint"></p></div>
         <div><h4>Diagnóstico</h4><div id="diag-box" style="display:flex;flex-direction:column;gap:10px"></div></div>
@@ -614,7 +616,7 @@ const PRO = {ele:"ele/dele", ela:"ela/dela", elu:"elu/delu (linguagem neutra)"};
 const GENERIC_PERSONA = {name:"Alex", pro:"ele", look:"", bio:"", extra:""};
 const KEEP = 12, COMPACT_CHARS = 60000, COMPACT_BYTES = 180000, LORE_CHARS = 4300, MAX_BYTES = 230000, DOC_LIMIT = 235000;
 
-const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"serif", lh:"n", ac:"teal", bk:true, recap:true, v:2};
+const prefs = {theme:"auto", mode:"default", length:"media", lore:true, lang:"pt", keeper:true, sim:false, vocab:true, npcs:true, diary:true, fs:"m", rf:"serif", lh:"n", ac:"teal", bk:true, recap:true, real:"real", offscreen:true, v:2};
 const S = {sample:null, downloads:null, store:null, index:{lastId:null, stories:[], chars:[]}, chars:new Map(),
   story:null, char:null, setupChar:null, view:"library", busy:false, ctl:null, live:null, error:null, editing:null,
   lastGen:"append", old:null, localNote:false, ai:{busy:false, ctl:null}, undo:null};
@@ -830,6 +832,27 @@ function matchLore(ch, scan){
 
 /* ---------- prompt ---------- */
 const sub = (t, user, cname) => String(t || "").replace(/\{\{user\}\}/gi, user).replace(/\{\{char\}\}/gi, cname).replace(/\{\{original\}\}\s*/gi, "");
+/* realismo: regras para o narrador, no nível escolhido */
+const REAL_LV = {leve: "Leve", real: "Realista", cru: "Cru"};
+const realOf = st => REAL_LV[st && st.real] ? st.real : (REAL_LV[prefs.real] ? prefs.real : "real");
+function realismBlock(st){
+  const n = st.setup.name, lv = realOf(st);
+  const tone = {
+    leve: "NÍVEL DE REALISMO: LEVE. Tom de aventura e cinema: aplique as regras abaixo com leveza. Erros complicam, mas raramente punem de verdade; ferimentos saram rápido; ninguém importante morre sem o jogador querer.",
+    real: "NÍVEL DE REALISMO: REALISTA. Consequências proporcionais, nem cruéis nem perdoadas.",
+    cru: "NÍVEL DE REALISMO: CRU. O mundo não protege " + n + ": decisões ruins têm custo alto e às vezes permanente; ferimentos graves podem matar (inclusive " + n + "); não há resgate de última hora sem motivo; pessoas podem trair, ir embora ou morrer. Seja justo, nunca sádico: avise o perigo pelo mundo antes de cobrar."
+  }[lv];
+  return tone + "\n" + [
+    "Competência: o que " + n + " sabe fazer (persona) pesa. Tentar algo fora do que " + n + " domina tende a falhar, sair desajeitado ou custar caro; o que é da área de " + n + " sai melhor. Ninguém vira especialista de repente.",
+    "Vontade própria: ninguém é prestativo por padrão. Cada pessoa tem interesses, humor do dia e o que fazer; pode recusar, mentir, cobrar um favor ou não largar o que está fazendo.",
+    "Emoção com inércia: raiva, medo, mágoa e alegria duram. Quem se irritou não esquece na resposta seguinte; passa com tempo ou com um gesto concreto.",
+    "Memória imperfeita: as pessoas esquecem detalhes, confundem nomes, datas e números com o tempo, e quem soube por terceiros lembra torto. O marcante fica nítido.",
+    "Logística: ir de um lugar a outro leva tempo; ninguém está em dois lugares; recado demora a chegar; objetos têm peso e lugar; aparelhos precisam de bateria e sinal; portas trancadas continuam trancadas.",
+    "Consequências voltam: o que " + n + " faz (roubar, mentir, ajudar, salvar) deixa marca. A vítima lembra, testemunhas comentam, autoridades agem se for o caso, às vezes dias depois.",
+    "Dinheiro e preço: as coisas custam; sem dinheiro ou troca não há compra; dívidas, salários e preços existem e são coerentes com o lugar.",
+    "Clima: o tempo existe e muda com os dias; chuva molha e esfria, frio cansa e pede abrigo, calor dá sede, tempestade fecha caminhos."
+  ].map(x => "- " + x).join("\n");
+}
 /* fatos fixos e agenda do mundo (decisões do jogador; ficam fora dos pontos de volta) */
 const PIN_MAX = 30, AG_MAX = 24;
 function pinsBlock(st){
@@ -879,9 +902,9 @@ function header(st, ch, loreHead){
   const lore = loreHead.length ? "LORE ATIVA (consulta; vale como fato do mundo)\n" + loreHead.map(e => "- " + S_(e.content)).join("\n") : "";
   const pins = pinsBlock(st), agenda = agendaBlock(st);
   const mem = st.memory ? "MEMÓRIA DA HISTÓRIA (o que já aconteceu antes das mensagens abaixo; é fato estabelecido)\n" + st.memory : "";
-  return [intro, how, ch.rules && S_(ch.rules),
+  return [intro, how, realismBlock(st), ch.rules && S_(ch.rules),
     ch.description && (ch.role === "narrator" ? "SOBRE O NARRADOR\n" : "FICHA DE " + c.toUpperCase() + "\n") + S_(ch.description),
-    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, pins, mem, agenda, stateBlock(st), npcBlock(st), placesBlock(st), rumorBlock(st), simBlock(st), vocabBlock(st), lore,
+    ch.personality && "PERSONALIDADE\n" + S_(ch.personality), ch.scenario && "CENÁRIO\n" + S_(ch.scenario), castBlock(st, n), persona, examples, pins, mem, agenda, stateBlock(st), npcBlock(st), placesBlock(st), repBlock(st), rumorBlock(st), offBlock(st), climaBlock(st), simBlock(st), vocabBlock(st), lore,
     "A cena já está em andamento; as mensagens a seguir são o histórico."].filter(Boolean).join("\n\n");
 }
 function tail(st, ch, loreTail){
@@ -2056,6 +2079,8 @@ function renderSettings(){
   seg($("#seg-lang"), Object.entries(LANGS).map(([k, v]) => [k, v[0]]), prefs.lang, id => { prefs.lang = id; savePrefs(); });
   seg($("#seg-lore"), [["on", "Mostrar"], ["off", "Esconder"]], prefs.lore ? "on" : "off", id => { prefs.lore = id === "on"; savePrefs(); if (S.story && S.view === "chat") renderLog(); });
   const bkh = () => { const l = Number(LS.get("rp.lastbk") || 0); $("#bk-hint").textContent = "Avisa na biblioteca quando faz " + (bkLimit() / 864e5) + " dias sem backup" + (S.store && S.store.kind === "db" ? " (aqui no Claude os dados já ficam na sua conta, então o aviso é mais raro)" : "") + ". Último backup: " + (l ? fmtDT(l) : "nenhum ainda") + "."; };
+  seg($("#seg-real"), [["leve", "Leve"], ["real", "Realista"], ["cru", "Cru"]], REAL_LV[prefs.real] ? prefs.real : "real", id => { prefs.real = id; savePrefs(); });
+  seg($("#seg-off"), [["on", "Ligado"], ["off", "Desligado"]], prefs.offscreen === false ? "off" : "on", id => { prefs.offscreen = id === "on"; savePrefs(); });
   seg($("#seg-recap"), [["on", "Ligado"], ["off", "Desligado"]], prefs.recap === false ? "off" : "on", id => { prefs.recap = id === "on"; savePrefs(); });
   seg($("#seg-bk"), [["on", "Ligado"], ["off", "Desligado"]], prefs.bk === false ? "off" : "on", id => { prefs.bk = id === "on"; savePrefs(); });
   bkh();
@@ -2551,7 +2576,7 @@ function bind(){
   const tm = $("#timemenu");
   TIME_JUMPS.forEach(([label, text]) => {
     const b = el("button", "", label); b.type = "button";
-    b.addEventListener("click", () => { tm.hidden = true; $("#b-time").setAttribute("aria-expanded", "false"); sendCmd("⏩ " + label, text + " Narre a transição: o que mudou no corpo, no ambiente, nas pessoas e na relação entre os personagens. Não resolva nada importante sem uma ação minha." + simTimeHint(S.story)); });
+    b.addEventListener("click", async () => { tm.hidden = true; $("#b-time").setAttribute("aria-expanded", "false"); if (S.story && !S.busy && prefs.offscreen !== false && hasAI()) { b.disabled = true; toast("🌍 O mundo anda…"); await offscreen(S.story, label.toLowerCase()); b.disabled = false; } sendCmd("⏩ " + label, text + " Narre a transição: o que mudou no corpo, no ambiente, nas pessoas e na relação entre os personagens. Não resolva nada importante sem uma ação minha." + simTimeHint(S.story)); });
     tm.append(b);
   });
   $("#b-time").addEventListener("click", () => { tm.hidden = !tm.hidden; $("#b-time").setAttribute("aria-expanded", String(!tm.hidden)); });
@@ -3377,7 +3402,7 @@ function applyKeeperJSON(st, j, fresh){
   const have = new Set(allLoreNames(st));
   const sug = genLore(asList(j && j.lore, "x")).filter(x => !have.has(x.name.toLowerCase().trim())).slice(0, 2);
   st.sloreSug = (st.sloreSug || []).concat(sug).slice(-6);
-  if (npcOn() && j && typeof j === "object" && !Array.isArray(j)) { applyNpcs(st, j.npcs); applyPlaces(st, j.lugares); if (Array.isArray(j.boatos)) applyRumors(st, j.boatos); }
+  if (npcOn() && j && typeof j === "object" && !Array.isArray(j)) { applyNpcs(st, j.npcs); applyPlaces(st, j.lugares); applyRep(st, j.reputacao); if (Array.isArray(j.boatos)) applyRumors(st, j.boatos); }
   st.keepN = 0; st.keepDue = false;
   renderScene();
 }
@@ -3397,10 +3422,21 @@ function afterReply(){
   if (prefs.keeper !== false && (st.keepN >= 3 || !st.state || vh)) {
     if (simReady) st.keepDue = true; else keeper(false);
   } else if (vh) vocabStep();
+  if (!simReady && prefs.offscreen !== false) { const li = lastAssistantIdx(), u = li > 0 ? st.messages[li - 1] : null; if (u && u.role === "user" && OFF_RX.test(u.text + " " + (u.kind === "cmd" ? "" : ""))) offscreen(st, "o tempo que passou na última cena"); }
 }
 function cleanExtras(st){
+  if (st.clima && !(st.clima.tipo && WX[st.clima.tipo])) delete st.clima;
+  if (st.real && !REAL_LV[st.real]) delete st.real;
+  ["places", "rep", "offscreen"].forEach(k => { if (st[k] != null && !Array.isArray(st[k])) delete st[k]; });
   st.pins = (Array.isArray(st.pins) ? st.pins : []).filter(x => x && typeof x.t === "string" && x.t.trim()).slice(0, PIN_MAX).map(x => ({id: String(x.id || rid()), t: x.t.slice(0, 240)}));
   st.agenda = (Array.isArray(st.agenda) ? st.agenda : []).filter(x => x && typeof x.t === "string" && x.t.trim()).slice(0, AG_MAX).map(x => ({id: String(x.id || rid()), t: x.t.slice(0, 140), day: Number(x.day) > 0 ? Math.floor(Number(x.day)) : null, hm: /^\d{1,2}:\d{2}$/.test(x.hm || "") ? x.hm : "", done: !!x.done}));
+}
+function realEl(st){
+  const w = el("div"); w.append(el("h4", "", "🎚️ Realismo desta história"));
+  const sg = el("div", "seg"); sg.id = "seg-real-st"; w.append(sg);
+  seg(sg, [["", "Como em Ajustes (" + REAL_LV[REAL_LV[prefs.real] ? prefs.real : "real"] + ")"], ["leve", "Leve"], ["real", "Realista"], ["cru", "Cru"]], st.real || "", id => { st.real = id || undefined; persist(); });
+  w.append(el("p", "hint", "Leve: aventura de cinema, erros perdoados. Realista: consequência na medida. Cru: o mundo não protege você, inclusive da morte."));
+  return w;
 }
 function youEl(st){
   const u = st.setup, w = el("div"); w.append(el("h4", "", "🧍 Sobre " + u.name));
@@ -3436,7 +3472,7 @@ function renderMemExtra(){
   const box = $("#mem-extra"); if (!box || !S.story) return;
   const st = S.story; box.textContent = "";
   const dr = el("div", "actions"); const rcb = el("button", "btn ghost sm", "⏪ Relembrar onde parei"); rcb.type = "button"; rcb.dataset.mx = "recap"; rcb.disabled = !hasAI() || st.messages.length < 2; dr.append(rcb); const dbt = el("button", "btn ghost sm", "📜 Diário da história" + ((st.diary || []).length ? " · " + st.diary.length + (st.diary.length === 1 ? " capítulo" : " capítulos") : "")); dbt.type = "button"; dbt.dataset.px = "diary"; dr.append(dbt); box.append(dr);
-  box.append(youEl(st), pinsEl(st), agendaEl(st));
+  box.append(realEl(st), youEl(st), pinsEl(st), agendaEl(st), climaEl(st));
   const a = el("div"); a.append(el("h4", "", "Estado da cena"));
   const s = st.state || {};
   STATE_FIELDS.forEach(([k, i, l]) => {
@@ -3809,6 +3845,7 @@ Operações de inventário (só para ${n}, e só se a ação ou a narração mos
     if (npc) applyTime(sim.npc, minutes, clamp(Number(pick(sono, c, "personagem")) || 0, 0, minutes), false);
     applyEffects(sim.player, pick(eff, n, "jogador")); if (npc) applyEffects(sim.npc, pick(eff, c, "personagem"));
     advanceClock(sim.clock, minutes);
+    if (minutes >= 360) setTimeout(() => { if (S.story === st) offscreen(st, Math.round(minutes / 60) + " horas"); }, 50);
     const spot = (st.state && filled(st.state.lugar)) ? st.state.lugar : "";
     const notes = invOps(sim, j.inventario, spot);
     sim.notes = (sim.notes || []).concat(notes).slice(-8);
@@ -4064,6 +4101,8 @@ const CK_PARTS = {
   rumors: st => st.rumors || [],
   diary: st => st.diary || [],
   places: st => st.places || [],
+  rep: st => st.rep || [],
+  off: st => st.offscreen || [],
   simS: st => st.sim && st.sim.ready ? {clock: st.sim.clock, player: st.sim.player, npc: st.sim.npc, notes: st.sim.notes || []} : null,
   simI: st => st.sim && st.sim.ready ? st.sim.items || [] : null
 };
@@ -4081,6 +4120,8 @@ function ckApply(st, snap, pool){
   st.keepN = snap.keepN || 0; st.keepDue = !!snap.keepDue;
   st.npcs = ckGet(pool, snap.npcs, []); st.rumors = ckGet(pool, snap.rumors, []); st.diary = ckGet(pool, snap.diary, []);
   if (snap.places !== undefined) st.places = ckGet(pool, snap.places, []);
+  if (snap.rep !== undefined) st.rep = ckGet(pool, snap.rep, []);
+  if (snap.off !== undefined) st.offscreen = ckGet(pool, snap.off, []);
   if (st.sim) {
     const s = ckGet(pool, snap.simS, null), it = ckGet(pool, snap.simI, null);
     if (s && it) { st.sim.clock = s.clock; st.sim.player = s.player; st.sim.npc = s.npc; st.sim.notes = s.notes || []; st.sim.items = it; st.sim.ready = true; }
@@ -4091,7 +4132,7 @@ function ckApply(st, snap, pool){
 /* decisões suas (lore aceita ou removida, palavra anotada ou apagada) valem em todos os pontos */
 function ckEditAll(part, fn){
   const d = part === "state" || part === "simS" || part === "simI" ? null : [];
-  for (const s of Object.values(CK.map)) { if (part === "places" && s[part] === undefined) continue; s[part] = ckIntern(CK.pool, fn(ckGet(CK.pool, s[part], d))); }
+  for (const s of Object.values(CK.map)) { if (["places", "rep", "off"].includes(part) && s[part] === undefined) continue; s[part] = ckIntern(CK.pool, fn(ckGet(CK.pool, s[part], d))); }
   CK.dirty = true;
 }
 function ckBackfillSim(st){
@@ -4759,11 +4800,14 @@ function npcSpec(st){
   return {json: `,
  "npcs": [criar ou atualizar fichas de pessoas com nome que aparecem ou são citadas (não inclua ${n}${c ? " nem " + c : ""}): {"nome":"...","aparencia":"...","jeito":"como fala e age","rotina":"onde costuma estar e quando","sabe":"o que sabe de importante e o que NÃO sabe","acha":"o que pensa de ${n}"}],
  "lugares": [criar ou atualizar lugares com nome ou importantes que aparecem ou são citados: {"nome":"...","tipo":"o que é","onde":"fica perto de quê ou como se chega","quem":"quem mora, trabalha ou costuma estar lá","visitado":true se ${n} esteve lá em cena,"notas":"..."}],
+ "reputacao": [como grupos e lugares veem ${n} (a aldeia, a polícia, os vizinhos), só se mudou agora: {"grupo":"...","opiniao":"o que pensam de ${n}, até 20 palavras","nivel":-2 a 2,"porque":"o que causou, até 15 palavras"}],
  "boatos": [lista completa e atualizada: {"fato":"...","sabem":["quem já sabe"],"pode_chegar":["quem pode ficar sabendo"],"como":"por quem ou por onde corre","distorcao":"como pode chegar torcido"}]`,
     rules: `Fichas atuais de NPCs:
 ${cur}
 NPCs: no máximo 3 por vez, só quem apareceu ou mudou agora; cada campo até 25 palavras ("sabe" até 40); deixe "" o que não mudou; não invente nada que não esteja nas mensagens.
 Lugares atuais: ${trunc((st.places || []).map(p => p.name + (p.tipo ? " (" + p.tipo + ")" : "")).join("; "), 1200) || "(nenhum)"}
+Reputação atual: ${(st.rep || []).map(r => r.grupo + " " + r.nivel).join("; ") || "(nenhuma)"}
+Reputação: só muda quando o grupo viu ou ficou sabendo (por boato, testemunha) de algo que ${n} fez; no máximo 2 por vez; -2 hostil, -1 desconfiado, 0 neutro, 1 simpático, 2 admira.
 Lugares: no máximo 3 por vez, só os que apareceram ou mudaram agora; cada campo até 20 palavras; deixe "" o que não mudou; não invente.
 Boatos atuais:
 ${rum}
@@ -4803,6 +4847,129 @@ function applyPlaces(st, list){
     p.upd = Date.now(); pl[i] = p;
   }
   st.places = pl;
+}
+/* clima e estações (com a simulação, muda dia a dia; sem ela vale a estação) */
+const WX = {
+  tropical: {l: "Tropical", s: [["estação chuvosa", 180], ["estação seca", 185]], w: {"estação chuvosa": [["sol forte e abafado", 3], ["pancadas de chuva à tarde", 4], ["chuva forte o dia todo", 2], ["tempestade com raios", 1], ["nublado e úmido", 2]], "estação seca": [["sol forte, céu limpo", 5], ["calor seco e poeira", 3], ["nublado", 1], ["chuva rápida", 1]]}},
+  temperado: {l: "Temperado", s: [["primavera", 91], ["verão", 92], ["outono", 91], ["inverno", 91]], w: {primavera: [["sol ameno", 3], ["chuva fina", 2], ["nublado e fresco", 2], ["vento frio", 1]], "verão": [["sol e calor", 4], ["calor abafado", 2], ["temporal no fim da tarde", 2], ["céu limpo, noite quente", 1]], outono: [["nublado e fresco", 3], ["chuva fria", 2], ["neblina de manhã", 2], ["sol fraco e vento", 2]], inverno: [["frio seco", 3], ["garoa gelada", 2], ["geada de manhã", 2], ["frio cortante e vento", 1], ["neve leve", 1]]}},
+  seco: {l: "Seco (deserto, sertão)", s: [["estação quente", 200], ["estação fria", 165]], w: {"estação quente": [["sol escaldante", 4], ["vento quente com poeira", 2], ["tempestade de areia", 1], ["céu limpo, noite fria", 2]], "estação fria": [["dia ameno, noite gelada", 3], ["vento frio", 2], ["céu limpo", 2], ["chuva rara", 1]]}},
+  frio: {l: "Frio (montanha, polar)", s: [["verão curto", 90], ["inverno longo", 275]], w: {"verão curto": [["fresco e ensolarado", 3], ["chuva fria", 2], ["neblina", 2]], "inverno longo": [["neve", 3], ["nevasca", 1], ["frio extremo e céu limpo", 2], ["vento gelado", 2], ["degelo e lama", 1]]}}
+};
+function hash32(t){ let h = 2166136261; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function seasonOf(cl, day){ const T = WX[cl.tipo]; const tot = T.s.reduce((a, x) => a + x[1], 0); let d = (T.s.slice(0, cl.est0 || 0).reduce((a, x) => a + x[1], 0) + Math.max(0, day - 1)) % tot; for (const [nm, len] of T.s) { if (d < len) return nm; d -= len; } return T.s[0][0]; }
+const WXC = new Map();
+function weatherFor(st, day){
+  const cl = st.clima; if (!cl || !WX[cl.tipo]) return null;
+  const key = st.id + "|" + cl.tipo + "|" + (cl.est0 || 0); let c = WXC.get(key); if (!c) { c = []; WXC.set(key, c); }
+  day = Math.max(1, Math.min(4000, Math.floor(day)));
+  for (let d = c.length + 1; d <= day; d++) {
+    const se = seasonOf(cl, d), opts = WX[cl.tipo].w[se], h = hash32(st.id + ":" + d), prev = c[d - 2];
+    let w;
+    if (prev && prev.se === se && (h % 100) < 45) w = prev.w;
+    else { const tot = opts.reduce((a, x) => a + x[1], 0); let r = (h >>> 8) % tot; w = opts.find(x => (r -= x[1]) < 0)[0]; }
+    c[d - 1] = {se, w};
+  }
+  return c[day - 1];
+}
+function climaBlock(st){
+  const cl = st.clima; if (!cl || !WX[cl.tipo]) return "";
+  const c = agClock(st);
+  if (!c) return "CLIMA: " + WX[cl.tipo].l.toLowerCase() + ", " + seasonOf(cl, 1) + ". O tempo varia de forma plausível com os dias e pesa nas cenas.";
+  const t = weatherFor(st, c.day), a = weatherFor(st, c.day + 1);
+  return "CLIMA (do app; vale como fato): hoje, dia " + c.day + " (" + t.se + "): " + t.w + ". Amanhã deve ser: " + a.w + (a.se !== t.se ? " (começa a " + a.se + ")" : "") + ". Mostre o clima no corpo, nas roupas, nos caminhos e nos planos das pessoas.";
+}
+function climaEl(st){
+  const w = el("div"); w.append(el("h4", "", "☁️ Clima e estações"));
+  const cl = st.clima || {}; const r = el("div", "row");
+  r.append(fieldEl("Clima do lugar", "cl-tipo", "select", cl.tipo || "", {options: [["", "Sem clima do app"]].concat(Object.entries(WX).map(([k, v]) => [k, v.l]))}));
+  if (cl.tipo && WX[cl.tipo]) r.append(fieldEl("Estação no começo", "cl-est", "select", String(cl.est0 || 0), {options: WX[cl.tipo].s.map((x, i) => [String(i), x[0]])}));
+  w.append(r);
+  const c = agClock(st);
+  if (cl.tipo && WX[cl.tipo]) w.append(el("p", "hint", c ? "Hoje (dia " + c.day + "): " + weatherFor(st, c.day).w + " · " + weatherFor(st, c.day).se + ". Amanhã: " + weatherFor(st, c.day + 1).w + "." : "Com a simulação ligada, o tempo muda dia a dia pelo relógio da história. Sem ela, o narrador só sabe a estação."));
+  else w.append(el("p", "hint", "Escolha um clima e o app decide o tempo de cada dia (chuva, frio, calor), de um jeito coerente com a estação. O narrador recebe o tempo de hoje e a previsão de amanhã."));
+  return w;
+}
+/* o mundo anda sem você */
+const OFF_RX = /\b(durm|dormi|dorme|dormir|cochil|viaj|semanas? depois|dias? depois|no dia seguinte|na manh[ãa] seguinte|meses depois|horas depois|anos depois)/i;
+async function offscreen(st, span, manual){
+  if (!hasAI() || !S.char || (prefs.offscreen === false && !manual)) return false;
+  if (!manual && st.offAt != null && st.messages.length - st.offAt < 3) return false;
+  st.offAt = st.messages.length;
+  const n = st.setup.name, tok = ckTok(st);
+  const recent = st.messages.slice(-4).map(m => (m.role === "assistant" ? (S.char.name) : n) + ": " + m.text).join("\n\n");
+  const prompt = `Você mantém vivo o mundo de um roleplay. O tempo passou: ${span}. Diga o que aconteceu FORA DE CENA, longe de ${n}, nesse intervalo: rotinas que seguiram, combinados da agenda que chegaram, boatos que correram, consequências de coisas que ${n} fez, mudanças nos lugares. Só o plausível e coerente com o que está abaixo; nada que dependa de ${n} estar presente; nada grandioso sem motivo; nada que contradiga os fatos fixos. No máximo 3 fatos, cada um com até 30 palavras, no passado.
+${[pinsBlock(st), npcBlock(st), placesBlock(st), agendaBlock(st), repBlock(st), rumorBlock(st)].filter(Boolean).join("\n\n") || "(o mundo ainda tem pouca coisa anotada)"}
+${st.memory ? "MEMÓRIA: " + trunc(st.memory, 1500) : ""}
+ÚLTIMAS MENSAGENS:
+${trunc(recent, 4000)}
+
+Responda SOMENTE com um objeto JSON: {"fatos":["..."]} (lista vazia se nada relevante aconteceu).`;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"quick", maxTokens:450});
+    const j = parseJSON(r.text);
+    if (!ckValid(tok, st)) return false;
+    const f = (j && Array.isArray(j.fatos) ? j.fatos : []).map(x => str(String(x || ""), 260)).filter(Boolean).slice(0, 3);
+    if (!f.length) { if (manual) toast("Nada de importante aconteceu longe de " + n + "."); return false; }
+    const at = st.messages.length;
+    st.offscreen = (st.offscreen || []).concat(f.map(t => ({id: "o" + rid(), t, at}))).slice(-8);
+    persist(); ckMark(st, tok.key);
+    toast("🌍 Enquanto isso, o mundo andou (" + f.length + (f.length === 1 ? " fato" : " fatos") + " em Memória).");
+    return true;
+  } catch { if (manual) toast("Não consegui agora."); return false; }
+}
+function offBlock(st){
+  const l = (st.offscreen || []).filter(x => st.messages.length - (x.at || 0) <= 30); if (!l.length) return "";
+  return "ENQUANTO ISSO (aconteceu fora de cena; " + st.setup.name + " não sabe de nada disso até ver, ouvir ou alguém contar; mostre as consequências quando fizer sentido, aos poucos, sem despejar tudo)\n" + l.map(x => "- " + x.t).join("\n");
+}
+function offEl(st){
+  const w = el("div"); w.append(el("h4", "", "🌍 Enquanto isso"));
+  w.append(el("p", "hint", prefs.offscreen === false ? "Desligado em Ajustes. Você ainda pode pedir à mão." : "Quando o tempo passa (dormir, viajar, Avançar tempo), o app pergunta o que aconteceu longe de você com as pessoas, a agenda e os lugares. O narrador mostra as consequências aos poucos."));
+  const l = st.offscreen || []; const ul = el("ul", "slist");
+  l.slice().reverse().forEach(x => { const li = el("li"); li.append(el("p", "", x.t)); li.lastChild.style.margin = "0"; const ac = el("div", "acts2"); const d = el("button", "btn ghost sm", "Esquecer"); d.type = "button"; d.dataset.px = "of-del"; d.dataset.id = x.id; ac.append(d); li.append(ac); ul.append(li); });
+  if (l.length) w.append(ul);
+  const ac = el("div", "actions"); const b = el("button", "btn ghost sm", "O que aconteceu lá fora?"); b.type = "button"; b.dataset.px = "of-now"; b.disabled = !hasAI(); ac.append(b); w.append(ac);
+  return w;
+}
+const REP_LV = {"-2": "😠 hostil", "-1": "🤨 desconfiado", "0": "😐 neutro", "1": "🙂 simpático", "2": "🤩 admira"};
+function applyRep(st, list){
+  if (!Array.isArray(list) || !list.length) return;
+  const rp = (st.rep || []).slice();
+  for (const x of list.slice(0, 3)) {
+    if (!x || typeof x !== "object") continue;
+    const g = str(x.grupo || x.group, 60); const k = vnorm(g); if (!k) continue;
+    let i = rp.findIndex(q => vnorm(q.grupo) === k);
+    if (i < 0) { if (rp.length >= 16) continue; rp.push({id: "g" + rid(), grupo: g, nivel: 0}); i = rp.length - 1; }
+    const r = Object.assign({}, rp[i]); const lv = Math.round(Number(x.nivel));
+    if (Number.isFinite(lv)) r.nivel = clamp(lv, -2, 2);
+    const o = str(x.opiniao, 160); if (o) r.opiniao = o; const w = str(x.porque, 120); if (w) r.porque = w;
+    r.upd = Date.now(); rp[i] = r;
+  }
+  st.rep = rp;
+}
+function repBlock(st){
+  const r = st.rep || []; if (!r.length) return "";
+  return "REPUTAÇÃO DE " + st.setup.name.toUpperCase() + " (o que cada grupo pensa; muda como " + st.setup.name + " é tratado por quem pertence a ele)\n" + r.map(x => "- " + x.grupo + ": " + (REP_LV[String(x.nivel || 0)] || "neutro").replace(/^\S+ /, "") + (x.opiniao ? "; " + x.opiniao : "") + (x.porque ? " (por: " + x.porque + ")" : "")).join("\n");
+}
+function repEl(st){
+  const w = el("div"); w.append(el("h4", "", "🏷️ Reputação"));
+  const list = st.rep || [];
+  if (!list.length) w.append(el("p", "hint", "Como grupos e lugares veem você (a aldeia, a polícia, os vizinhos). O anotador atualiza quando eles ficam sabendo do que você fez; o narrador usa para decidir como você é tratado."));
+  const ul = el("ul", "slist");
+  list.forEach(r => {
+    const li = el("li"); li.append(el("b", "", r.grupo + " · " + (REP_LV[String(r.nivel || 0)] || "neutro")));
+    if (r.opiniao || r.porque) li.append(el("small", "", [r.opiniao, r.porque && "por: " + r.porque].filter(Boolean).join(" · ")));
+    const ac = el("div", "acts2");
+    const dn = el("button", "btn ghost sm", "− Pior"); dn.type = "button"; dn.dataset.px = "rp-dn"; dn.dataset.id = r.id; dn.disabled = r.nivel <= -2;
+    const up = el("button", "btn ghost sm", "+ Melhor"); up.type = "button"; up.dataset.px = "rp-up"; up.dataset.id = r.id; up.disabled = r.nivel >= 2;
+    const d = el("button", "btn ghost sm danger", "Remover"); d.type = "button"; d.dataset.px = "rp-del"; d.dataset.id = r.id;
+    ac.append(dn, up, d); li.append(ac); ul.append(li);
+  });
+  if (list.length) w.append(ul);
+  const add = el("div", "send-row"); add.style.marginTop = "10px";
+  const ni = el("input"); ni.type = "text"; ni.id = "rp-new"; ni.placeholder = "Grupo ou lugar (ex.: a guarda)"; ni.maxLength = 60; ni.className = "pin";
+  const nb = el("button", "btn ghost sm", "Adicionar"); nb.type = "button"; nb.dataset.px = "rp-add";
+  add.append(ni, nb); w.append(add);
+  return w;
 }
 function placesBlock(st){
   const list = st.places || []; if (!list.length) return "";
@@ -4894,10 +5061,16 @@ function peopleEl(box, st){
     r.append(ul2);
   }
   box.append(r);
-  box.append(placesEl(st));
+  box.append(placesEl(st), repEl(st), offEl(st));
 }
 function bindPeople(){
-  $("#mem-extra").addEventListener("click", e => {
+  $("#mem-extra").addEventListener("change", e => {
+    if (!S.story || (e.target.id !== "cl-tipo" && e.target.id !== "cl-est")) return;
+    const st = S.story, t = $("#cl-tipo").value;
+    st.clima = t && WX[t] ? {tipo: t, est0: e.target.id === "cl-est" ? Number(e.target.value) || 0 : 0} : undefined;
+    persist(); renderMemExtra();
+  });
+  $("#mem-extra").addEventListener("click", async e => {
     const b = e.target.closest("[data-px]"); if (!b || !S.story) return;
     const st = S.story, a = b.dataset.px, id = b.dataset.id;
     if (a === "np-save") {
@@ -4931,6 +5104,15 @@ function bindPeople(){
       const idea = $("#e-idea"); if (idea) idea.value = "Complete a ficha de " + p.name + " a partir das anotações abaixo, que vieram de uma história já jogada: mantenha tudo o que está escrito, preencha o que falta (personalidade, regras de condução, exemplos de fala) e crie duas aberturas coerentes.";
       toast("Ficha começada com as anotações de " + p.name + ". Toque em Aplicar mudança para a IA completar, ou edite à mão.");
     }
+    else if (a === "rp-up" || a === "rp-dn") { const d = a === "rp-up" ? 1 : -1; const f = x => x.id === id ? Object.assign({}, x, {nivel: clamp((x.nivel || 0) + d, -2, 2)}) : x; st.rep = (st.rep || []).map(f); ckEditAll("rep", a2 => a2.map(f)); persist(); renderMemExtra(); }
+    else if (a === "rp-del") { st.rep = (st.rep || []).filter(x => x.id !== id); ckEditAll("rep", a2 => a2.filter(x => x.id !== id)); persist(); renderMemExtra(); }
+    else if (a === "rp-add") {
+      const g = ($("#rp-new").value || "").trim().slice(0, 60); if (!g) { toast("Escreva o grupo ou lugar."); return; }
+      if ((st.rep || []).some(x => vnorm(x.grupo) === vnorm(g))) { toast("Esse grupo já está na lista."); return; }
+      const r = {id: "g" + rid(), grupo: g, nivel: 0, upd: Date.now()}; st.rep = (st.rep || []).concat([r]); ckEditAll("rep", a2 => a2.some(x => x.id === r.id) ? a2 : a2.concat([r])); persist(); renderMemExtra();
+    }
+    else if (a === "of-del") { st.offscreen = (st.offscreen || []).filter(x => x.id !== id); ckEditAll("off", a2 => a2.filter(x => x.id !== id)); persist(); renderMemExtra(); }
+    else if (a === "of-now") { b.disabled = true; b.textContent = "Pensando…"; await offscreen(st, "desde a última vez que " + st.setup.name + " olhou em volta", true); renderMemExtra(); }
     else if (a === "pl-vis") { st.places = (st.places || []).map(x => x.id === id ? Object.assign({}, x, {vis: !x.vis}) : x); ckEditAll("places", a2 => a2.map(x => x.id === id ? Object.assign({}, x, {vis: !x.vis}) : x)); persist(); renderMemExtra(); }
     else if (a === "pl-del") { st.places = (st.places || []).filter(x => x.id !== id); ckEditAll("places", a2 => a2.filter(x => x.id !== id)); persist(); renderMemExtra(); }
     else if (a === "pl-add") {
@@ -5641,7 +5823,7 @@ async function boot(){
 }
 boot();
 // Gancho só para os testes automáticos: aparece apenas se a página definir window.__MESA_TEST antes de carregar.
-if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON};
+if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON, offscreen, weatherFor, renderMemExtra};
 })();
 </script>
 

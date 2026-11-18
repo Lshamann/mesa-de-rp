@@ -36,6 +36,7 @@ MOCK = r"""
       if (input.includes('Escreva 3 aberturas')) return {text: JSON.stringify([{label:'A',text:'*Abertura A.*'},{label:'B',text:'*Abertura B.*'},{label:'C',text:'*Abertura C.*'}]), truncated:false};
       if (input.includes('Escreva 6 a 8 entradas')) return {text: '```json\n' + JSON.stringify([{name:'L1',keys:['x','y'],content:'conteudo 1'},{name:'L2',keys:['z'],content:'conteudo 2'}]) + '\n```', truncated:false};
       if (input.includes('designer de personagens')) { if (opts.onText) opts.onText({text:'{"name"', delta:''}); return {text: JSON.stringify(FULL), truncated:false}; }
+      if (input.includes('Você mantém vivo o mundo')) return {text: JSON.stringify({fatos: window.__off || ['Neema consertou a rede grande sozinha.', 'Choveu forte na aldeia durante a noite.']}), truncated:false};
       if (input.includes('Corrija a frase que o aluno')) return {text: JSON.stringify(window.__scres || {ok:false, corrigida:'Ninakula chakula.', pt:'Eu como comida.', erros:[{errado:'Nakula', certo:'Ninakula', regra:'Falta o prefixo ni- (eu) e o -na- (agora).'}], dica:'Comece sempre pelo prefixo da pessoa.'}), truncated:false};
       return {text:'- Resumo: os dois se conheceram.', truncated:false};
     }

@@ -27,6 +27,7 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - Idiomas: revisão espaçada das palavras salvas (Errei/Acertei; 1, 3, 7, 16 e 40 dias) e “Corrigir minha frase” com a IA.
 - Leitura e backup: tamanho e fonte da letra, espaço entre linhas, cor de destaque; lembrete de backup; livro em .epub (diário ou conversa).
 - 18/11/2026 (segunda leva): “Anteriormente…” ao voltar para uma história depois de 6 horas; ☆ marcar momentos e 🔎 buscar na história (inclui mensagens antigas); 🎲 dados (o narrador respeita o resultado); lixeira de 30 dias para histórias e personagens; 🎭 NPC vira personagem; 🗺️ lugares mantidos pelo anotador.
+- 18/11/2026 (realismo): regras universais para o narrador (competência, vontade própria, emoção com inércia, memória imperfeita, logística, consequências, dinheiro, clima) com nível Leve, Realista ou Cru (Ajustes e por história); 🏷️ reputação por grupo; 🌍 o mundo anda sem você (fatos de fora de cena quando o tempo passa); ☁️ clima e estações (dia a dia com a simulação).
 - Linha do tempo: Voltar, Regerar, trocar de versão, editar a última resposta e Ramificar levam o estado junto; "Recalcular do zero" para histórias antigas.
 - Simulação: fome, sede, energia, higiene, necessidades, saúde, relógio, inventário realista.
 - Idiomas: tradução por IA, Google e offline (Bergamot); dicionário de palavras aprendidas em cena, com níveis e revisão.
@@ -59,6 +60,8 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - [ ] Dados com o Mestre da Mesa: resultado baixo complica de verdade?
 - [ ] “Anteriormente…” resume bem depois de um dia sem jogar?
 - [ ] Lugares: o anotador cria e atualiza sem inventar?
+- [ ] Realismo Cru: o mundo cobra sem ficar sádico? E o Leve continua divertido?
+- [ ] Enquanto isso: os fatos de fora de cena aparecem aos poucos, sem despejar tudo?
 
 ## Ideias para depois
 
