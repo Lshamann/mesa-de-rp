@@ -55,7 +55,7 @@ Leia isto primeiro, seja você (Kelvin) ou uma conversa nova com o Claude. Aqui 
 - [ ] Sincronização entre celular e computador (e uma exclusão viajando).
 - [ ] Expressões do Tau e do Ousmane trocando na conversa.
 - [ ] O francês do Ousmane lido com voz francesa no "Ouvir".
-- [ ] Ousmane nota a aparência de quem joga (parente de pele clara: ele procura semelhança ou estranha?).
+- [ ] Os personagens (Tau, Ousmane e os novos) notam a aparência de quem joga? Ex.: parente de pele clara: procuram semelhança ou estranham?
 - [ ] Dados com o Mestre da Mesa: resultado baixo complica de verdade?
 - [ ] “Anteriormente…” resume bem depois de um dia sem jogar?
 - [ ] Lugares: o anotador cria e atualiza sem inventar?
