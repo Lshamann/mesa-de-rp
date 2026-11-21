@@ -469,6 +469,15 @@ details.adv>summary{font:600 14px/1.3 var(--f-body);letter-spacing:0;text-transf
 .bar .ib svg{width:17px;height:17px}
 @media (max-width:420px){#app[data-view="chat"] .bar .ib{min-width:34px;height:34px;padding:0 8px}#app[data-view="chat"] .bar{gap:4px}}
 .msg.cmd{border:0;font:500 12.5px/1 var(--f-body);letter-spacing:0}
+/* conversa não pode ficar mais larga que a tela: a linha de ações rola por dentro, não empurra o balão */
+#msgs{overflow-x:hidden}
+.msg.tau,.msg.you{min-width:0;max-width:100%}
+.msg.tau>*,.msg.you>*{max-width:100%;min-width:0}
+.msg .acts{align-self:stretch;width:100%;box-sizing:border-box}
+.msg.you .acts{justify-content:flex-start}
+.msg.you .acts>:first-child{margin-left:auto}
+.msg .tag{align-self:stretch}
+@media (max-width:420px){#app[data-view="chat"] #b-models,#app[data-view="chat"] #b-lock{display:none}.bt{min-width:72px}}
 </style>
 
 <div id="app" data-view="library">
