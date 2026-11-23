@@ -3000,7 +3000,7 @@ async function importChub(link){
 }
 
 /* ---------- tradução ---------- */
-const TR_LANGS = ["francês", "inglês", "espanhol", "italiano", "alemão", "árabe", "wolof", "suaíli", "japonês", "português"];
+const TR_LANGS = ["francês", "inglês", "espanhol", "italiano", "alemão", "árabe", "wolof", "suaíli", "iorubá", "crioulo haitiano", "japonês", "português"];
 const TRX = {busy:null, undo:null, out:null, inBusy:false};
 function trLang(){ return (S.story && S.story.trLang) || (S.char && S.char.trLang) || LS.get("rp.trLang") || "francês"; }
 function renderTrMenu(){
@@ -3015,7 +3015,7 @@ function renderTrMenu(){
     const g = el("button", "", got.length ? "Baixar mais idiomas…" : "Baixar idiomas…"); g.type = "button"; g.dataset.goset = "1"; m.append(g);
   }
   const t = ($("#in").value || "").trim();
-  const gl = {"francês":"fr", "inglês":"en", "espanhol":"es", "italiano":"it", "alemão":"de", "árabe":"ar", "wolof":"wo", "suaíli":"sw", "japonês":"ja", "português":"pt"}[cur] || "fr";
+  const gl = {"francês":"fr", "inglês":"en", "espanhol":"es", "italiano":"it", "alemão":"de", "árabe":"ar", "wolof":"wo", "suaíli":"sw", "iorubá":"yo", "crioulo haitiano":"ht", "japonês":"ja", "português":"pt"}[cur] || "fr";
   const a = el("a", "", "Abrir no Google Tradutor ↗"); a.href = "https://translate.google.com/?sl=auto&tl=" + gl + "&op=translate" + (t ? "&text=" + encodeURIComponent(t.slice(0, 2000)) : ""); a.target = "_blank"; a.rel = "noopener";
   m.append(a);
 }
@@ -3028,7 +3028,7 @@ async function translateInput(lang){
   const st = S.story, n = st.setup.name;
   const hasQuotes = /["“”]/.test(t);
   const prompt = `Traduza para ${lang} ${hasQuotes ? "SOMENTE as falas entre aspas" : "a fala"} do texto de roleplay abaixo, escrito por ${n}.
-Regras: ${hasQuotes ? "ações e narração entre *asteriscos* e qualquer coisa fora das aspas ficam exatamente como estão, em português; " : "se o texto for só uma fala, devolva-a traduzida e entre aspas retas; "}use um registro natural, falado, coerente com a cena${st.setup.bio ? " e com quem " + n + " é (" + trunc(st.setup.bio, 300) + ")" : ""}; mantenha nomes próprios; não acrescente nada. Trechos entre (( )) ficam iguais.
+Regras: ${hasQuotes ? "ações e narração entre *asteriscos* e qualquer coisa fora das aspas ficam exatamente como estão, em português; " : "se o texto for só uma fala, devolva-a traduzida e entre aspas retas; "}use um registro natural, falado${/haiti/i.test(lang) ? " (kreyòl ayisyen de verdade, com a ortografia oficial: mwen, ou, li, nou, yo, pa, se, ki; não francês)" : ""}, coerente com a cena${st.setup.bio ? " e com quem " + n + " é (" + trunc(st.setup.bio, 300) + ")" : ""}; mantenha nomes próprios; não acrescente nada. Trechos entre (( )) ficam iguais.
 TEXTO:
 ${t}
 
@@ -5393,12 +5393,13 @@ function exprPrompt(ch, m){
 }
 
 /* vozes */
-const TTS_LANG = {pt:"pt-BR", en:"en-US", es:"es-ES", fr:"fr-FR", de:"de-DE", it:"it-IT", sw:"sw-KE"};
+const TTS_LANG = {pt:"pt-BR", en:"en-US", es:"es-ES", fr:"fr-FR", de:"de-DE", it:"it-IT", sw:"sw-KE", ht:"fr-FR"};
 const LANG_HINTS = {
   fr: /\b(je|tu|vous|nous|c'est|est|suis|êtes|pas|ne|le|la|les|des|une|et|qui|mon|ma|ton|ça|oui|non|merci|bonjour|avec|pour|dans|au|aux|mais|très|bien|où|il|elle)\b/gi,
   en: /\b(the|you|is|are|and|what|my|your|not|yes|this|that|with|for|it|of|to|i'm|don't|will|have)\b/gi,
   es: /\b(usted|qué|está|estoy|sí|pero|muy|los|las|una|por|para|con|y|el|es|mi|tu|bueno|gracias|señor|hola|yo)\b/gi,
   pt: /\b(você|não|sim|está|estou|uma|para|com|e|o|os|é|meu|seu|mas|muito|isso|eu|obrigad[oa]|tá|né|vou|aqui)\b/gi,
+  ht: /\b(mwen|nou|li|ki|kote|mèsi|bonjou|bonswa|kijan|pral|konsa|kounye|zanmi|lakay|pitit|bagay|tankou|paske|avèk|konnen|renmen|vini|sak pase|n ap|m ap|m pa|pa gen)\b/gi,
   sw: /\b(mimi|wewe|yeye|sisi|ni|hapa|nini|nani|wapi|njoo|kaa|sana|asante|karibu|rafiki|sawa|hakuna|twende|ndiyo|hapana|polepole|jina|lako|langu|maji|moto|toka|kama|lakini|pia|hii|hiyo)\b|\b\w*(?:sielewi|sijui|nina|una|ana|tuna|wana|ali|nili|nita|uta|ata)\w*\b/gi
 };
 function guessLang(t, base){
@@ -5936,7 +5937,7 @@ async function boot(){
 }
 boot();
 // Gancho só para os testes automáticos: aparece apenas se a página definir window.__MESA_TEST antes de carregar.
-if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON, offscreen, weatherFor, renderMemExtra};
+if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON, offscreen, weatherFor, renderMemExtra, guessLang};
 })();
 </script>
 
