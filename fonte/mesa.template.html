@@ -1349,6 +1349,125 @@ async function jumpTo(mid, old){
   const n = $('#msgs [data-mid="' + CSS.escape(mid) + '"]'); if (!n) { toast("Não achei essa mensagem na tela."); return; }
   n.scrollIntoView({block: "center"}); n.classList.add("flash"); setTimeout(() => n.classList.remove("flash"), 1800);
 }
+/* voltar até qualquer ponto: desfaz o momento escolhido e tudo depois dele, e limpa o que foi desfeito da memória */
+function rewindCut(list, j){
+  let cut = j;
+  if (list[cut] && list[cut].role === "assistant" && cut > 0 && list[cut - 1].role === "user") cut -= 1;
+  return cut;
+}
+function rewindCount(st, mid){
+  const i = st.messages.findIndex(m => m.id === mid);
+  if (i >= 0) return st.messages.length - rewindCut(st.messages, i);
+  const arc = S.old || [], j = arc.findIndex(m => m.id === mid);
+  return j >= 0 ? (arc.length - rewindCut(arc, j)) + st.messages.length : st.messages.length;
+}
+function rewindNode(){
+  const r = S.rewind, d = el("div", "recap rewind"); d.setAttribute("role", "status");
+  d.append(el("b", "", "⏪ Você voltou no tempo"));
+  d.append(el("p", "", r.busy ? "Limpando a memória do que foi desfeito…" : (r.n + (r.n === 1 ? " mensagem desfeita" : " mensagens desfeitas") + ". " + (r.note || "A memória e as anotações voltaram para antes desse momento."))));
+  if (!r.busy) { const x = el("button", "btn ghost sm", "Desfazer a volta"); x.type = "button"; x.dataset.act = "rewind-undo"; d.append(x); }
+  return d;
+}
+async function rewindTo(mid){
+  const st = S.story; if (!st || S.busy) return;
+  await CK.ready; if (S.story !== st) return;
+  if (dirty) { clearTimeout(saveTimer); await enqueue(() => flush()); }
+  const arcN = st.archiveChunks || 0;
+  let list = st.messages, j = list.findIndex(m => m.id === mid), inArc = false, arc = null;
+  if (j < 0) {
+    arc = []; for (let n = 1; n <= arcN; n++) { try { arc = arc.concat(await S.store.getArchive(st.id, n)); } catch {} }
+    j = arc.findIndex(m => m.id === mid); if (j < 0) { toast("Não achei essa mensagem."); return; }
+    inArc = true; list = arc;
+  }
+  const cut = rewindCut(list, j);
+  if (!inArc && cut < 1 && !arcN) { toast("Esse é o começo da história: para recomeçar, crie uma história nova."); return; }
+  const removed = inArc ? arc.slice(cut).concat(st.messages) : st.messages.slice(cut);
+  const back = list[cut] && list[cut].role === "user" && list[cut].kind !== "cmd" ? list[cut].text : "";
+  /* para poder desfazer a volta */
+  const undo = {sid: st.id, st: JSON.parse(JSON.stringify(clean(st))), arc: inArc ? arc.slice() : null, ck: {pool: JSON.parse(JSON.stringify(CK.pool)), map: JSON.parse(JSON.stringify(CK.map))}};
+  CK.epoch++;
+  let exact = false, memoryHit = false;
+  if (!inArc) {
+    const pre = ckFind(st, cut, false);
+    st.messages = st.messages.slice(0, cut);
+    if (pre) { ckApply(st, pre); exact = true; }
+  } else {
+    memoryHit = true;
+    const kept = arc.slice(0, cut), keepBack = Math.min(KEEP, kept.length);
+    if (!keepBack) { toast("Esse é o começo da história: para recomeçar, crie uma história nova."); return; }
+    const newArc = kept.slice(0, kept.length - keepBack); st.messages = kept.slice(kept.length - keepBack);
+    let n = 0; try { for (const ch of chunkBySize(newArc, 150000)) { n += 1; const nn = n; await enqueue(() => S.store.setArchive(st.id, nn, ch)); } for (let k = n + 1; k <= arcN; k++) { const kk = k; await enqueue(() => S.store.setArchive(st.id, kk, [])); } }
+    catch { toast("Não consegui reescrever as mensagens antigas. Nada foi mudado."); Object.assign(st, undo.st); return; }
+    st.archiveChunks = n; st.archived = newArc.length;
+    CK.map = {}; CK.pool = {}; CK.dirty = true;
+  }
+  /* o que é decisão do jogador e não depende de ponto de volta */
+  const total = (st.archived || 0) + st.messages.length;
+  if (!exact) st.diary = (st.diary || []).filter(c => !c.to || c.to <= total);
+  const gone = new Set(removed.map(m => m.id));
+  if (!exact) st.vocab = (st.vocab || []).filter(v => v.manual || !v.at || !gone.has(String(v.at).split("_")[0]));
+  st.offscreen = (st.offscreen || []).filter(x => (x.at || 0) <= st.messages.length);
+  S.old = null; FIND.arc = null; FIND.sid = null; S.recap = null; S.error = null; S.editing = null;
+  S.rewind = {sid: st.id, n: removed.length, busy: !exact && hasAI(), undo};
+  const ta = $("#in"); if (back) { ta.value = back; autosize(); draftSave(); }
+  persist(true); renderLog(); refreshDerived();
+  if (exact) { ckMark(st); return; }
+  if (!hasAI()) { S.rewind.note = "Sem modelo ativo, não deu para limpar a memória: use Memória → Recalcular do zero quando puder."; renderLog(); return; }
+  const tok = ckTok(st);
+  const ok = await rewindClean(st, removed, memoryHit);
+  if (S.story !== st || !S.rewind || S.rewind.sid !== st.id) return;
+  if (ok && ckValid(tok, st)) { await keeper(false, {fresh:true}); if (S.story === st) ckMark(st); }
+  S.rewind.busy = false; S.rewind.note = ok ? "A memória foi limpa do que foi desfeito e o estado da cena foi refeito." : "Não consegui limpar tudo agora: confira a Memória ou use Recalcular do zero.";
+  persist(); renderLog(); refreshDerived();
+}
+async function rewindClean(st, removed, memoryHit){
+  const n = st.setup.name, c = S.char ? S.char.name : st.charName;
+  const txt = removed.filter(m => m.kind !== "cmd").map(m => (m.role === "assistant" ? c : n) + ": " + m.text).join("\n\n");
+  const gone = txt.length > 14000 ? txt.slice(0, 10000) + "\n[…]\n" + txt.slice(-4000) : txt;
+  const lists = JSON.stringify({
+    npcs: (st.npcs || []).map(p => ({nome: p.name, sabe: p.sabe || "", acha: p.acha || "", notas: p.notas || ""})),
+    boatos: (st.rumors || []).map(r => r.fato), lugares: (st.places || []).map(p => ({nome: p.name, visitado: !!p.vis})),
+    reputacao: (st.rep || []).map(r => ({grupo: r.grupo, nivel: r.nivel || 0, opiniao: r.opiniao || ""})), fora_de_cena: (st.offscreen || []).map(x => x.t),
+    palavras: (st.vocab || []).filter(v => !v.manual).map(v => v.w)
+  });
+  const prompt = `Você mantém as anotações de um roleplay. O jogador (${n}) VOLTOU NO TEMPO: tudo o que acontece nas mensagens desfeitas abaixo NUNCA aconteceu. Limpe as anotações de tudo o que veio delas (fatos, consequências, objetos, ferimentos, relações, promessas, pessoas e lugares que só apareceram ali, palavras aprendidas ali), e mantenha igual tudo o que já existia antes.
+${memoryHit ? "MEMÓRIA ATUAL (reescreva sem nada das mensagens desfeitas, no mesmo formato e tamanho):\n" + (st.memory || "(vazia)") + "\n" : ""}
+ANOTAÇÕES ATUAIS (JSON):
+${trunc(lists, 9000)}
+
+MENSAGENS DESFEITAS:
+${gone}
+
+Responda SOMENTE com um objeto JSON:
+{${memoryHit ? '"memoria":"memória reescrita",' : ""}"npcs_remover":["nome de quem só existia por causa das mensagens desfeitas"],"npcs_corrigir":[{"nome":"...","sabe":"...","acha":"...","notas":"..."}],"boatos_remover":["texto do boato"],"lugares_remover":["nome"],"lugares_nao_visitados":["nome"],"reputacao":[{"grupo":"...","nivel":-2 a 2,"opiniao":"..."}],"reputacao_remover":["grupo"],"fora_de_cena_remover":["texto"],"palavras_remover":["palavra"]}
+Use listas vazias quando não houver nada a mudar. Não invente nada novo.`;
+  try {
+    const r = await ask(prompt, {cache:false, modelTier:"default", maxTokens: memoryHit ? 2200 : 1200});
+    const j = parseJSON(r.text); if (!j || typeof j !== "object") throw new Error("json");
+    const set = a => new Set((Array.isArray(a) ? a : []).map(x => vnorm(String(x || ""))).filter(Boolean));
+    if (memoryHit && typeof j.memoria === "string" && j.memoria.trim().length > 20) st.memory = j.memoria.trim();
+    const rn = set(j.npcs_remover); st.npcs = (st.npcs || []).filter(p => !rn.has(vnorm(p.name)));
+    (Array.isArray(j.npcs_corrigir) ? j.npcs_corrigir : []).forEach(x => { if (!x || typeof x !== "object") return; const p = (st.npcs || []).find(q => vnorm(q.name) === vnorm(String(x.nome || ""))); if (!p) return; ["sabe", "acha", "notas"].forEach(f => { if (typeof x[f] === "string") p[f] = str(x[f], 300); }); });
+    const rb = set(j.boatos_remover); st.rumors = (st.rumors || []).filter(r => !rb.has(vnorm(r.fato)));
+    const rl = set(j.lugares_remover), nv = set(j.lugares_nao_visitados); st.places = (st.places || []).filter(p => !rl.has(vnorm(p.name))).map(p => nv.has(vnorm(p.name)) ? Object.assign({}, p, {vis: false}) : p);
+    const rr = set(j.reputacao_remover); st.rep = (st.rep || []).filter(x => !rr.has(vnorm(x.grupo)));
+    (Array.isArray(j.reputacao) ? j.reputacao : []).forEach(x => { if (!x || typeof x !== "object") return; const g = (st.rep || []).find(q => vnorm(q.grupo) === vnorm(String(x.grupo || ""))); if (!g) return; const lv = Math.round(Number(x.nivel)); if (Number.isFinite(lv)) g.nivel = clamp(lv, -2, 2); if (typeof x.opiniao === "string" && x.opiniao) g.opiniao = str(x.opiniao, 160); });
+    const ro = set(j.fora_de_cena_remover); st.offscreen = (st.offscreen || []).filter(x => !ro.has(vnorm(x.t)));
+    const rw = set(j.palavras_remover); st.vocab = (st.vocab || []).filter(v => v.manual || !rw.has(vnorm(v.w)));
+    return true;
+  } catch { return false; }
+}
+async function rewindUndo(){
+  const r = S.rewind, st = S.story; if (!r || !st || r.sid !== st.id || r.busy || S.busy) return;
+  const u = r.undo; CK.epoch++;
+  if (u.arc) { let n = 0; try { for (const ch of chunkBySize(u.arc, 150000)) { n += 1; const nn = n; await enqueue(() => S.store.setArchive(st.id, nn, ch)); } } catch { toast("Não consegui desfazer a volta."); return; } }
+  for (const k of Object.keys(st)) if (!(k in u.st)) delete st[k];
+  Object.assign(st, JSON.parse(JSON.stringify(u.st)));
+  CK.pool = u.ck.pool; CK.map = u.ck.map; CK.dirty = true;
+  S.rewind = null; S.old = null; FIND.arc = null; FIND.sid = null;
+  $("#in").value = ""; draftSave();
+  persist(true); renderLog(); refreshDerived(); toast("Pronto: a história voltou a ser como antes da volta no tempo.");
+}
 /* "Anteriormente…": só para o jogador, não entra na conversa */
 const RECAP_GAP = 6 * 3600e3;
 function recapNode(){
@@ -1410,6 +1529,7 @@ function msgNode(m, i){
     const ed = el("button", "", "Editar"); ed.dataset.act = "edit"; ed.dataset.i = i; a.append(ed);
     if (i >= 0) { const sb = el("button", "", m.star ? "★ Marcado" : "☆ Marcar"); sb.dataset.act = "star"; sb.dataset.i = i; sb.title = "Guarda este momento em Buscar e marcados"; sb.setAttribute("aria-pressed", m.star ? "true" : "false"); a.append(sb); }
     if (isTau && i >= 0 && hasAI()) { const tb = el("button", "", m.tr ? (m.trHide ? "Mostrar tradução" : "Esconder tradução") : (TRX.busy === m.id ? "Traduzindo…" : "Traduzir")); tb.dataset.act = "tr-msg"; tb.dataset.i = i; a.append(tb); }
+    if ((i >= 1 || (i < 0 && m.id)) && S.char) { const rw = el("button", "", "⏪ Voltar até aqui"); rw.dataset.act = "rewind"; rw.dataset.mid = m.id || ""; rw.title = "Desfaz este momento e tudo o que veio depois, e limpa a memória do que foi desfeito"; a.append(rw); }
     if (i >= 0 && S.char) { const br = el("button", "", "Ramificar"); br.dataset.act = "branch"; br.dataset.i = i; br.title = "Cria uma história nova que segue daqui, sem mexer nesta"; a.append(br); }
     if (isTau && i >= 0 && window.speechSynthesis) { const sp = el("button", "", VOICE.on === i ? "Parar voz" : "Ouvir"); sp.dataset.act = "speak"; sp.dataset.i = i; a.append(sp); }
     if (isTau && i === lastAssistantIdx() && i > 0 && S.char) {
@@ -1463,6 +1583,7 @@ function renderLog(o = {}){
     box.append(msgNode(m, i));
   });
   if (S.recap && S.recap.id === st.id) box.append(recapNode());
+  if (S.rewind && S.rewind.sid === st.id) box.append(rewindNode());
   if (o.liveAt == null && S.live) box.append(S.live.node);
   if (S.error) box.append(errNode());
   if (stick) toBottom();
@@ -1569,7 +1690,7 @@ async function send(text, label){
   const img = !label ? S.pendingImg : null;
   if (!text && img) text = "[imagem]";
   if (!text || !S.story) return;
-  clearTimeout(S.draftT); LS.del("rp.draft"); S.recap = null;
+  clearTimeout(S.draftT); LS.del("rp.draft"); S.recap = null; S.rewind = null;
   const m = {id: rid(), role:"user", text};
   if (label) { m.kind = "cmd"; m.label = label; }
   if (img) {
@@ -2696,6 +2817,13 @@ function bind(){
     const vwEl = e.target.closest(".vw"); if (vwEl && !e.target.closest("[data-act]")) { vocabTap(vwEl.textContent); return; }
     const b = e.target.closest("[data-act]"); if (!b || !S.story) return;
     const act = b.dataset.act, i = Number(b.dataset.i), st = S.story;
+    if (act === "rewind") {
+      const mid = b.dataset.mid; if (!mid || S.busy) return;
+      const n = rewindCount(st, mid);
+      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirmar: desfazer " + n + (n === 1 ? " mensagem" : " mensagens"); setTimeout(() => { if (b.isConnected) { b.dataset.armed = ""; b.textContent = "⏪ Voltar até aqui"; } }, 5000); return; }
+      rewindTo(mid); return;
+    }
+    if (act === "rewind-undo") { rewindUndo(); return; }
     if (act === "star") { const m = st.messages[i]; if (m) { m.star = !m.star; persist(); renderLog(); toast(m.star ? "★ Momento marcado. Veja em Buscar e marcados." : "Marcação removida."); } return; }
     if (act === "recap-x") { S.recap = null; renderLog(); return; }
     if (act === "edit") { S.editing = i; renderLog(); const t = $("#editor"); if (t) { t.focus(); t.style.height = Math.min(t.scrollHeight + 4, 360) + "px"; } }
@@ -3633,9 +3761,13 @@ function bindFeatures(){
   $("#scene").addEventListener("click", () => openSheet("memory"));
   let t0 = null; const msgs = $("#msgs");
   msgs.addEventListener("touchstart", e => {
-    const a = e.target.closest(".msg.tau"); if (!a || a.dataset.i == null || e.touches.length !== 1 || e.target.closest("textarea")) { t0 = null; return; }
+    const a = e.target.closest(".msg.tau"); if (!a || a.dataset.i == null || e.touches.length !== 1 || e.target.closest("textarea, button, a, input, select, .acts, .tag, .trbox, .rewind")) { t0 = null; return; }
+    /* dentro de algo que rola de lado, o arrasto é do rolamento, não troca de versão */
+    for (let n = e.target; n && n !== a; n = n.parentElement) if (n.scrollWidth > n.clientWidth + 2 && /auto|scroll/.test(getComputedStyle(n).overflowX)) { t0 = null; return; }
     const t = e.touches[0]; t0 = {x: t.clientX, y: t.clientY, i: Number(a.dataset.i), at: Date.now()};
   }, {passive:true});
+  msgs.addEventListener("touchmove", e => { if (t0 && e.touches.length !== 1) t0 = null; }, {passive:true});
+  msgs.addEventListener("touchcancel", () => { t0 = null; }, {passive:true});
   msgs.addEventListener("touchend", e => {
     if (!t0) return; const s = t0; t0 = null; const t = e.changedTouches[0];
     const dx = t.clientX - s.x, dy = t.clientY - s.y;
@@ -5936,6 +6068,6 @@ async function boot(){
 }
 boot();
 // Gancho só para os testes automáticos: aparece apenas se a página definir window.__MESA_TEST antes de carregar.
-if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON, offscreen, weatherFor, renderMemExtra, guessLang};
+if (window.__MESA_TEST) window.__mesa = {get S(){ return S; }, get prefs(){ return prefs; }, buildTurns, newSim, cleanExtras, persist, saveChar, renderLibrary, normChar, blankChar, loreAll, buildEpub, bkInfo, bkMark, applyTheme, openStory, rollDice, trashPurge, makeRecap, renderLog, applyKeeperJSON, offscreen, weatherFor, renderMemExtra, guessLang, rewindTo, ckMark, rewindUndo};
 })();
 </script>
